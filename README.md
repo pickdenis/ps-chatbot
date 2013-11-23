@@ -20,10 +20,16 @@ The bot will respond to any command starting with `base:number`:
     base:105 invested doubled asbase       (Mega-Mawile's base attack)
     base:80 invested scarf asbase          (Effective base of 80 scarfed mon)
 
+# Installation
 
+Note: If you have `faye-websocket` and `eventmachine` installed, you can skip this step.
 
+    bundle install
+
+ 
 # Usage
 
+   
     ruby connector.rb USER PASS ROOM
 
 
