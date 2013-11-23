@@ -52,4 +52,25 @@ t.match { |info|
 
 Once the match has been performed and returns a value other than `false` or `nil`, this gets added to the info hash under the key `:result`
 
+An example of this in action can be taken from a (shortened) version of the stat calculator's action:
+
+```ruby
+t.act do |info|
+  # initialize all variables
+  
+  
+  # loop through the list of flags
+  info[:result].each do |term|
+     # do stuff to variables
+  end
+  
+  # calculate the result
+ 
+  # format and send the message
+  
+  result = "your nice result"
+  
+  info[:respond].call(result) # invoking procs is different from invoking methods
+end
+```
 Another key is added, `:respond`, and this is used to send a message back. If `info[:where] == 'pm'` then it will respond to the sender, and if `info[:where] == 'c'`, it will respond in `info[:room]`.
