@@ -2,7 +2,8 @@
 ChatHandler::TRIGGERS << Trigger.new do |t|
   t.match { |info|
     info[:what][0..3] == 'base' &&
-    sc = info[:what].scan(/[:\+\-\w]+/) and sc }
+    info[:what].scan(/[:\+\-\w]+/)
+  }
   
   t.act do |info|
     # initialize all variables
