@@ -32,4 +32,8 @@ Note: If you have `faye-websocket` and `eventmachine` installed, you can skip th
    
     ruby connector.rb USER PASS ROOM
 
+# Contact
 
+Pull requests are encouraged. Feel free to submit one if you notice something is wrong or have a cool feature to add.
+
+You can contact me at pickmydenis@gmail.com or pm 'pick' on Pokemon Showdown if I'm online.
