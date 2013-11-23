@@ -73,4 +73,4 @@ t.act do |info|
   info[:respond].call(result) # invoking procs is different from invoking methods
 end
 ```
-Another key is added, `:respond`, and this is used to send a message back. If `info[:where] == 'pm'` then it will respond to the sender, and if `info[:where] == 'c'`, it will respond in `info[:room]`.
+Note the new key, `:respond`, and this is used to send a message back. If `info[:where] == 'pm'` then it will respond to the sender, and if `info[:where] == 'c'`, it will respond in `info[:room]`. *Important: this must be invoked with `info[:respond].call()` because it is a `Proc`, not a method.
