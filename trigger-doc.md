@@ -1,4 +1,4 @@
-Triggers:
+# Triggers
 
 The basic structure of a trigger is this:
 
@@ -48,5 +48,8 @@ t.match { |info|
 }
 ```
 
+# Actions
 
+Once the match has been performed and returns a value other than `false` or `nil`, this gets added to the info hash under the key `:result`
 
+Another key is added, `:respond`, and this is used to send a message back. If `info[:where] == 'pm'` then it will respond to the sender, and if `info[:where] == 'c'`, it will respond in `info[:room]`.
