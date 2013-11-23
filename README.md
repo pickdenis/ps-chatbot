@@ -1,12 +1,12 @@
 # Introduction
 
-[Pokemon Showdown][0] chat needs some features, so this supplements it by running a bot that responds to some commands in the chat.
+[Pokemon Showdown][0] chat needs some features, so this supplements it by running a bot that responds to some commands in the chat or pms it recieves.
 
   [0]: http://pokemonshowdown.com
 
 # Features
 
-## Triggers
+## Stat calculator
 The stat calculator can do these things:
   1. calculate final stat from base stat and evs
   2. calculate effective base stat after boosts/modifiers
