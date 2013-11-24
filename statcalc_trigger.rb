@@ -56,13 +56,12 @@ ChatHandler::TRIGGERS << Trigger.new do |t|
     
     # calculate the stats
     stat = !hp ? ((((iv + 2*base + ev/4) * level/100.0 + 5) * modifier * boostmod).to_i * naturemod).to_i
-               : (iv + 2*base + ev/4) * level/100.0 + 10 + level
+               : ((iv + 2*base + ev/4) * level/100.0 + 10 + level).to_i
         
     if as_base
       if as_uninvested_base
         stat = (((stat.to_f/naturemod - 5) * 100.0/level - iv) / 2).to_i
       else
-        p stat
         stat = (((stat.to_f/naturemod - 5) * 100.0/level - ev/4 - iv) / 2).to_i
       end
       
@@ -90,6 +89,6 @@ ChatHandler::TRIGGERS << Trigger.new do |t|
       "results in a stat of #{stat}."
     end
     
-    info[:respond].call("#{result}")
+    info[:respond].call(result)
   end
 end
