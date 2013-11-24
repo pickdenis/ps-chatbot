@@ -56,6 +56,7 @@ end
 class Trigger
   
   def initialize &blk
+    @vars = {}
     yield self
   end
   
@@ -74,6 +75,17 @@ class Trigger
   def do_act m_info
     @action.call(m_info)
   end
+  
+  def get var
+    @vars[var]
+  end
+  
+  def set var, to
+    @vars[var] = to
+  end
+  
+  alias_method :[], :get
+  alias_method :[]=, :set
 end
 
 

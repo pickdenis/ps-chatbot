@@ -1,7 +1,9 @@
 ChatHandler::TRIGGERS << Trigger.new do |t|
+  t[:who_can_access] = ['pick', 'flippo', 'stretcher']
+  
   t.match { |info|
     info[:what][0..3] == 'fsym' &&
-    (info[:who] == 'pick' || info[:who] == 'flippo') && # nexessary guard
+    t[:who_can_access].index(info[:who]) && # necessary guard
     info[:what][5..-1]
   }
   
