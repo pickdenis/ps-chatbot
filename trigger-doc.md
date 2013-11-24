@@ -74,3 +74,20 @@ t.act do |info|
 end
 ```
 Note the new key, `:respond`, and this is used to send a message back. If `info[:where] == 'pm'` then it will respond to the sender, and if `info[:where] == 'c'`, it will respond in `info[:room]`. **Important: this must be invoked with `info[:respond].call()` because it is a `Proc`, not a method.**
+
+# Integrating with the Chat Handler
+
+Ideally, every trigger should be in its own file named `<name>_trigger.rb` and it should look like:
+```ruby
+ChatHandler::TRIGGERS << Trigger.new do |t|
+  t.match { |info|
+    # stuff
+  }
+  
+  t.act do |info|
+    # more stuff
+  end
+end
+```
+
+This file, if needed, should then be included at the bottom of `chathandler.rb`
