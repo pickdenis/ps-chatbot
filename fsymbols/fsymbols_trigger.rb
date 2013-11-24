@@ -1,7 +1,7 @@
 ChatHandler::TRIGGERS << Trigger.new do |t|
   t.match { |info|
-    info[:who] == 'pick' && # initial guard
     info[:what][0..3] == 'fsym' &&
+    (info[:who] == 'pick' || info[:who] == 'flippo') && # nexessary guard
     info[:what][5..-1]
   }
   

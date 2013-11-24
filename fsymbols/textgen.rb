@@ -11,10 +11,10 @@ module FSymbols
   def self.convert text
     result = ["", "", ""]
     text.each_byte do |b|
-      c = b.chr
-      result[0] << CHARDATA[c][0]
-      result[1] << CHARDATA[c][1]
-      result[2] << CHARDATA[c][2]
+      data = CHARDATA[b.chr] || next
+      result[0] << data[0]
+      result[1] << data[1]
+      result[2] << data[2]
     end
     
     result
