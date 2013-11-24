@@ -14,13 +14,8 @@ $login = {
 $room = ARGV.shift || 'showderp'
 
 def log *argv
-  print "#{File.basepath(__FILE__)}: "
+  print "#{File.basename(__FILE__)}: "
   puts *argv
-end
-
-def logp *argv
-  print "#{File.basepath(__FILE__)}: "
-  p *argv
 end
 
 if __FILE__ == $0
@@ -77,7 +72,7 @@ if __FILE__ == $0
     end
 
     ws.on :close do |event|
-      logp [:close, event.code, event.reason]
+      log "connection closed. code=#{event.code}, reason=#{event.reason}"
       ws = nil
     end
   }

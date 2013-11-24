@@ -1,7 +1,12 @@
+def log *argv
+  print "#{File.basename(__FILE__)}: "
+  puts *argv
+end
+
 module Pokedex
   BASEPATH = File.expand_path(File.dirname(__FILE__))
-  FORMATSDATA = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattlePokedex.json")[0])
-  POKEMONDATA = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattleFormatsData.json")[0])
+  POKEMONDATA = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattlePokedex.json")[0])
+  FORMATSDATA = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattleFormatsData.json")[0])
   
   def self.get_randbats_speeds
     # Adapted from https://github.com/Zarel/Pokemon-Showdown/blob/25c56a0293af58d20008a27f87186cecd1abba28/data/scripts.js#L1461
@@ -43,13 +48,24 @@ module Pokedex
     
     rand_speeds = {}
     POKEMONDATA.each do |name, data|
+      fd = FORMATSDATA[name] || next
+      
       realname = data["species"]
-      tier = FORMATSDATA[name]["tier"]
-      p tier
+      tier = fd["tier"]
+      
+      level = custom_scale[realname] || level_scale[tier] || next
+      base_speed = data["baseStats"]["spe"]
+      rand_speeds[name] = ((31 + 2*base_speed + 85/4) * level.to_f/100 + 5).to_i
+      
     end
+    
+    rand_speeds
     
   end
 end
 
 log "pokedex data loaded"
-Pokedex.get_randbats_speeds
+
+log "loading randbats data..."
+$randbats_speeds = Pokedex.get_randbats_speeds
+log "done"
