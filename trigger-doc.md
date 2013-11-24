@@ -77,7 +77,7 @@ Note the new key, `:respond`, and this is used to send a message back. If `info[
 
 # Integrating with the Chat Handler
 
-Ideally, every trigger (or logical group of triggers) should be in its own file named `<name>_trigger(s).rb` and it should look like:
+Ideally, every trigger (or logical group of triggers) should be in its own directory, and it should be named `<name>_trigger(s).rb` and it should look like:
 ```ruby
 ChatHandler::TRIGGERS << Trigger.new do |t|
   t.match { |info|
@@ -90,4 +90,6 @@ ChatHandler::TRIGGERS << Trigger.new do |t|
 end
 ```
 
-This file, if needed, should then be included at the bottom of `chathandler.rb`
+Inside said directory, there should also be helper files for the trigger.
+
+This file (and all of its helpers) should then be included at the bottom of `chathandler.rb`
