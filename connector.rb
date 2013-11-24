@@ -3,6 +3,7 @@ require 'eventmachine'
 require 'net/http'
 require 'json'
 require './chathandler.rb'
+require './consoleinput.rb'
 
 # USAGE: connector.rb user pass room
 
@@ -20,6 +21,7 @@ end
 
 if __FILE__ == $0
 
+  
   EM.run {
     ws = Faye::WebSocket::Client.new('ws://sim.psim.us:8000/showdown/websocket')
 
@@ -59,9 +61,12 @@ if __FILE__ == $0
         ws.send("|/trn #{$login[:name]},0,#{assertion}")
         
       when "updateuser"
-      
-        log "Name updated: #{message[2]}"
         
+        if message[2] == $login[:name]
+          log 'succesfully logged in!'
+          log 'started console'
+          ci_thread = ConsoleInput.start_loop(ws)
+        end
         ws.send("|/join #{$room}")
         
       when "c", "pm"
@@ -76,4 +81,7 @@ if __FILE__ == $0
       ws = nil
     end
   }
+  
+  
+
 end

@@ -3,18 +3,30 @@ module ChatHandler
   TRIGGERS = []
   
   def self.make_info message, ws
-    info = {
-      room: message[0][1..-2],
-      where: "c",
-      who: message[2][1..-1],
-      what: message[3],
-      ws: ws
-    }
+    info = {where: message[1]}
     
-    if message[1] == "pm"
-      info[:where] = "pm"
-      info[:what] = message[4]
-      info[:to] = message[3][1..-1]
+    info = if info[:where] == 'c'
+      {
+        room: message[0][1..-2],
+        where: message[1],
+        who: message[2][1..-1],
+        what: message[3],
+        ws: ws
+      }
+    elsif info[:where] == 'pm'
+      {
+        where: message[1],
+        what: message[4],
+        to: message[3][1..-1],
+        ws: ws
+      }
+    elsif info[:where] = 's'
+      {
+        room: nil,
+        who: $login[:name],
+        what: message[1],
+        where: info[:where]
+      }
     end
     
     info
@@ -30,7 +42,7 @@ module ChatHandler
         m_info[:result] = result
         m_info[:respond] = if m_info[:where] == 'c'
           proc { |mtext| m_info[:ws].send("#{m_info[:room]}|#{mtext}") }
-        else 
+        elsif m_info[:where] == 'pm'
           proc { |mtext| m_info[:ws].send("|/pm #{m_info[:who]},#{mtext}") } 
         end 
         t.do_act(m_info)
@@ -63,6 +75,7 @@ class Trigger
     @action.call(m_info)
   end
 end
+
 
 # load helper files
 
