@@ -64,11 +64,13 @@ class Trigger
   end
 end
 
-# pokedex data here:
+# load helper files
 
-require './pokedex/load.rb'
+require './pokemon-related/load.rb'
+require './fsymbols/textgen.rb'
 
 # require all trigger files here
 
-require './statcalc_trigger.rb'
-require './randbats_trigger.rb'
+require './statcalc/statcalc_trigger.rb'
+require './pokemon-related/randbats_trigger.rb'
+require './fsymbols/fsymbols_trigger.rb'
