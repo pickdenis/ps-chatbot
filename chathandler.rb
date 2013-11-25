@@ -3,31 +3,26 @@ module ChatHandler
   TRIGGERS = []
   
   def self.make_info message, ws
-    info = {where: message[1]}
+    info = {where: message[1], ws: ws}
     
-    info = if info[:where] == 'c'
+    info.merge!(if info[:where] == 'c'
       {
         room: message[0][1..-2],
-        where: message[1],
         who: message[2][1..-1],
         what: message[3],
-        ws: ws
       }
     elsif info[:where] == 'pm'
       {
-        where: message[1],
         what: message[4],
         to: message[3][1..-1],
-        ws: ws
       }
     elsif info[:where] = 's'
       {
-        room: nil,
+        room: $room,
         who: $login[:name],
         what: message[1],
-        where: info[:where]
       }
-    end
+    end)
     
     info
   end
@@ -40,7 +35,7 @@ module ChatHandler
       
       if result
         m_info[:result] = result
-        m_info[:respond] = if m_info[:where] == 'c'
+        m_info[:respond] = if m_info[:where] == 'c' || m_info[:where] == 's'
           proc { |mtext| m_info[:ws].send("#{m_info[:room]}|#{mtext}") }
         elsif m_info[:where] == 'pm'
           proc { |mtext| m_info[:ws].send("|/pm #{m_info[:who]},#{mtext}") } 

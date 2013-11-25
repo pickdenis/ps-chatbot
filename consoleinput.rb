@@ -7,14 +7,20 @@ module ConsoleInput
   def self.start_loop ws
     @@ci_thread = Thread.new do
       loop do
-        input = gets.strip
-        message = ['s', input]
-        ChatHandler.handle(message, ws)  # the ws field is left blank because there is no ws
+        begin
+          print "console> "
+          input = gets.strip
+          message = ['s', input]
+          ChatHandler.handle(message, ws)  # the ws field is left blank because there is no ws
+        rescue Exception => e
+          puts e.message
+          puts e.backtrace
+        end
       end
     end
     
     ChatHandler::TRIGGERS << @@handler_trigger = Trigger.new do |t|
-      t.match { |info| 
+      t.match { |info|
         info[:where] == 's' &&
         info[:what] == 'exit'
       }
