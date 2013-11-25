@@ -15,6 +15,7 @@ module ChatHandler
       {
         what: message[4],
         to: message[3][1..-1],
+        who: message[2][1..-1],
       }
     elsif info[:where] = 's'
       {
@@ -31,6 +32,7 @@ module ChatHandler
   def self.handle message, ws
     m_info = make_info(message, ws)
     TRIGGERS.each do |t|
+      t[:off] and next
       result = t.is_match?(m_info)
       
       if result
@@ -44,6 +46,17 @@ module ChatHandler
       end
       
     end
+  end
+  
+  def self.turn_by_id id, on
+    TRIGGERS.each do |t|
+      if t[:id] == id
+        t[:off] = !on
+        return true
+      end
+    end
+    
+    false
   end
 
 end
