@@ -4,6 +4,7 @@ require 'net/http'
 require 'json'
 require './chathandler.rb'
 require './consoleinput.rb'
+require './logger.rb'
 
 # USAGE: connector.rb user pass room
 
@@ -14,10 +15,7 @@ $login = {
 }
 $room = ARGV.shift || 'showderp'
 
-def log *argv
-  print "#{File.basename(__FILE__)}: "
-  puts *argv
-end
+
 
 if __FILE__ == $0
 
@@ -26,7 +24,7 @@ if __FILE__ == $0
     ws = Faye::WebSocket::Client.new('ws://sim.psim.us:8000/showdown/websocket')
 
     ws.on :open do |event|
-      log "Connection opened"
+      $logger.log 1, "Connection opened"
     end
 
     ws.on :message do |event|
@@ -34,7 +32,7 @@ if __FILE__ == $0
       #puts event.data
       case message[1]
       when "challstr"
-        log "Attempting to login..."
+        $logger.log 1, "Attempting to login..."
         $data[:challenge] = message[3]
         $data[:challengekeyid] = message[2]
         uri = URI.parse("https://play.pokemonshowdown.com/action.php")
@@ -63,8 +61,8 @@ if __FILE__ == $0
       when "updateuser"
         
         if message[2] == $login[:name]
-          log 'succesfully logged in!'
-          log 'started console'
+          $logger.log 1, 'succesfully logged in!'
+          $logger.log 1, 'started console'
           ci_thread = ConsoleInput.start_loop(ws)
         end
         ws.send("|/join #{$room}")
@@ -77,7 +75,7 @@ if __FILE__ == $0
     end
 
     ws.on :close do |event|
-      log "connection closed. code=#{event.code}, reason=#{event.reason}"
+      $logger.log 1, "connection closed. code=#{event.code}, reason=#{event.reason}"
       ws = nil
     end
   }

@@ -1,3 +1,4 @@
+require './pokemon-related/load.rb'
 
 ChatHandler::TRIGGERS << Trigger.new do |t|
   t[:id] = "rspd"

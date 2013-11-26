@@ -14,7 +14,7 @@ module ConsoleInput
       }
       
       t.act { |info|
-        log 'exiting console...'
+        $logger.log 'exiting console...'
         end_thread
       }
     end, Trigger.new do |t|

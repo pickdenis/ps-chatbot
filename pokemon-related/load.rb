@@ -1,7 +1,4 @@
-def log *argv
-  print "#{File.basename(__FILE__)}: "
-  puts *argv
-end
+require "./logger.rb"
 
 module Pokedex
   BASEPATH = File.expand_path(File.dirname(__FILE__))
@@ -64,8 +61,8 @@ module Pokedex
   end
 end
 
-log "pokedex data loaded"
+$logger.log 1, "pokedex data loaded"
 
-log "loading randbats data..."
+$logger.log 1, "loading randbats data..."
 $randbats_speeds = Pokedex.get_randbats_speeds
-log "done"
+$logger.log 1, "done"

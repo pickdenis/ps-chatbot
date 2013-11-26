@@ -97,13 +97,10 @@ class Trigger
 end
 
 
-# load helper files
-
-require './pokemon-related/load.rb'
-require './fsymbols/textgen.rb'
 
 # require all trigger files here
 
 require './statcalc/statcalc_trigger.rb'
 require './pokemon-related/randbats_trigger.rb'
 require './fsymbols/fsymbols_trigger.rb'
+require './bread/bread_trigger.rb'
