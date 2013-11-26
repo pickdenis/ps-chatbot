@@ -1,5 +1,7 @@
 
 ChatHandler::TRIGGERS << Trigger.new do |t|
+  t[:id] = "rspd"
+  
   t.match { |info|
     info[:what][0..3] == "rspd" && info[:what].size > 4 &&
     info[:what][5..-1]

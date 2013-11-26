@@ -27,7 +27,11 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        ChatHandler.turn_by_id(info[:result], false) and puts "Turned off trigger: #{info[:result]}" or puts "No such trigger: #{info[:result]}"
+        if ChatHandler.turn_by_id(info[:result], false)
+          puts "Turned off trigger: #{info[:result]}"
+        else
+          puts "No such trigger: #{info[:result]}"
+        end
       }
     end, Trigger.new do |t|
       t[:id] = 'console_ton'
@@ -35,11 +39,15 @@ module ConsoleInput
       t.match { |info| 
         info[:where] == 's' &&
         info[:what][0..2] == "ton" &&
-        info[:what][3..-1]
+        info[:what][4..-1]
       }
       
       t.act { |info| 
-        ChatHandler.turn_by_id(info[:result], true) and puts "Turned on trigger: #{info[:result]}" or puts "No such trigger: #{info[:result]}"
+        if ChatHandler.turn_by_id(info[:result], true)
+          puts "Turned on trigger: #{info[:result]}"
+        else
+          puts "No such trigger: #{info[:result]}"
+        end
       }
     end]
   end

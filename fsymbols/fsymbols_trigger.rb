@@ -1,5 +1,6 @@
 ChatHandler::TRIGGERS << Trigger.new do |t|
   t[:who_can_access] = ['pick', 'flippo', 'stretcher']
+  t[:id] = 'fsym'
   
   t.match { |info|
     info[:what][0..3] == 'fsym' &&
