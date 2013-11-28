@@ -12,7 +12,6 @@ $chat << Trigger.new do |t|
   t.act do |info|
     t[:lastused] + t[:cooldown] < Time.now or next
     
-    puts "Checking for a new battle"
     lastbattle = Battles.get_battles.last
     
     if t[:lastbattle] != lastbattle
