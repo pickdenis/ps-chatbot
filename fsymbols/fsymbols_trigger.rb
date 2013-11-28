@@ -1,6 +1,6 @@
 require './fsymbols/textgen.rb'
 
-ChatHandler::TRIGGERS << Trigger.new do |t|
+$chat << Trigger.new do |t|
   t[:who_can_access] = ['pick', 'flippo', 'stretcher']
   t[:id] = 'fsym'
   

@@ -59,7 +59,6 @@ if __FILE__ == $0
         ws.send("|/trn #{$login[:name]},0,#{assertion}")
         
       when "updateuser"
-        
         if message[2] == $login[:name]
           $logger.log 1, 'succesfully logged in!'
           $logger.log 1, 'started console'
@@ -68,7 +67,7 @@ if __FILE__ == $0
         ws.send("|/join #{$room}")
         
       when "c", "pm"
-        ChatHandler.handle(message, ws)
+        $chat.handle(message, ws)
       end
     
       

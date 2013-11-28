@@ -1,5 +1,5 @@
 
-ChatHandler::TRIGGERS << Trigger.new do |t|
+$chat << Trigger.new do |t|
   t.match { |info|
     info[:what][0..3] == 'base' &&
     info[:what].scan(/[:\+\-\w]+/)

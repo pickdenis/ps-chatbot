@@ -1,8 +1,3 @@
-def log *argv
-  print "#{File.basename(__FILE__)}: "
-  puts *argv
-end
-
 module ConsoleInput
   def self.init
     @@handler_triggers = [Trigger.new do |t|
@@ -43,7 +38,23 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        if ChatHandler.turn_by_id(info[:result], true)
+        if $chat.turn_by_id(info[:result], true)
+          puts "Turned on trigger: #{info[:result]}"
+        else
+          puts "No such trigger: #{info[:result]}"
+        end
+      }
+    end, Trigger.new do |t|
+      t[:id] = 'console_ban'
+      
+      t.match { |info| 
+        info[:where] == 's' &&
+        info[:what][0..2] == "ban" &&
+        info[:what][4..-1]
+      }
+      
+      t.act { |info| 
+        if $chat.turn_by_id(info[:result], true)
           puts "Turned on trigger: #{info[:result]}"
         else
           puts "No such trigger: #{info[:result]}"
@@ -59,7 +70,7 @@ module ConsoleInput
           print "console> "
           input = gets.strip
           message = ['s', input]
-          ChatHandler.handle(message, ws)  # the ws field is left blank because there is no ws
+          $chat.handle(message, ws)  # the ws field is left blank because there is no ws
         rescue Exception => e
           puts e.message
           puts e.backtrace
@@ -68,12 +79,12 @@ module ConsoleInput
     end
     
     # Console triggers
-    ChatHandler::TRIGGERS.push(*@@handler_triggers)
+    $chat.triggers.push(*@@handler_triggers)
   end
   
   def self.end_thread
     @@ci_thread.exit
-    ChatHandler::TRIGGERS.delete(*@@handler_triggers)
+    $chat.triggers.delete(*@@handler_triggers)
   end
   
 end

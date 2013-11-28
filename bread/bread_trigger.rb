@@ -1,7 +1,7 @@
 require "./bread/breadfinder.rb"
 require "./bread/battles.rb"
 
-ChatHandler::TRIGGERS << Trigger.new do |t| # breadfinder
+$chat << Trigger.new do |t| # breadfinder
   t[:lastused] = Time.now
   t[:cooldown] = 5 # seconds
   
@@ -10,7 +10,7 @@ ChatHandler::TRIGGERS << Trigger.new do |t| # breadfinder
   }
   
   t.act do |info|
-    t[:lastused] + t[:cooldown] < Time.now or return
+    t[:lastused] + t[:cooldown] < Time.now or next # This should break out of the block
     
     t[:lastused] = Time.now
     
@@ -31,7 +31,7 @@ end << Trigger.new do |t| # battles
   }
   
   t.act do |info|
-    t[:lastused] + t[:cooldown] < Time.now or return
+    t[:lastused] + t[:cooldown] < Time.now or next
     
     t[:lastused] = Time.now
     

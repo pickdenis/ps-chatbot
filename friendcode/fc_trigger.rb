@@ -1,6 +1,6 @@
 require "google_drive"
 
-ChatHandler::TRIGGERS << Trigger.new do |t|
+$chat << Trigger.new do |t|
 
   t[:lastused] = Time.now
   t[:cooldown] = 5 # seconds
@@ -10,7 +10,7 @@ ChatHandler::TRIGGERS << Trigger.new do |t|
   }
   
   gmail_user, gmail_pass = IO.readlines("./friendcode/gmail_auth.txt").map(&:strip)
-
+  $logger.info 'succesfully logged in to google'
   session = GoogleDrive.login(gmail_user, gmail_pass)
   ws = session.spreadsheet_by_key("0Apfr8v-a4nORdHVkcjJUTjJrd3hXV1N2T0dIbktuVVE").worksheets[0]
 

@@ -1,6 +1,10 @@
-module ChatHandler
+class ChatHandler
+  attr_accessor :triggers, :ignorelist
   
-  TRIGGERS = []
+  def initialize
+    @triggers = []
+    @ignorelist = []
+  end
   
   def self.make_info message, ws
     info = {where: message[1], ws: ws}
@@ -29,9 +33,10 @@ module ChatHandler
   end
   
   
-  def self.handle message, ws
-    m_info = make_info(message, ws)
-    TRIGGERS.each do |t|
+  def handle message, ws
+    m_info = self.class.make_info(message, ws)
+    @ignorelist.index(m_info[:who].downcase) and return
+    @triggers.each do |t|
       t[:off] and next
       result = t.is_match?(m_info)
       
@@ -48,8 +53,8 @@ module ChatHandler
     end
   end
   
-  def self.turn_by_id id, on
-    TRIGGERS.each do |t|
+  def turn_by_id id, on
+    @triggers.each do |t|
       if t[:id] == id
         t[:off] = !on
         return true
@@ -57,6 +62,11 @@ module ChatHandler
     end
     
     false
+  end
+  
+  def << trigger
+    @triggers.push(trigger)
+    self
   end
 
 end
@@ -99,6 +109,8 @@ end
 
 
 # require all trigger files here
+
+$chat = ChatHandler.new
 
 require './statcalc/statcalc_trigger.rb'
 require './pokemon-related/randbats_trigger.rb'
