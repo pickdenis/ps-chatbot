@@ -6,7 +6,7 @@ $chat << Trigger.new do |t|
   t[:cooldown] = 5 # seconds
 
   t.match { |info|
-    (info[:what][0..2].downcase == '!fc' && info[:what][4..-1])
+    info[:what][0..2].downcase == '!fc' && info[:what][3..-1].strip
   }
   
   gmail_user, gmail_pass = IO.readlines("./friendcode/gmail_auth.txt").map(&:strip)
@@ -20,9 +20,10 @@ $chat << Trigger.new do |t|
     t[:lastused] = Time.now
     
     userfound = false
-
+    
+    info[:result] == '' and info[:result] = nil
     who = info[:result] || info[:who] # if result is nil, then we'll just use whoever asked
-
+    
     ws.reload()
 
     ws.rows.each do |row|
@@ -32,7 +33,7 @@ $chat << Trigger.new do |t|
       end
     end
     
-    userfound or info[:respond].call("User #{who} not found.")
+    userfound or info[:respond].call("User '#{who}' not found.")
 
   end
 end
