@@ -11,7 +11,7 @@ ChatHandler::TRIGGERS << Trigger.new do |t|
     #info[:who] == 'Scotteh' &&
   }
 
-  session = GoogleDrive.login("pickmydenis@gmail.com", "dummyaccount")
+  session = GoogleDrive.login("pickmydenis@gmail.com", "PASSWORD")
   ws = session.spreadsheet_by_key("0Apfr8v-a4nORdHVkcjJUTjJrd3hXV1N2T0dIbktuVVE").worksheets[0]
 
   t.act do |info|
