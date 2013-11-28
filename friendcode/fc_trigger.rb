@@ -9,7 +9,7 @@ ChatHandler::TRIGGERS << Trigger.new do |t|
     (info[:what][0..2].downcase == '!fc' && info[:what][4..-1])
   }
   
-  gmail_user, gmail_pass = IO.readlines("gmail_auth.txt").map(&:strip)
+  gmail_user, gmail_pass = IO.readlines("./friendcode/gmail_auth.txt").map(&:strip)
 
   session = GoogleDrive.login(gmail_user, gmail_pass)
   ws = session.spreadsheet_by_key("0Apfr8v-a4nORdHVkcjJUTjJrd3hXV1N2T0dIbktuVVE").worksheets[0]
