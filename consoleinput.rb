@@ -57,6 +57,19 @@ module ConsoleInput
         $chat.ignorelist << info[:result]
         puts "Added #{info[:result]} to ignore list. (case insensitive)"
       }
+    end, Trigger.new do |t|
+      t[:id] = 'console_unignore'
+      
+      t.match { |info| 
+        info[:where] == 's' &&
+        info[:what][0..7] == "unignore" &&
+        info[:what][9..-1]
+      }
+      
+      t.act { |info| 
+        $chat.ignorelist.delete(info[:result])
+        puts "Removed #{info[:result]} from ignore list. (case insensitive)"
+      }
     end]
   end
   
