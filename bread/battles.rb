@@ -10,7 +10,7 @@ module Battles
     battles = []
     thread = nil
     
-    open("http://a.4cdn.org/vp/res/16281671.json") do |f|
+    open("http://a.4cdn.org/vp/res/#{bread[:no]}.json") do |f|
       thread = JSON.parse(f.read)
     end
     
