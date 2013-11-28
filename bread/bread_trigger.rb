@@ -27,7 +27,7 @@ end << Trigger.new do |t| # battles
   t[:cooldown] = 10 # seconds
   
   t.match { |info| 
-    info[:what].downcase == "!bread"
+    info[:what].downcase == "!champ"
   }
   
   t.act do |info|
