@@ -15,6 +15,10 @@ $login = {
 }
 $room = ARGV.shift || 'showderp'
 
+trap("INT") do
+  $logger.info 'Gracefully exiting...'
+  exit
+end
 
 
 if __FILE__ == $0
@@ -24,7 +28,7 @@ if __FILE__ == $0
     ws = Faye::WebSocket::Client.new('ws://sim.psim.us:8000/showdown/websocket')
 
     ws.on :open do |event|
-      $logger.log 1, "Connection opened"
+      $logger.info "Connection opened"
     end
 
     ws.on :message do |event|
@@ -32,7 +36,7 @@ if __FILE__ == $0
       #puts event.data
       case message[1]
       when "challstr"
-        $logger.log 1, "Attempting to login..."
+        $logger.info "Attempting to login..."
         $data[:challenge] = message[3]
         $data[:challengekeyid] = message[2]
         uri = URI.parse("https://play.pokemonshowdown.com/action.php")
@@ -60,8 +64,8 @@ if __FILE__ == $0
         
       when "updateuser"
         if message[2] == $login[:name]
-          $logger.log 1, 'succesfully logged in!'
-          $logger.log 1, 'started console'
+          $logger.info 'succesfully logged in!'
+          $logger.info, 'started console'
           ci_thread = ConsoleInput.start_loop(ws)
         end
         ws.send("|/join #{$room}")
@@ -74,7 +78,7 @@ if __FILE__ == $0
     end
 
     ws.on :close do |event|
-      $logger.log 1, "connection closed. code=#{event.code}, reason=#{event.reason}"
+      $logger.info "connection closed. code=#{event.code}, reason=#{event.reason}"
       ws = nil
     end
   }

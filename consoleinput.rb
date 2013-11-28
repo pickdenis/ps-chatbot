@@ -54,11 +54,8 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        if $chat.turn_by_id(info[:result], true)
-          puts "Turned on trigger: #{info[:result]}"
-        else
-          puts "No such trigger: #{info[:result]}"
-        end
+        $chat.ignorelist << info[:result]
+        puts "Added #{info[:result]} to ignore list. (case insensitive)"
       }
     end]
   end

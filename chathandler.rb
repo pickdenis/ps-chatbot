@@ -35,7 +35,7 @@ class ChatHandler
   
   def handle message, ws
     m_info = self.class.make_info(message, ws)
-    @ignorelist.index(m_info[:who].downcase) and return
+    @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     @triggers.each do |t|
       t[:off] and next
       result = t.is_match?(m_info)
