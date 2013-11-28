@@ -16,7 +16,7 @@ $chat << Trigger.new do |t|
     
     if t[:lastbattle] != lastbattle
       t[:lastbattle] = lastbattle
-      info[:respond].call(lastbattle)
+      info[:respond].call("New battle posted in bread: #{lastbattle}")
     end
     
   end
