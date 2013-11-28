@@ -107,11 +107,11 @@ class Trigger
 end
 
 
-
-# require all trigger files here
-
+FileUtils.touch("ignored.txt")
 $chat = ChatHandler.new
 $chat.ignorelist = IO.readlines("ignored.txt")
+
+# require all trigger files here
 
 require './statcalc/statcalc_trigger.rb'
 require './pokemon-related/randbats_trigger.rb'
