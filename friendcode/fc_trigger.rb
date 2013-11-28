@@ -7,8 +7,6 @@ ChatHandler::TRIGGERS << Trigger.new do |t|
 
   t.match { |info|
     (info[:what][0..2].downcase == '!fc' && info[:what][4..-1])
-
-    #info[:who] == 'Scotteh' &&
   }
 
   session = GoogleDrive.login("pickmydenis@gmail.com", "killer horse eats penguins")
