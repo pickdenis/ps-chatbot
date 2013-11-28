@@ -6,7 +6,7 @@ ChatHandler::TRIGGERS << Trigger.new do |t| # breadfinder
   t[:cooldown] = 5 # seconds
   
   t.match { |info| 
-    info[:what] =~ /where is (the )?bread/i
+    info[:what].downcase == "!bread"
   }
   
   t.act do |info|
@@ -27,7 +27,7 @@ end << Trigger.new do |t| # battles
   t[:cooldown] = 10 # seconds
   
   t.match { |info| 
-    info[:what] =~ /where is (the )?champ battle/i
+    info[:what].downcase == "!bread"
   }
   
   t.act do |info|
