@@ -63,6 +63,5 @@ end
 
 $logger.log 1, "pokedex data loaded"
 
-$logger.log 1, "loading randbats data..."
 $randbats_speeds = Pokedex.get_randbats_speeds
-$logger.log 1, "done"
+$logger.log 1, "randbats data loaded"
