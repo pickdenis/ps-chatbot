@@ -13,7 +13,6 @@ $chat << Trigger.new do |t|
     t[:lastused] + t[:cooldown] < Time.now or next
     
     lastbattle = Battles.get_battles.last
-    
     if t[:lastbattle] != lastbattle
       t[:lastbattle] = lastbattle
       info[:respond].call("New battle posted in bread: #{lastbattle}")
