@@ -6,7 +6,7 @@ ChatHandler::TRIGGERS << Trigger.new do |t| # breadfinder
   t[:cooldown] = 5 # seconds
   
   t.match { |info| 
-    info[:what] =~ /where is the bread/i
+    info[:what] =~ /where is (the )?bread/i
   }
   
   t.act do |info|
