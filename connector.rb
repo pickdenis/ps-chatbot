@@ -2,6 +2,7 @@ require 'faye/websocket'
 require 'eventmachine'
 require 'net/http'
 require 'json'
+require 'fileutils'
 require './chathandler.rb'
 require './consoleinput.rb'
 require './logger.rb'
@@ -15,14 +16,17 @@ $login = {
 }
 $room = ARGV.shift || 'showderp'
 
-trap("INT") do
-  $logger.info 'Gracefully exiting...'
-  exit
-end
 
 
 if __FILE__ == $0
-
+  FileUtils.touch("ignored.txt")
+  
+  trap("INT") do
+    puts "\nExiting"
+    puts "Writing ignore list to file..."
+    IO.write("ignored.txt", $chat.ignorelist.join("\n"))
+    exit
+  end
   
   EM.run {
     ws = Faye::WebSocket::Client.new('ws://sim.psim.us:8000/showdown/websocket')
@@ -65,8 +69,8 @@ if __FILE__ == $0
       when "updateuser"
         if message[2] == $login[:name]
           $logger.info 'succesfully logged in!'
-          $logger.info, 'started console'
-          ci_thread = ConsoleInput.start_loop(ws)
+          $logger.info 'started console'
+          $ci_thread = ConsoleInput.start_loop(ws)
         end
         ws.send("|/join #{$room}")
         
@@ -83,6 +87,6 @@ if __FILE__ == $0
     end
   }
   
-  
+
 
 end

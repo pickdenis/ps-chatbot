@@ -45,12 +45,12 @@ module ConsoleInput
         end
       }
     end, Trigger.new do |t|
-      t[:id] = 'console_ban'
+      t[:id] = 'console_ignore'
       
       t.match { |info| 
         info[:where] == 's' &&
-        info[:what][0..2] == "ban" &&
-        info[:what][4..-1]
+        info[:what][0..5] == "ignore" &&
+        info[:what][7..-1]
       }
       
       t.act { |info| 
@@ -77,6 +77,7 @@ module ConsoleInput
     
     # Console triggers
     $chat.triggers.push(*@@handler_triggers)
+    @@ci_thread
   end
   
   def self.end_thread
