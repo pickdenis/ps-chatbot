@@ -47,7 +47,13 @@ class ChatHandler
         elsif m_info[:where] == 'pm'
           proc { |mtext| m_info[:ws].send("|/pm #{m_info[:who]},#{mtext}") } 
         end 
+        
+        # log the action
+        
+        $usage_log.info("#{info[:who]} tripped trigger id:#{t[:id] || '(no id set)'}")
+        
         t.do_act(m_info)
+        
       end
       
     end
