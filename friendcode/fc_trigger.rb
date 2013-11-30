@@ -10,8 +10,10 @@ $chat << Trigger.new do |t|
   }
   
   gmail_user, gmail_pass = IO.readlines("./friendcode/gmail_auth.txt").map(&:strip)
-  $logger.info 'succesfully logged in to google'
+  
   session = GoogleDrive.login(gmail_user, gmail_pass)
+  $logger.info 'succesfully logged in to google'
+  
   ws = session.spreadsheet_by_key("0Apfr8v-a4nORdHVkcjJUTjJrd3hXV1N2T0dIbktuVVE").worksheets[0]
 
   t.act do |info|
