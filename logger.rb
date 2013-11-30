@@ -5,7 +5,6 @@ fmt = proc do |severity, datetime, progname, msg|
 end
 
 $logger = Logger.new($>)
+$logger.formatter = fmt
 
 $usage_log = Logger.new('logs/usage.log', 'daily')
-
-$logger.formatter = $usage_log.formatter = fmt
