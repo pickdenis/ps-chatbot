@@ -1,7 +1,7 @@
 require "./bread/battles.rb"
 
 $chat << Trigger.new do |t|
-  t[:lastused] = Time.now
+  t[:lastused] = Time.now - 10
   t[:cooldown] = 10
   t[:lastbattle] = nil
   
