@@ -19,7 +19,8 @@ $room = ARGV.shift || 'showderp'
 
 
 if __FILE__ == $0
-  FileUtils.touch("ignored.txt")
+  
+  
   
   trap("INT") do
     puts "\nExiting"
