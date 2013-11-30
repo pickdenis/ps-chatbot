@@ -50,7 +50,7 @@ class ChatHandler
         
         # log the action
         
-        $usage_log.info("#{info[:who]} tripped trigger id:#{t[:id] || '(no id set)'}")
+        $usage_log.info("#{m_info[:who]} tripped trigger id:#{t[:id] || '(no id set)'}")
         
         t.do_act(m_info)
         
