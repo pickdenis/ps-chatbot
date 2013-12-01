@@ -15,7 +15,12 @@ module BreadFinder
     
     catalog.each do |page|
       page["threads"].each do |thread|
-        if (thread["sub"] =~ /showderp/i || thread["name"] =~ /showderp/i) && thread["last_replies"]
+        if (thread["sub"] =~ /showderp/i ||
+          thread["name"] =~ /showderp/i ||
+          thread["com"] =~ /showderp/i) &&
+          thread["last_replies"]
+          
+          
           reply_time = thread["last_replies"].max { |reply| reply["time"] }["time"]
           
           if reply_time > current_candidate[:lr_time]
