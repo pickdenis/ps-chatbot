@@ -12,13 +12,19 @@
   * Random battle speed calculator
   * ASCII art large text generator
 
-# Installation
+# Installation of dependencies
 
-Note: If you have `faye-websocket` and `eventmachine` installed, you can skip this step.
+## bundler (recommended)
+
+If you have bundler (`gem install bundler`), you can do this:
 
     bundle install
 
-Alternatively, you can `gem install` everything you see in the `Gemfile`.
+## Manual
+
+    gem install eventmachine
+    gem install faye-websocket
+    # there might me more, check the Gemfile
 
 # Usage
 
