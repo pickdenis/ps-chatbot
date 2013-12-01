@@ -33,7 +33,7 @@ $chat << Trigger.new do |t|
     ws.reload()
 
     ws.rows.each do |row|
-      if row[1].gsub(/[^\w\d]/, '').downcase == who.gsub(/[^\w\d]/, '').downcase
+      if CBUtils.condense_name(row[1]) == CBUtils.condense_name(who)
         info[:respond].call("#{row[0]}'s FC: #{row[2]}")
         userfound = true
       end

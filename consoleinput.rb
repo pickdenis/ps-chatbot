@@ -58,8 +58,13 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        $chat.ignorelist << info[:result]
-        puts "Added #{info[:result]} to ignore list. (case insensitive)"
+        realname = CBUtils.condense_name(info[:result])
+        if $chat.ignorelist.index(realname)
+          puts "#{info[:result]} is already on the ignore list."
+        else
+          $chat.ignorelist << info[:result]
+          puts "Added #{info[:result]} to ignore list. (case insensitive)"
+        end
       }
     end, Trigger.new do |t|
       t[:id] = 'console_unignore'
@@ -72,8 +77,12 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        $chat.ignorelist.delete(info[:result])
-        puts "Removed #{info[:result]} from ignore list. (case insensitive)"
+        if realname = CBUtils.condense_name(info[:result])
+          $chat.ignorelist.delete(realname)
+          puts "Removed #{info[:result]} from ignore list. (case insensitive)"
+        else
+          puts "#{info[:result]} is not on the ignore list"
+        end
       }
     end]
   end
