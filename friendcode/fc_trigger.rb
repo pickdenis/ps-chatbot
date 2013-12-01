@@ -9,6 +9,10 @@ $chat << Trigger.new do |t|
     info[:what][0..2].downcase == '!fc' && info[:what][3..-1].strip
   }
   
+  if !File.exist?("./friendcode/gmail_auth.txt")
+    raise "it's called 'readme' for a reason."
+  end
+  
   gmail_user, gmail_pass = IO.readlines("./friendcode/gmail_auth.txt").map(&:strip)
   
   session = GoogleDrive.login(gmail_user, gmail_pass)
