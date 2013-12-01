@@ -2,6 +2,7 @@ module ConsoleInput
   def self.init
     @@handler_triggers = [Trigger.new do |t|
       t[:id] = 'console_exit'
+      t[:nolog] = true
       
       t.match { |info|
         info[:where] == 's' &&
@@ -14,6 +15,7 @@ module ConsoleInput
       }
     end, Trigger.new do |t|
       t[:id] = 'console_toff'
+      t[:nolog] = true
       
       t.match { |info| 
         info[:where] == 's' &&
@@ -30,6 +32,7 @@ module ConsoleInput
       }
     end, Trigger.new do |t|
       t[:id] = 'console_ton'
+      t[:nolog] = true
       
       t.match { |info| 
         info[:where] == 's' &&
@@ -46,6 +49,7 @@ module ConsoleInput
       }
     end, Trigger.new do |t|
       t[:id] = 'console_ignore'
+      t[:nolog] = true
       
       t.match { |info| 
         info[:where] == 's' &&
@@ -59,6 +63,7 @@ module ConsoleInput
       }
     end, Trigger.new do |t|
       t[:id] = 'console_unignore'
+      t[:nolog] = true
       
       t.match { |info| 
         info[:where] == 's' &&
