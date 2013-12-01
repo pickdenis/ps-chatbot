@@ -34,7 +34,7 @@ Alternatively, you can `gem install` everything you see in the `Gemfile`.
    
     ruby connector.rb USER PASS ROOM
 
-*IMPORTANT*: read [this](https://github.com/pickdenis/ps-chatbot/tree/master/friendcode).
+**IMPORTANT**: read [this](https://github.com/pickdenis/ps-chatbot/tree/master/friendcode).
 
 # Contact
 
