@@ -1,6 +1,6 @@
 # Introduction
 
-[Pokemon Showdown][0] chat needs some features, so this supplements it by running a bot that responds to some commands in the chat or pms it recieves. If you would like to contribute, check the [Wiki][0]
+[Pokemon Showdown][0] chat needs some features, so this supplements it by running a bot that responds to some commands in the chat or pms it recieves. If you would like to contribute, check the [Wiki][1]
 
   [0]: http://pokemonshowdown.com
   [1]: https://github.com/pickdenis/ps-chatbot/wiki
