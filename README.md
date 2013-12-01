@@ -7,7 +7,7 @@
 
 # Features
 
-  * Stat calculator
+  * [Stat calculator](./statcalc)
   * Friend code searcher
   * Random battle speed calculator
   * ASCII art large text generator
