@@ -1,7 +1,7 @@
 require './fsymbols/textgen.rb'
 
 $chat << Trigger.new do |t|
-  t[:who_can_access] = ['pick', 'flippo', 'stretcher']
+  t[:who_can_access] = ['pick', 'stretcher']
   t[:id] = 'fsym'
   
   t.match { |info|
