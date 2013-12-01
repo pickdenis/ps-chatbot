@@ -59,6 +59,7 @@ module ConsoleInput
       
       t.act { |info| 
         realname = CBUtils.condense_name(info[:result])
+        
         if $chat.ignorelist.index(realname)
           puts "#{info[:result]} is already on the ignore list."
         else
@@ -77,8 +78,9 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        if realname = CBUtils.condense_name(info[:result])
-          $chat.ignorelist.delete(realname)
+        realname = CBUtils.condense_name(info[:result])
+        
+        if $chat.ignorelist.delete(realname)
           puts "Removed #{info[:result]} from ignore list. (case insensitive)"
         else
           puts "#{info[:result]} is not on the ignore list"
