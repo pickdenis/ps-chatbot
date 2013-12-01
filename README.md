@@ -27,7 +27,8 @@ Note: If you have `faye-websocket` and `eventmachine` installed, you can skip th
 
     bundle install
 
- 
+Alternatively, you can `gem install` everything you see in the `Gemfile`.
+
 # Usage
 
    
