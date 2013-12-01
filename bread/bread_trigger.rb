@@ -2,6 +2,7 @@ require "./bread/breadfinder.rb"
 require "./bread/battles.rb"
 
 $chat << Trigger.new do |t| # breadfinder
+  t[:id] = 'bread'
   t[:lastused] = Time.now
   t[:cooldown] = 5 # seconds
   
@@ -23,6 +24,7 @@ $chat << Trigger.new do |t| # breadfinder
     info[:respond].call(result)
   end
 end << Trigger.new do |t| # battles
+  t[:id] = 'champ'
   t[:lastused] = Time.now
   t[:cooldown] = 10 # seconds
   

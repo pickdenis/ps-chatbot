@@ -49,8 +49,9 @@ class ChatHandler
         end 
         
         # log the action
-        
-        $usage_log.info("#{m_info[:who]} tripped trigger id:#{t[:id] || '(no id set)'}")
+        if t[:id] && !t[:nolog] # only log triggers with IDs
+          $usage_log.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
+        end
         
         t.do_act(m_info)
         
