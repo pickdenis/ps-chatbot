@@ -13,7 +13,7 @@ $chat << Trigger.new do |t|
   t.act do |info|
     t[:lastused] + t[:cooldown] < Time.now or next
     
-    lastbattle = Battles.get_battles.max {|x| }
+    lastbattle = Battles.get_battles.last
     if t[:lastbattle] != lastbattle
       t[:lastbattle] = lastbattle
       if t[:first]
