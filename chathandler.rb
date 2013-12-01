@@ -116,7 +116,8 @@ end
 
 FileUtils.touch("ignored.txt")
 $chat = ChatHandler.new
-$chat.ignorelist = IO.readlines("ignored.txt")
+p $chat.ignorelist = IO.readlines("ignored.txt").map(&:chomp)
+
 
 # require all trigger files here
 
