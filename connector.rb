@@ -6,6 +6,7 @@ require 'fileutils'
 require './chathandler.rb'
 require './consoleinput.rb'
 require './logger.rb'
+require './utils.rb'
 
 # USAGE: connector.rb user pass room
 
