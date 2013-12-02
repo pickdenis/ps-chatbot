@@ -1,9 +1,33 @@
+require 'logger'
+
 class ChatHandler
-  attr_accessor :triggers, :ignorelist
+  attr_accessor :triggers, :ignorelist, :groups, :usagelogger
   
-  def initialize
+  def initialize group
     @triggers = []
     @ignorelist = []
+    @group = group
+    
+    initialize_loggers
+    
+  end
+  
+  def initialize_loggers
+    
+    @usagelogger = Logger.new("./#{@group}/logs/usage.log", 'daily')
+  end
+  
+  def load_trigger_files
+    allgroups = JSON.parse(IO.readlines('./trigger_sets.json').join(''))
+    
+    files = allgroups[@group]
+    if files
+      files.each do |f|
+        puts "loading:  ./#{@group}/#{f}"
+        require "./#{@group}/#{f}"
+      end
+    end
+    
   end
   
   def self.make_info message, ws
@@ -36,6 +60,7 @@ class ChatHandler
   def handle message, ws
     m_info = self.class.make_info(message, ws)
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
+    
     @triggers.each do |t|
       t[:off] and next
       result = t.is_match?(m_info)
@@ -50,7 +75,7 @@ class ChatHandler
         
         # log the action
         if t[:id] && !t[:nolog] # only log triggers with IDs
-          $usage_log.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
+          @usagelogger.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
         end
         
         t.do_act(m_info)
@@ -115,15 +140,8 @@ end
 
 
 FileUtils.touch("ignored.txt")
-$chat = ChatHandler.new
+$chat = ChatHandler.new("showderp")
+$chat.load_trigger_files
+
 $chat.ignorelist = IO.readlines("ignored.txt").map(&:chomp)
 
-
-# require all trigger files here
-
-require './statcalc/statcalc_trigger.rb'
-require './pokemon-related/randbats_trigger.rb'
-require './fsymbols/fsymbols_trigger.rb'
-require './bread/bread_trigger.rb'
-require './bread/battle_reporter_trigger.rb'
-require './friendcode/fc_trigger.rb'
