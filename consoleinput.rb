@@ -1,3 +1,5 @@
+require 'pry'
+
 module ConsoleInput
   def self.init
     @@handler_triggers = [Trigger.new do |t|
@@ -85,6 +87,30 @@ module ConsoleInput
         else
           puts "#{info[:result]} is not on the ignore list"
         end
+      }
+    end, Trigger.new do |t|
+      t[:id] = 'console_customsend'
+      t[:nolog] = true
+      
+      t.match { |info| 
+        info[:where] == 's' &&
+        info[:what][0..1] == "s" &&
+        info[:what][2..-1]
+      }
+      
+      t.act { |info| 
+        info[:ws].send(info[:result])
+      }
+    end, Trigger.new do |t|
+      t[:id] = 'console_pry'
+      t[:nolog] = true
+      
+      t.match { |info| 
+        info[:what] == 'pry'
+      }
+      
+      t.act { |info| 
+        binding.pry
       }
     end]
   end
