@@ -84,7 +84,7 @@ $chat << Trigger.new do |t|
     end
     
     if level != 100
-      result << "at level #{level} "
+      result << "at level #{level.to_i} "
     end
     
     result << " #{modifier > 1 ? "with a modifier of #{modifier}x" : ''} "
