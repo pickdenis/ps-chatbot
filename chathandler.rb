@@ -1,7 +1,7 @@
 require 'logger'
 
 class ChatHandler
-  attr_accessor :triggers, :ignorelist, :groups, :usagelogger
+  attr_accessor :triggers, :ignorelist, :group, :usagelogger
   
   def initialize group
     @triggers = []
@@ -18,9 +18,8 @@ class ChatHandler
   end
   
   def load_trigger_files
-    allgroups = JSON.parse(IO.readlines('./trigger_sets.json').join(''))
+    files = IO.readlines("./#{@group}/triggers").map(&:chomp)
     
-    files = allgroups[@group]
     if files
       files.each do |f|
         puts "loading:  ./#{@group}/#{f}"
