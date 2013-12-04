@@ -3,4 +3,4 @@ bread/battle_reporter_trigger
 statcalc/statcalc_trigger
 pokemon-related/randbats_trigger
 fsymbols/fsymbols_trigger
-friendcode/fc_trigger.rb
+friendcode/fc_trigger
