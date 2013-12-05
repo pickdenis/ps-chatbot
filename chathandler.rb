@@ -23,7 +23,7 @@ class ChatHandler
     if files
       files.each do |f|
         puts "loading:  ./#{@group}/#{f}"
-        @triggers << eval(File.read("./#{@group}/#{f}.rb"))
+        @triggers << eval(File.read("./#{@group}/#{f}"))
       end
     end
     
