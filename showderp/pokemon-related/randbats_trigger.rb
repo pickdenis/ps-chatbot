@@ -1,6 +1,6 @@
-require_relative 'load.rb'
+require './showderp/pokemon-related/load.rb'
 
-$chat << Trigger.new do |t|
+Trigger.new do |t|
   t[:id] = "rspd"
   
   t.match { |info|

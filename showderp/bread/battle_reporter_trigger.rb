@@ -1,6 +1,8 @@
-require_relative "battles.rb"
+$LOAD_PATH << '.'
 
-$chat << Trigger.new do |t|
+require "./showderp/bread/battles.rb"
+
+Trigger.new do |t|
   t[:lastused] = Time.now - 10
   t[:cooldown] = 10
   t[:prevbattles] = []

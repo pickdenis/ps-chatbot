@@ -1,5 +1,5 @@
-require_relative "breadfinder.rb"
-require_relative "battles.rb"
+require "./showderp/bread/breadfinder.rb"
+require "./showderp/bread/battles.rb"
 
 Trigger.new do |t| # battles
   t[:id] = 'champ'

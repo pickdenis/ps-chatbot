@@ -1,6 +1,6 @@
-require_relative 'textgen.rb'
+require './showderp/fsymbols/textgen.rb'
 
-$chat << Trigger.new do |t|
+Trigger.new do |t|
   t[:who_can_access] = ['pick', 'stretcher']
   t[:id] = 'fsym'
   
