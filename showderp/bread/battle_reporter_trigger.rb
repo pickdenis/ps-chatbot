@@ -16,8 +16,8 @@ $chat << Trigger.new do |t|
     t[:lastused] = Time.now
     
     lastbattle = Battles.get_battles.last
-    if t[:lastbattle].index(lastbattle)
-      t[:lastbattle] << lastbattle
+    if t[:prevbattles].index(lastbattle)
+      t[:prevbattles] << lastbattle
       if t[:first]
         t[:first] = false
       else
