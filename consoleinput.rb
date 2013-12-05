@@ -26,7 +26,7 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        if ChatHandler.turn_by_id(info[:result], false)
+        if $chat.turn_by_id(info[:result], false)
           puts "Turned off trigger: #{info[:result]}"
         else
           puts "No such trigger: #{info[:result]}"
