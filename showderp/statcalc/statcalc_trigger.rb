@@ -1,5 +1,4 @@
-
-$chat << Trigger.new do |t|
+Trigger.new do |t|
   t[:id] = 'statcalc'
   t[:cooldown] = 2 # seconds
   t[:lastused] = Time.now - t[:cooldown]

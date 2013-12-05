@@ -1,6 +1,6 @@
 require "google_drive"
 
-$chat << Trigger.new do |t|
+Trigger.new do |t|
 
   t[:lastused] = Time.now
   t[:cooldown] = 5 # seconds
