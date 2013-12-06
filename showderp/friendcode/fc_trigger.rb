@@ -2,6 +2,8 @@ require "google_drive"
 
 Trigger.new do |t|
 
+  t[:id] = 'fc'
+  
   t[:lastused] = Time.now
   t[:cooldown] = 5 # seconds
 
