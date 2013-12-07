@@ -94,10 +94,11 @@ Trigger.new do |t|
     
     result << " #{modifier > 1 ? "with a modifier of #{modifier}x" : ''} "
     
+    
     result << if as_base
       "is equivalent to a base stat of #{stat} #{as_uninvested_base ? 'without investment' : 'with same investment'}."
     else
-      "results in a stat of #{stat}."
+      "results in a stat of #{stat}#{stat == 420 ? ' (blaze it)' : ''}."
     end
     
     info[:respond].call(result)
