@@ -138,8 +138,8 @@ class Trigger
 end
 
 
-FileUtils.touch("./#{$chat.group}/ignored.txt")
 $chat = ChatHandler.new("showderp")
+FileUtils.touch("./#{$chat.group}/ignored.txt")
 $chat.load_trigger_files
 
 $chat.ignorelist = IO.readlines("./#{$chat.group}/ignored.txt").map(&:chomp)
