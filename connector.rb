@@ -3,9 +3,9 @@ require 'eventmachine'
 require 'net/http'
 require 'json'
 require 'fileutils'
-require './chathandler.rb'
-require './consoleinput.rb'
-require './utils.rb'
+require './app/chathandler.rb'
+require './app/consoleinput.rb'
+require './app/utils.rb'
 
 # USAGE: connector.rb user pass room
 
@@ -38,7 +38,7 @@ if __FILE__ == $0
 
     ws.on :message do |event|
       message = event.data.split("|")
-      #puts event.data
+      
       case message[1]
       when "challstr"
         puts "Attempting to login..."
