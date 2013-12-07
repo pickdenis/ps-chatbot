@@ -18,7 +18,7 @@ Trigger.new do |t|
     t[:lastused] = Time.now
     
     lastbattle = Battles.get_battles.last
-    if t[:prevbattles].index(lastbattle)
+    if !t[:prevbattles].index(lastbattle)
       t[:prevbattles] << lastbattle
       if t[:first]
         t[:first] = false
