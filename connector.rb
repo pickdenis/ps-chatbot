@@ -44,20 +44,12 @@ if __FILE__ == $0
         puts "Attempting to login..."
         $data[:challenge] = message[3]
         $data[:challengekeyid] = message[2]
-        uri = URI.parse("https://play.pokemonshowdown.com/action.php")
-        
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        
-        request = Net::HTTP::Post.new(uri.request_uri)
-        request.set_form_data "act" => "login",
+      
+        $data[:response] = CBUtils.login "act" => "login",
           "name" => $login[:name],
           "pass" => $login[:pass],
           "challengekeyid" => $data[:challengekeyid].to_i,
           "challenge" => $data[:challenge]
-      
-        $data[:response] = JSON.parse(http.request(request).body[1..-1]) # PS returns a ']' before the json
         
         assertion = $data[:response]["assertion"]
         
