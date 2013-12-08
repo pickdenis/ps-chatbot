@@ -25,7 +25,7 @@ if __FILE__ == $0
   trap("INT") do
     puts "\nExiting"
     puts "Writing ignore list to file..."
-    IO.write("ignored.txt", $chat.ignorelist.join("\n"))
+    IO.write("./#{$chat.group}/ignored.txt", $chat.ignorelist.join("\n"))
     exit
   end
   
@@ -44,13 +44,11 @@ if __FILE__ == $0
         puts "Attempting to login..."
         $data[:challenge] = message[3]
         $data[:challengekeyid] = message[2]
-      
         $data[:response] = CBUtils.login "act" => "login",
           "name" => $login[:name],
           "pass" => $login[:pass],
           "challengekeyid" => $data[:challengekeyid].to_i,
           "challenge" => $data[:challenge]
-        
         assertion = $data[:response]["assertion"]
         
         if assertion.nil? 
