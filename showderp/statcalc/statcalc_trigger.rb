@@ -64,8 +64,11 @@ Trigger.new do |t|
     # calculate the stats
     stat = !hp ? ((((iv + 2*base + ev/4) * level/100.0 + 5) * modifier * boostmod).to_i * naturemod).to_i
                : ((iv + 2*base + ev/4) * level/100.0 + 10 + level).to_i
-        
+    
+    
     if as_base
+      o_naturemod = naturemod
+      o_
       if as_uninvested_base
         stat = (((stat.to_f/naturemod - 5) * 100.0/level - iv) / 2).to_i
       else
@@ -76,7 +79,7 @@ Trigger.new do |t|
     
     # format and send the message
     
-    result = "#{base.to_i} base stat #{ev == 252 ? 'invested' : ev > 0 ? "at #{ev} evs" : 'uninvested'} "
+    result = "#{base.to_i} base stat #{ev == 252 ? 'invested' : ev > 0 ? "at #{ev.to_i} evs" : 'uninvested'} "
     
     result << if plus == 0
       if minus == 0
