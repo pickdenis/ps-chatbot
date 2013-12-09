@@ -1,8 +1,13 @@
 require 'readline'
 
-module ConsoleInput
-  def self.init
-    @@handler_triggers = [Trigger.new do |t|
+class Console
+  attr_accessor :ws, :ch
+  
+  def initialize ws, ch
+    @ws = ws
+    @ch = ch
+    
+    @handler_triggers = [Trigger.new do |t|
       t[:id] = 'console_exit'
       t[:nolog] = true
       
@@ -26,7 +31,7 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        if $chat.turn_by_id(info[:result], false)
+        if @ch.turn_by_id(info[:result], false)
           puts "Turned off trigger: #{info[:result]}"
         else
           puts "No such trigger: #{info[:result]}"
@@ -43,7 +48,7 @@ module ConsoleInput
       }
       
       t.act { |info| 
-        if $chat.turn_by_id(info[:result], true)
+        if @ch.turn_by_id(info[:result], true)
           puts "Turned on trigger: #{info[:result]}"
         else
           puts "No such trigger: #{info[:result]}"
@@ -62,10 +67,10 @@ module ConsoleInput
       t.act { |info| 
         realname = CBUtils.condense_name(info[:result])
         
-        if $chat.ignorelist.index(realname)
+        if @ch.ignorelist.index(realname)
           puts "#{info[:result]} is already on the ignore list."
         else
-          $chat.ignorelist << info[:result]
+          @ch.ignorelist << info[:result]
           puts "Added #{info[:result]} to ignore list. (case insensitive)"
         end
       }
@@ -82,7 +87,7 @@ module ConsoleInput
       t.act { |info| 
         realname = CBUtils.condense_name(info[:result])
         
-        if $chat.ignorelist.delete(realname)
+        if @ch.ignorelist.delete(realname)
           puts "Removed #{info[:result]} from ignore list. (case insensitive)"
         else
           puts "#{info[:result]} is not on the ignore list"
@@ -113,27 +118,26 @@ module ConsoleInput
         binding.pry
       }
     end]
+    
   end
   
-  def self.start_loop ws
+  def start_loop
     Thread::abort_on_exception = false
-    @@ci_thread = Thread.new do
+    @ci_thread = Thread.new do
       while input = Readline.readline('console> ', true).strip
         message = ['s', input]
-        $chat.handle(message, ws)  # the ws field is left blank because there is no ws
+        @ch.handle(message, @ws)  # the ws field is left blank because there is no ws
       end
     end
     
     # Console triggers
-    $chat.triggers.push(*@@handler_triggers)
-    @@ci_thread
+    @ch.triggers.push(*@handler_triggers)
+    @ci_thread
   end
   
   def self.end_thread
-    @@ci_thread.exit
-    $chat.triggers.delete(*@@handler_triggers)
+    @ci_thread.exit
+    @ch.triggers.delete(*@handler_triggers)
   end
   
 end
-
-ConsoleInput.init

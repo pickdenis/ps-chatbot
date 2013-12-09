@@ -17,29 +17,39 @@ $login = {
 $room = ARGV.shift || 'showderp'
 
 
+class Chatbot
+  include EM::Deferrable
+  attr_accessor :name, :pass, :ch # chathandler
+  
+  PS_URL = 'ws://sim.psim.us:8000/showdown/websocket'
+  
+  
+  def initialize name, pass, tgroup
+    @name = name
+    @pass = pass
+    
+    @ch = ChatHandler.new(tgroup)
+    FileUtils.touch("./#{@ch.group}/ignored.txt")
+    @ch.load_trigger_files
+    @ch.ignorelist = IO.readlines("./#{@ch.group}/ignored.txt").map(&:chomp)
+    
+    @console = Console.new(nil, @ch)
 
-if __FILE__ == $0
-  
-  
-  
-  trap("INT") do
-    puts "\nExiting"
-    puts "Writing ignore list to file..."
-    IO.write("./#{$chat.group}/ignored.txt", $chat.ignorelist.join("\n"))
-    exit
+    connect
   end
   
-  EM.run {
-    ws = Faye::WebSocket::Client.new('ws://sim.psim.us:8000/showdown/websocket')
-
+  def connect
+    ws = Faye::WebSocket::Client.new(PS_URL)
+    
     ws.on :open do |event|
       puts "Connection opened"
     end
 
     ws.on :message do |event|
       message = event.data.split("|")
+      
       case message[1]
-      when "challstr"
+      when 'challstr'
         puts "Attempting to login..."
         $data[:challenge] = message[3]
         $data[:challengekeyid] = message[2]
@@ -56,16 +66,18 @@ if __FILE__ == $0
         
         ws.send("|/trn #{$login[:name]},0,#{assertion}")
         
-      when "updateuser"
+      when 'updateuser'
         if message[2] == $login[:name]
-          puts 'succesfully logged in!'
-          puts 'started console'
-          $ci_thread = ConsoleInput.start_loop(ws)
+          puts 'Succesfully logged in!'
+          puts 'Started console'
+          @console.ws = ws
+          @console.start_loop
         end
         ws.send("|/join #{$room}")
         
-      when "c", "pm"
-        $chat.handle(message, ws)
+        
+      when 'c', 'pm'
+        @ch.handle(message, ws)
       end
     
       
@@ -75,6 +87,24 @@ if __FILE__ == $0
       puts "connection closed. code=#{event.code}, reason=#{event.reason}"
       ws = nil
     end
+  end
+    
+end
+
+
+if __FILE__ == $0
+  
+  
+  
+  #trap("INT") do
+  #  puts "\nExiting"
+  #  puts "Writing ignore list to file..."
+  #  IO.write("./#{$chat.group}/ignored.txt", $chat.ignorelist.join("\n"))
+  #  exit
+  #end
+  
+  EM.run {
+    bot = Chatbot.new($login[:name], $login[:pass], 'showderp')
   }
   
 

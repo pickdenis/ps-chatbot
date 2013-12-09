@@ -18,6 +18,7 @@ class ChatHandler
   end
   
   def load_trigger_files
+    
     files = IO.readlines("./#{@group}/triggers").map(&:chomp)
     
     if files
@@ -136,11 +137,4 @@ class Trigger
   alias_method :[], :get
   alias_method :[]=, :set
 end
-
-
-$chat = ChatHandler.new("showderp")
-FileUtils.touch("./#{$chat.group}/ignored.txt")
-$chat.load_trigger_files
-
-$chat.ignorelist = IO.readlines("./#{$chat.group}/ignored.txt").map(&:chomp)
 
