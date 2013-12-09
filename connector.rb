@@ -38,7 +38,6 @@ if __FILE__ == $0
 
     ws.on :message do |event|
       message = event.data.split("|")
-      
       case message[1]
       when "challstr"
         puts "Attempting to login..."

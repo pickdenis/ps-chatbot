@@ -1,4 +1,4 @@
-require 'pry'
+require 'readline'
 
 module ConsoleInput
   def self.init
@@ -116,17 +116,11 @@ module ConsoleInput
   end
   
   def self.start_loop ws
+    Thread::abort_on_exception = false
     @@ci_thread = Thread.new do
-      loop do
-        begin
-          print "console> "
-          input = gets.strip
-          message = ['s', input]
-          $chat.handle(message, ws)  # the ws field is left blank because there is no ws
-        rescue Exception => e
-          puts e.message
-          puts e.backtrace
-        end
+      while input = Readline.readline('console> ', true).strip
+        message = ['s', input]
+        $chat.handle(message, ws)  # the ws field is left blank because there is no ws
       end
     end
     
