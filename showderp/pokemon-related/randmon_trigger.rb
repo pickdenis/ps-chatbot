@@ -20,7 +20,7 @@ Trigger.new do |t|
     fdata = Pokedex::FORMATSDATA
     
     # this will hold the selected mons
-    result = nil
+    result = []
     
     num, tier, arg1 = nil
     
@@ -33,11 +33,11 @@ Trigger.new do |t|
     end
     
     
-    result = num.times.map do
+    num.times do
       mon = mondata.keys.sample
-      tier == 'any' || (fdata[mon] && fdata[mon]['tier'].downcase == tier.downcase) || retry
+      tier == 'any' || (fdata[mon] && fdata[mon]['tier'].downcase == tier.downcase) || redo
       
-      mondata[mon]['name']
+      result << mondata[mon]['name']
     end
     
     info[:respond].call("(#{info[:who]}) #{result.join(', ')} (tier=#{tier.upcase})")
