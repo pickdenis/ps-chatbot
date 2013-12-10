@@ -1,4 +1,4 @@
-require './showderp/pokemon-related/load.rb'
+require './showderp/pokemon-related/pokedata.rb'
 
 Trigger.new do |t|
   t[:id] = "rspd"
