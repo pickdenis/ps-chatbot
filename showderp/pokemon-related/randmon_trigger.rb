@@ -34,11 +34,14 @@ Trigger.new do |t|
     
     num <= 6 or next
     
+    tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'G5CAP', 'G4CAP', 'BL', 'BL2', 'BL3', 'LIMBO', 'NFE']
+    
     num.times do
       mon = mondata.keys.sample
-      p mon
-      tier == 'any' || (fdata[mon] && fdata[mon]['tier'] && fdata[mon]['tier'].downcase == tier.downcase) or redo
+      fdata[mon] or redo
+      (montier = fdata[mon]['tier']) or redo
       
+      tiers.index(tier.upcase) and montier.upcase == tier.upcase or redo
       result << mondata[mon]['name']
     end
     
