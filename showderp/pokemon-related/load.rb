@@ -1,7 +1,9 @@
 module Pokedex
+  print  'Pokedex data loaded...  '
   BASEPATH = File.expand_path(File.dirname(__FILE__))
   POKEMONDATA = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattlePokedex.json")[0])
   FORMATSDATA = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattleFormatsData.json")[0])
+  puts 'done.'
   
   def self.get_randbats_speeds
     # Adapted from https://github.com/Zarel/Pokemon-Showdown/blob/25c56a0293af58d20008a27f87186cecd1abba28/data/scripts.js#L1461
@@ -57,9 +59,8 @@ module Pokedex
     rand_speeds
     
   end
+  
+  print "Loading randbats data...  "
+  RANDBATS_SPEEDS = get_randbats_speeds
+  puts "done."
 end
-
-puts "pokedex data loaded"
-
-$randbats_speeds = Pokedex.get_randbats_speeds
-puts "randbats data loaded"

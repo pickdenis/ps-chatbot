@@ -82,7 +82,7 @@ module StatCalc
     
     
     if asbase
-      stat = (((stat.to_f/(o_naturemod)/(o_boostmod)/(o_modifier) - 5) * 100.0/(o_level) - ev/4 - iv) / 2).to_i + 1
+      stat = (((stat.to_f/(o_naturemod)/(o_boostmod)/(o_modifier) - 5) * 100.0/(o_level) - o_ev/4 - o_iv) / 2).to_i + 1
     end
     
     stat = stat.to_i
@@ -107,7 +107,7 @@ module StatCalc
   def self.generate_modstring ev, iv, plus, minus, level, modifier, naturemod
     modstring = ""
     
-    modstring << (ev == 252 ? 'invested ' : ev > 0 ? "at #{ev} evs" : 'uninvested ')
+    modstring << (ev == 252 ? 'invested ' : ev > 0 ? "at #{ev} evs " : 'uninvested ')
     iv != 31 and modstring << "with #{iv} ivs "
     
     modstring << (plus == 0 ? minus != 0 ? "at -#{minus} " : "" : "at +#{plus} ")

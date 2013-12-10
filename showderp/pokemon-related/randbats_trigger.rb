@@ -9,8 +9,9 @@ Trigger.new do |t|
   }
   
   t.act do |info|
-    $randbats_speeds == {} and $randbats_speeds = load_speeds
-    result = $randbats_speeds[info[:result].downcase.gsub(/[^\w]/, '')]
+    rspd = Pokedex::RANDBATS_SPEEDS
+    
+    result = rspd[info[:result].downcase.gsub(/[^\w]/, '')]
     
     result = if result.nil?
       ""

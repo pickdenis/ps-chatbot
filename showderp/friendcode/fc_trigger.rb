@@ -12,13 +12,15 @@ Trigger.new do |t|
   }
   
   if !File.exist?("./showderp/friendcode/gmail_auth.txt")
-    raise "it's called 'readme' for a reason."
+    raise "it's called 'readme' for a reason. (you don't have an auth file)"
   end
   
   gmail_user, gmail_pass = IO.readlines("./showderp/friendcode/gmail_auth.txt").map(&:strip)
   
+  time = Time.now
+  print "Attempting to log into google...  "
   session = GoogleDrive.login(gmail_user, gmail_pass)
-  puts 'succesfully logged in to google'
+  puts "done. (#{Time.now - time})"
   
   ws = session.spreadsheet_by_key("0Apfr8v-a4nORdHVkcjJUTjJrd3hXV1N2T0dIbktuVVE").worksheets[0]
 
