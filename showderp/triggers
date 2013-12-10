@@ -3,5 +3,6 @@ bread/champ_trigger.rb
 bread/battle_reporter_trigger.rb
 statcalc/statcalc_trigger.rb
 pokemon-related/randbats_trigger.rb
+pokemon-related/randmon_trigger.rb
 fsymbols/fsymbols_trigger.rb
 friendcode/fc_trigger.rb
