@@ -12,13 +12,15 @@ Trigger.new do |t|
   }
   
   if !File.exist?("./showderp/friendcode/gmail_auth.txt")
-    raise "it's called 'readme' for a reason. (you don't have an auth file)"
+    puts "Could not login to Google. (have you read the readme in showderp/friendcode?)"
+    t[:on] = false
+    next
   end
   
   gmail_user, gmail_pass = IO.readlines("./showderp/friendcode/gmail_auth.txt").map(&:strip)
   
   time = Time.now
-  print "Attempting to log into google...  "
+  print "Attempting to log into Google...  "
   session = GoogleDrive.login(gmail_user, gmail_pass)
   puts "done. (#{Time.now - time})"
   
