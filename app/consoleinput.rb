@@ -99,19 +99,35 @@ class Console
       
       t.match { |info| 
         info[:where] == 's' &&
-        info[:what][0..1] == "s" &&
+        info[:what][0..0] == "s" &&
         info[:what][2..-1]
       }
       
       t.act { |info| 
+        puts "whee"
         info[:ws].send(info[:result])
+      }
+    end, Trigger.new do |t|
+      t[:id] = 'console_login'
+      t[:nolog] = true
+      
+      t.match { |info| 
+        info[:where] == 's' &&
+        info[:what][0..0] == "l" &&
+        info[:what][2..-1].split(' ')
+      }
+      
+      t.act { |info| 
+        assertion = CBUtils.login(*info[:result])["assertion"]
+        p assertion
+        info[:ws].send("|/trn #{info[:result][0]},0,#{assertion}")
       }
     end, Trigger.new do |t|
       t[:id] = 'console_pry'
       t[:nolog] = true
       
       t.match { |info| 
-        info[:what] == 'pry'
+        info[:what] == 'pry' && info[:where] == 's'
       }
       
       t.act { |info| 

@@ -3,7 +3,7 @@ module CBUtils
     name.downcase.gsub(/[^\w\d]/, '')
   end
   
-  def self.login data
+  def self.login name, pass
     uri = URI.parse("https://play.pokemonshowdown.com/action.php")
         
     http = Net::HTTP.new(uri.host, uri.port)
@@ -11,7 +11,11 @@ module CBUtils
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     
     request = Net::HTTP::Post.new(uri.request_uri)
-    request.set_form_data data
+    request.set_form_data 'act' => 'login',
+      'name' => name,
+      'pass' => pass,
+      'challengekeyid' => $data[:challengekeyid].to_i,
+      'challenge' => $data[:challenge]
   
     JSON.parse(http.request(request).body[1..-1]) # PS returns a ']' before the json
   end

@@ -34,11 +34,7 @@ class Chatbot
         puts "Attempting to login..."
         $data[:challenge] = message[3]
         $data[:challengekeyid] = message[2]
-        $data[:response] = CBUtils.login "act" => "login",
-          "name" => $login[:name],
-          "pass" => $login[:pass],
-          "challengekeyid" => $data[:challengekeyid].to_i,
-          "challenge" => $data[:challenge]
+        $data[:response] = CBUtils.login $login[:name], $login[:pass]
         assertion = $data[:response]["assertion"]
         
         if assertion.nil? 
