@@ -5,8 +5,8 @@ Trigger.new do |t|
   t[:lastused] = Time.now - t[:cooldown]
   
   t.match { |info|
-    info[:what][0..5] == '!rmon ' && 
-    info[:what][6..-1].split(',').map(&:strip)
+    (info[:what][0..4] == '!rmon' && []) || 
+    (info[:what][0..5] == '!rmon ' && info[:what][6..-1].split(' ').map(&:strip))
 
   }
   
