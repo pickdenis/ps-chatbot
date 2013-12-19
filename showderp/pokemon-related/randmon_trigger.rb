@@ -33,7 +33,7 @@ Trigger.new do |t|
     
     num <= 6 or next
     
-    tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'G5CAP', 'G4CAP', 'BL', 'BL2', 'BL3', 'LIMBO', 'NFE']
+    tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'G5CAP', 'G4CAP', 'BL', 'BL2', 'BL3', 'NFE']
     num.times do
       mon = mondata.keys.sample
       fdata[mon] or redo
