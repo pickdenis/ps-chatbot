@@ -139,23 +139,16 @@ class Console
   
   def start_loop
     Thread::abort_on_exception = false
-    
-    
-    infile = $stdin
-    
-    if $options[:pipe]
-      FileUtils.touch('./pipe.tmp')
-      
-      infile = File.open('./pipe.tmp')
-      
-    end
+  
     
     
     @ci_thread = Thread.new do
-      while input = infile.gets.strip
+      
+      while input = Readline.readline("console> ", true).strip
         message = ['s', input]
         @ch.handle(message, @ws)  # the ws field is left blank because there is no ws
       end
+      
     end
     
     # Console triggers

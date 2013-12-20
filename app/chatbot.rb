@@ -15,7 +15,7 @@ class Chatbot
     @ch.ignorelist = IO.readlines("./#{@ch.group}/ignored.txt").map(&:chomp)
     
     @console = Console.new(nil, @ch)
-
+    
     connect
   end
   
@@ -57,12 +57,29 @@ class Chatbot
         @ch.handle(message, ws)
       end
     
-      
     end
 
     ws.on :close do |event|
       puts "connection closed. code=#{event.code}, reason=#{event.reason}"
       ws = nil
+    end
+    
+    fix_input_server(ws)
+  end
+  
+  def fix_input_server ws
+    InputServer.define_method :recieve_data do |data|
+      @data << data
+      if @data[-1] == "\n"
+        message = [@data, 's']
+        
+        callback = proc do |mtext|
+          send_data "#{mtext}\r\n"
+        end
+        
+        @ch.handle(message, ws, callback)
+        @data = ''
+      end
     end
   end
     

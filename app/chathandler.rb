@@ -57,7 +57,7 @@ class ChatHandler
   end
   
   
-  def handle message, ws
+  def handle message, ws, callback = nil
     m_info = self.class.make_info(message, ws)
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
@@ -67,11 +67,13 @@ class ChatHandler
       
       if result
         m_info[:result] = result
-        m_info[:respond] = if m_info[:where] == 'c' || m_info[:where] == 's'
+        m_info[:respond] = (callback || if m_info[:where] == 'c'
           proc { |mtext| m_info[:ws].send("#{m_info[:room]}|#{mtext}") }
+        elsif m_info[:where] == 's'
+          proc { |mtext| puts mtext }
         elsif m_info[:where] == 'pm'
           proc { |mtext| m_info[:ws].send("|/pm #{m_info[:who]},#{mtext}") } 
-        end 
+        end)
         
         # log the action
         if t[:id] && !t[:nolog] # only log triggers with IDs
