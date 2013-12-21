@@ -33,7 +33,7 @@ op = OptionParser.new do |opts|
     $options[:room] = v
   end
   
-  opts.on('-i', '--[no-]console-input', 'console input') do |v|
+  opts.on('-c', '--[no-]console-input', 'console input') do |v|
     $options[:console] = v
   end
   
