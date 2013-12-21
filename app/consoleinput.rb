@@ -142,11 +142,17 @@ class Console
   
     
     
-    @ci_thread = Thread.new do
-      
-      while input = Readline.readline("console> ", true).strip
-        message = ['s', input]
-        @ch.handle(message, @ws)  # the ws field is left blank because there is no ws
+    @ci_thread = Thread.new do 
+      begin
+        
+        while input = Readline.readline("console> ", true).strip
+          message = ['s', input]
+          @ch.handle(message, @ws)  # the ws field is left blank because there is no ws
+        
+        end
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
       end
       
     end

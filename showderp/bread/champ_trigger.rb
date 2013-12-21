@@ -3,8 +3,8 @@ require "./showderp/bread/battles.rb"
 
 Trigger.new do |t| # battles
   t[:id] = 'champ'
-  t[:lastused] = Time.now
   t[:cooldown] = 10 # seconds
+  t[:lastused] = Time.now - t[:cooldown]
   
   t.match { |info| 
     info[:what].downcase == "!champ"
@@ -15,17 +15,15 @@ Trigger.new do |t| # battles
     
     t[:lastused] = Time.now
     
-    battles, time = Battles.get_batt
-    
+    battles, time = Battles.get_battles.last
     
     
     result = if battles.nil?
       "couldn't find any battles, sorry"
     else
-      # In minutes
-      time_since = Time.now(Time.now - time) / (1000 * 60)
+      time_since = (Time.now - time).to_i / 60 # minutes
       
-      "champ battle: #{battles.last}, posted #{time_since} minutes ago."
+      "champ battle: #{battles}, posted #{time_since} minutes ago."
     end
     
     info[:respond].call(result)
