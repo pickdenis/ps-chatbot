@@ -23,7 +23,7 @@ class Chatbot
     
     # initialize console if requested
     
-    @console = console ? Console.new(nil, @ch) : nil
+    @console = (console && Console.new(nil, @ch))
     
     @room = room
     
