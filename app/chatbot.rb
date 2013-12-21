@@ -5,7 +5,7 @@ class Chatbot
   PS_URL = 'ws://sim.psim.us:8000/showdown/websocket'
   
   
-  def initialize name, pass, tgroup
+  def initialize name, pass, tgroup, room, console
     @name = name
     @pass = pass
     
@@ -14,7 +14,9 @@ class Chatbot
     @ch.load_trigger_files
     @ch.ignorelist = IO.readlines("./#{@ch.group}/ignored.txt").map(&:chomp)
     
-    @console = Console.new(nil, @ch)
+    @console = console ? Console.new(nil, @ch) : nil
+    
+    @room = room
     
     connect
   end
@@ -46,9 +48,12 @@ class Chatbot
       when 'updateuser'
         if message[2] == $login[:name]
           puts 'Succesfully logged in!'
-          puts 'Started console'
-          @console.ws = ws
-          @console.start_loop
+          
+          if @console
+            puts 'Started console'
+            @console.ws = ws
+            @console.start_loop
+          end
         end
         ws.send("|/join #{$options[:room]}")
         

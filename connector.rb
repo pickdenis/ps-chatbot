@@ -15,7 +15,7 @@ require './app/utils.rb'
 
 $data = {}
 $login = {}
-$options = {room: 'showderp'}
+$options = {room: 'showderp', tgroup: 'showderp'}
 
 
 op = OptionParser.new do |opts|
@@ -31,6 +31,14 @@ op = OptionParser.new do |opts|
   
   opts.on('-r', '--room ROOM', 'specify room to join (default is showderp)') do |v|
     $options[:room] = v
+  end
+  
+  opts.on('-i', '--no-input', 'no console input') do |v|
+    $options[:console] = !v
+  end
+  
+  opts.on('-s', '--[no-]socket', 'no socket input') do |v|
+    $options[:socket] = !v
   end
   
   opts.on_tail('-h', '--help', 'Show this message') do
@@ -60,8 +68,11 @@ if __FILE__ == $0
   #end
   
   EM.run do
-    bot = Chatbot.new($login[:name], $login[:pass], $options[:room])
-    EM.start_server('127.0.0.1', 8081, InputServer)
+    bot = Chatbot.new($login[:name], $login[:pass], $options[:tgroup], $options[:room], $options[:socket])
+    
+    if $options[:socket]
+      EM.start_server('127.0.0.1', 8081, InputServer)
+    end
   end
   
 

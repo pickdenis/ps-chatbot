@@ -5,7 +5,7 @@ module InputServer
   
   
   def post_init
-    puts "Socket connection"
+    puts "Recieved a connection to the socket"
     @data = ""
   end
 
@@ -15,6 +15,6 @@ module InputServer
   end
 
   def unbind
-    puts "Socket disconnection"
+    puts "Client disconnected"
   end
 end
