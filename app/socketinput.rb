@@ -10,6 +10,7 @@ module InputServer
   end
 
   def receive_data data
+    puts "old method"
     # this should be changed
   end
 

@@ -50,7 +50,7 @@ class Chatbot
           @console.ws = ws
           @console.start_loop
         end
-        ws.send("|/join #{$room}")
+        ws.send("|/join #{$options[:room]}")
         
         
       when 'c', 'pm'
@@ -68,16 +68,17 @@ class Chatbot
   end
   
   def fix_input_server ws
-    InputServer.define_method :recieve_data do |data|
+    v_ch = @ch
+    InputServer.send :define_method, :receive_data do |data|
       @data << data
       if @data[-1] == "\n"
-        message = [@data, 's']
+        message = ['s', @data.strip]
         
         callback = proc do |mtext|
           send_data "#{mtext}\r\n"
         end
         
-        @ch.handle(message, ws, callback)
+        v_ch.handle(message, ws, callback)
         @data = ''
       end
     end

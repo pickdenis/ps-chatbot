@@ -67,12 +67,13 @@ class ChatHandler
       
       if result
         m_info[:result] = result
+        
         m_info[:respond] = (callback || if m_info[:where] == 'c'
-          proc { |mtext| m_info[:ws].send("#{m_info[:room]}|#{mtext}") }
+          proc do |mtext| m_info[:ws].send("#{m_info[:room]}|#{mtext}") end
         elsif m_info[:where] == 's'
-          proc { |mtext| puts mtext }
+          proc do |mtext| puts mtext end
         elsif m_info[:where] == 'pm'
-          proc { |mtext| m_info[:ws].send("|/pm #{m_info[:who]},#{mtext}") } 
+          proc do |mtext| m_info[:ws].send("|/pm #{m_info[:who]},#{mtext}") end
         end)
         
         # log the action
