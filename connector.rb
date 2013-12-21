@@ -33,12 +33,12 @@ op = OptionParser.new do |opts|
     $options[:room] = v
   end
   
-  opts.on('-i', '--no-input', 'no console input') do |v|
-    $options[:console] = !v
+  opts.on('-i', '--[no-]console-input', 'console input') do |v|
+    $options[:console] = v
   end
   
-  opts.on('-s', '--no-socket', 'no socket input') do |v|
-    $options[:socket] = !v
+  opts.on('-s', '--[no-]socket-input', 'socket input') do |v|
+    $options[:socket] = v
   end
   
   opts.on_tail('-h', '--help', 'Show this message') do
@@ -53,7 +53,6 @@ if ARGV.empty?
 end
 
 op.parse!(ARGV)
-
 
 
 
