@@ -10,9 +10,18 @@ class Chatbot
     @pass = pass
     
     @ch = ChatHandler.new(tgroup)
+    
+    
+    # load ignore list
+    
     FileUtils.touch("./#{@ch.group}/ignored.txt")
-    @ch.load_trigger_files
     @ch.ignorelist = IO.readlines("./#{@ch.group}/ignored.txt").map(&:chomp)
+    
+    # load all of the triggers
+    
+    @ch.load_trigger_files
+    
+    # initialize console if requested
     
     @console = console ? Console.new(nil, @ch) : nil
     
