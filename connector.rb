@@ -37,7 +37,7 @@ op = OptionParser.new do |opts|
     $options[:console] = !v
   end
   
-  opts.on('-s', '--[no-]socket', 'no socket input') do |v|
+  opts.on('-s', '--no-socket', 'no socket input') do |v|
     $options[:socket] = !v
   end
   
