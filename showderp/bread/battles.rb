@@ -17,7 +17,7 @@ module Battles
     
     thread["posts"].each do |post|
       if post["com"] && post["com"].gsub('<wbr>', '') =~ %r{(http\://play\.pokemonshowdown\.com/battle-\w+-\d+)}
-        battles << $1
+        battles << [$1, post["time"]]
       end
     end
     
