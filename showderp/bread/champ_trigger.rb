@@ -15,12 +15,17 @@ Trigger.new do |t| # battles
     
     t[:lastused] = Time.now
     
-    battles = Battles.get_battles
+    battles, time = Battles.get_batt
     
-    result = if battles == []
+    
+    
+    result = if battles.nil?
       "couldn't find any battles, sorry"
     else
-      "champ battle: #{battles.last}"
+      # In minutes
+      time_since = Time.now(Time.now - time) / (1000 * 60)
+      
+      "champ battle: #{battles.last}, posted #{time_since} minutes ago."
     end
     
     info[:respond].call(result)

@@ -18,16 +18,15 @@ Trigger.new do |t|
     t[:lastused] = Time.now
     
     lastbattle, time = Battles.get_battles.last
+    
     if !t[:prevbattles].index(lastbattle)
       t[:prevbattles] << lastbattle
       if t[:first]
         t[:first] = false
       else
         
-        # In minutes
-        time_since = Time.now(Time.now - time) / (1000 * 60)
         
-        info[:respond].call("New battle posted in bread: #{lastbattle}, #{time_since} minutes ago")
+        info[:respond].call("New battle posted in bread: #{lastbattle}")
       end
     end
     
