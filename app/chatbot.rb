@@ -5,11 +5,11 @@ class Chatbot
   PS_URL = 'ws://sim.psim.us:8000/showdown/websocket'
   
   
-  def initialize name, pass, tgroup, room, console
-    @name = name
-    @pass = pass
+  def initialize opts # possible keys: name, pass, group, room, console
+    @name = opts[:name]
+    @pass = opts[:pass]
     
-    @ch = ChatHandler.new(tgroup)
+    @ch = ChatHandler.new(opts[:group])
     
     
     # load ignore list
@@ -23,11 +23,16 @@ class Chatbot
     
     # initialize console if requested
     
-    @console = (console && Console.new(nil, @ch))
+    @console = (opts[:console] && Console.new(nil, @ch))
     
-    @room = room
+    @room = opts[:doom]
     
-    connect
+    if @room == 'none'
+      fix_input_server(nil)
+      start_console(nil) if @console
+    else
+      connect
+    end
   end
   
   def connect
@@ -45,7 +50,8 @@ class Chatbot
         puts "Attempting to login..."
         $data[:challenge] = message[3]
         $data[:challengekeyid] = message[2]
-        $data[:response] = CBUtils.login $login[:name], $login[:pass]
+        $data[:response] = CBUtils.login @name, @pass
+        
         assertion = $data[:response]["assertion"]
         
         if assertion.nil? 
@@ -58,11 +64,7 @@ class Chatbot
         if message[2] == $login[:name]
           puts 'Succesfully logged in!'
           
-          if @console
-            puts 'Started console'
-            @console.ws = ws
-            @console.start_loop
-          end
+          start_console(ws) if @console
         end
         ws.send("|/join #{$options[:room]}")
         
@@ -79,6 +81,12 @@ class Chatbot
     end
     
     fix_input_server(ws)
+  end
+  
+  def start_console ws
+    puts 'Started console'
+    @console.ws = ws
+    @console.start_loop
   end
   
   def fix_input_server ws

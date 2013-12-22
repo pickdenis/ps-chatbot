@@ -67,7 +67,12 @@ if __FILE__ == $0
   #end
   
   EM.run do
-    bot = Chatbot.new($login[:name], $login[:pass], $options[:tgroup], $options[:room], $options[:console])
+    bot = Chatbot.new(
+      name: $login[:name], 
+      pass: $login[:pass], 
+      group: $options[:tgroup], 
+      room: $options[:room], 
+      console: $options[:console])
     
     if $options[:socket]
       EM.start_server('127.0.0.1', 8081, InputServer)
