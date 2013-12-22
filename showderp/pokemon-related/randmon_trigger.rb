@@ -25,22 +25,23 @@ Trigger.new do |t|
     
     num, tier, arg1 = nil
     if (arg1 = args.shift).to_i > 0
-      tier = (args.shift || 'any')
+      tier = (args.shift || 'ANY')
       num = arg1.to_i
     else
-      tier = (arg1 || 'any')
+      tier = (arg1 || 'ANY')
       num = 1
     end
     
     num <= 6 or next
     
     tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'G5CAP', 'G4CAP', 'BL', 'BL2', 'BL3', 'NFE']
+    tier = "ANY" if !tiers.index(tier.upcase) 
     num.times do
       mon = mondata.keys.sample
-      fdata[mon] or redo
-      (montier = fdata[mon]['tier']) or redo
+      redo if fdata[mon].nil?
+      redo if (montier = fdata[mon]['tier']).nil?
+      redo if tiers.index(tier.upcase) && montier.upcase != tier.upcase
       
-      !tiers.index(tier.upcase) || montier.upcase == tier.upcase or redo
       result << mondata[mon]['name']
     end
     
