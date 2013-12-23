@@ -34,7 +34,7 @@ Trigger.new do |t|
     
     num <= 6 or next
     
-    tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'G5CAP', 'G4CAP', 'BL', 'BL2', 'BL3', 'NFE']
+    tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'CAP', 'BL', 'BL2', 'BL3', 'NFE']
     tier = "ANY" if !tiers.index(tier.upcase) 
     num.times do
       mon = mondata.keys.sample
