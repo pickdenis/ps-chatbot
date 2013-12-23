@@ -29,7 +29,13 @@ If you have bundler (`gem install bundler`), you can do this:
 # Usage
 
    
-    ruby connector.rb USER PASS ROOM
+    ruby connector.rb -n USER -p PASS [more options]
+
+Some more options are
+    
+    -s: run a socket server to accept input (used to turn off triggers, etc)
+    -c: run an input loop to accept input
+    -r ROOM: join a room. Joins showderp by default
 
 **IMPORTANT**: read [this](https://github.com/pickdenis/ps-chatbot/tree/master/friendcode).
 
