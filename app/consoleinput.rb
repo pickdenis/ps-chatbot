@@ -17,7 +17,7 @@ class Console
       }
       
       t.act { |info|
-        puts 'exiting console...'
+        info[:respond].call('exiting console...')
         end_thread
       }
     end, Trigger.new do |t|
@@ -32,9 +32,9 @@ class Console
       
       t.act { |info| 
         if @ch.turn_by_id(info[:result], false)
-          puts "Turned off trigger: #{info[:result]}"
+          info[:respond].call("Turned off trigger: #{info[:result]}")
         else
-          puts "No such trigger: #{info[:result]}"
+          info[:respond].call("No such trigger: #{info[:result]}")
         end
       }
     end, Trigger.new do |t|
@@ -49,9 +49,9 @@ class Console
       
       t.act { |info| 
         if @ch.turn_by_id(info[:result], true)
-          puts "Turned on trigger: #{info[:result]}"
+          info[:respond].call("Turned on trigger: #{info[:result]}")
         else
-          puts "No such trigger: #{info[:result]}"
+          info[:respond].call("No such trigger: #{info[:result]}")
         end
       }
     end, Trigger.new do |t|
@@ -68,10 +68,10 @@ class Console
         realname = CBUtils.condense_name(info[:result])
         
         if @ch.ignorelist.index(realname)
-          puts "#{info[:result]} is already on the ignore list."
+          info[:respond].call("#{info[:result]} is already on the ignore list.")
         else
           @ch.ignorelist << info[:result]
-          puts "Added #{info[:result]} to ignore list. (case insensitive)"
+          info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
         end
       }
     end, Trigger.new do |t|
@@ -88,9 +88,9 @@ class Console
         realname = CBUtils.condense_name(info[:result])
         
         if @ch.ignorelist.delete(realname)
-          puts "Removed #{info[:result]} from ignore list. (case insensitive)"
+          info[:respond].call("Removed #{info[:result]} from ignore list. (case insensitive)")
         else
-          puts "#{info[:result]} is not on the ignore list"
+          info[:respond].call("#{info[:result]} is not on the ignore list")
         end
       }
     end, Trigger.new do |t|
@@ -104,7 +104,6 @@ class Console
       }
       
       t.act { |info| 
-        puts "whee"
         info[:ws].send(info[:result])
       }
     end, Trigger.new do |t|
