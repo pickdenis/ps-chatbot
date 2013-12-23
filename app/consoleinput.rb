@@ -118,6 +118,7 @@ class Console
       }
       
       t.act { |info| 
+        next if info[:result].size != 2
         assertion = CBUtils.login(*info[:result])["assertion"]
         p assertion
         info[:ws].send("|/trn #{info[:result][0]},0,#{assertion}")
