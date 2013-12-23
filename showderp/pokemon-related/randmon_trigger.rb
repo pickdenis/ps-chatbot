@@ -5,46 +5,51 @@ Trigger.new do |t|
   t[:lastused] = Time.now - t[:cooldown]
   
   t.match { |info|
-    (info[:what][0..5] == '!rmon ' && info[:what][6..-1].split(' ').map(&:strip)) ||
+    (info[:what][0..5] == '!rmon ' && info[:what][6..-1].gsub(/,/, '').split(' ').map(&:strip)) ||
     (info[:what][0..4] == '!rmon' && []) 
 
   }
   
   t.act do |info|
-    p info[:result]
     t[:lastused] + t[:cooldown] < Time.now or next
     t[:lastused] = Time.now
     
     # aliases
-    args = info[:result]
     mondata = Pokedex::POKEMONDATA
     fdata = Pokedex::FORMATSDATA
     
     # this will hold the selected mons
     result = []
     
-    num, tier, arg1 = nil
-    if (arg1 = args.shift).to_i > 0
-      tier = (args.shift || 'ANY')
-      num = arg1.to_i
+    num, arg1 = nil
+    stiers = []
+    args = info[:result]
+    
+    tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'CAP', 'BL', 'BL2', 'BL3', 'NFE']
+    
+    if args[0].to_i > 0
+      num = args.shift.to_i
     else
-      tier = (arg1 || 'ANY')
       num = 1
     end
     
-    num <= 6 or next
+    args.each_with_index do |arg|
+      stiers << (tiers.index(arg) ? arg.upcase : 'ANY')
+    end
     
-    tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'CAP', 'BL', 'BL2', 'BL3', 'NFE']
-    tier = "ANY" if !tiers.index(tier.upcase) 
+    stiers = ['ANY'] if stiers == []
+    
+    next if num > 6
+    
     num.times do
       mon = mondata.keys.sample
       redo if fdata[mon].nil?
       redo if (montier = fdata[mon]['tier']).nil?
-      redo if tiers.index(tier.upcase) && montier.upcase != tier.upcase
+      redo if stiers.all? { |t| tiers.index(t) } && !stiers.index(montier)
       
       result << mondata[mon]['name']
     end
     
-    info[:respond].call("(#{info[:who]}) #{result.join(', ')} (tier=#{tier.upcase})")
+    info[:respond].call("(#{info[:who]}) #{result.join(', ')} (tiers #{stiers.join(', ')})")
   end
 end
