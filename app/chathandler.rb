@@ -31,7 +31,7 @@ class ChatHandler
   end
   
   def self.make_info message, ws
-    info = {where: message[1], ws: ws}
+    info = {where: message[1], ws: ws, all: message}
     
     info.merge!(if info[:where] == 'c'
       {

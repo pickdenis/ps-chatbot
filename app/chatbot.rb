@@ -44,7 +44,7 @@ class Chatbot
 
     ws.on :message do |event|
       message = event.data.split("|")
-      
+      p message
       case message[1]
       when 'challstr'
         puts "Attempting to login..."
@@ -71,8 +71,8 @@ class Chatbot
         
       when 'c', 'pm'
         @ch.handle(message, ws)
+        
       end
-    
     end
 
     ws.on :close do |event|
