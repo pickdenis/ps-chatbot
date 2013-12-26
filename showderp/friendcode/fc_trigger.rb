@@ -50,7 +50,7 @@ Trigger.new do |t|
     
     fc = FCGetter.get_fc(who)
     
-    info[:respond].call("#{who}'s FC: #{fc}" || "no FC for #{who}")
+    info[:respond].call(fc ? "#{who}'s FC: #{fc}" : "no FC for #{who}")
     
     FCGetter.load_values
 
