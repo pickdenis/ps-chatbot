@@ -13,7 +13,7 @@ module FCGetter
         
         name, _, fc = vals
         
-        @@fcs[CBUtils.condense_name(name)] = fc
+        @@fcs[CBUtils.condense_name(name)] = {fc: fc, realname: name}
         
       end
     }
@@ -48,9 +48,12 @@ Trigger.new do |t|
     info[:result] == '' and info[:result] = nil
     who = info[:result] || info[:who] # if no arg specified, then we'll just use whoever asked
     
-    fc = FCGetter.get_fc(CBUtils.condense_name(who))
+    entry = FCGetter.get_fc(CBUtils.condense_name(who))
     
-    info[:respond].call(fc ? "#{who}'s FC: #{fc}" : "no FC for #{who}")
+    realname = entry[:realname]
+    fc = entry[:fc]
+    
+    info[:respond].call(entry ? "#{realname}'s FC: #{fc}" : "no FC for #{realname}")
     
     FCGetter.load_values
 
