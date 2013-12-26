@@ -1,4 +1,29 @@
-require "google_drive"
+require 'em-http'
+
+module FCGetter
+  URL = "https://docs.google.com/spreadsheet/pub?key=0Apfr8v-a4nORdHVkcjJUTjJrd3hXV1N2T0dIbktuVVE&output=csv"
+  
+  def self.load_values
+    
+    @@fcs = {}
+    
+    EM::HttpRequest.new(URL).get.callback { |http|
+      http.response.each_line do |line|
+        vals = line.split(',')
+        
+        name, _, fc = vals
+        
+        @@fcs[CBUtils.condense_name(name)] = fc
+        
+      end
+    }
+    
+  end
+  
+  def self.get_fc name
+    @@fcs[CBUtils.condense_name(name)]
+  end
+end
 
 Trigger.new do |t|
 
@@ -11,21 +36,8 @@ Trigger.new do |t|
     info[:what][0..2].downcase == '!fc' && info[:what][3..-1].strip
   }
   
-  if !File.exist?("./showderp/friendcode/gmail_auth.txt")
-    puts "Could not login to Google. (have you read the readme in showderp/friendcode?)"
-    t[:on] = false
-    next
-  end
+  FCGetter.load_values
   
-  gmail_user, gmail_pass = IO.readlines("./showderp/friendcode/gmail_auth.txt").map(&:strip)
-  
-  time = Time.now
-  print "Attempting to log into Google...  "
-  session = GoogleDrive.login(gmail_user, gmail_pass)
-  puts "done. (#{Time.now - time})"
-  
-  ws = session.spreadsheet_by_key("0Apfr8v-a4nORdHVkcjJUTjJrd3hXV1N2T0dIbktuVVE").worksheets[0]
-
   t.act do |info|
     t[:lastused] + t[:cooldown] < Time.now or next
 
@@ -34,18 +46,13 @@ Trigger.new do |t|
     userfound = false
     
     info[:result] == '' and info[:result] = nil
-    who = info[:result] || info[:who] # if result is nil, then we'll just use whoever asked
+    who = CBUtils.condense_name(info[:result] || info[:who]) # if no arg specified, then we'll just use whoever asked
     
-    ws.reload()
-
-    ws.rows.each do |row|
-      if CBUtils.condense_name(row[1]) == CBUtils.condense_name(who)
-        info[:respond].call("#{row[0]}'s FC: #{row[2]}")
-        userfound = true
-      end
-    end
+    fc = FCGetter.get_fc(who)
     
-    userfound or info[:respond].call("User '#{who}' not found.")
+    info[:respond].call(fc || "no FC for #{who}")
+    
+    FCGetter.load_values
 
   end
 end

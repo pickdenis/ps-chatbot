@@ -4,4 +4,4 @@ source 'https://rubygems.org'
 
 gem 'faye-websocket'
 gem 'eventmachine'
-gem 'google_drive'
+gem 'em-http-request'
