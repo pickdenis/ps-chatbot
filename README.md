@@ -37,7 +37,6 @@ Some more options are
     -c: run an input loop to accept input
     -r ROOM: join a room. Joins showderp by default
 
-**IMPORTANT**: read [this](https://github.com/pickdenis/ps-chatbot/tree/master/friendcode).
 
 # Contact
 
