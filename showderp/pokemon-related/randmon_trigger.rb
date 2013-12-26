@@ -26,7 +26,7 @@ Trigger.new do |t|
     args = info[:result]
     
     tiers = ['UBER', 'OU', 'UU', 'RU', 'NU', 'LC', 'CAP', 'BL', 'BL2', 'BL3', 'NFE']
-    
+
     if args[0].to_i > 0
       num = args.shift.to_i
     else
@@ -34,21 +34,21 @@ Trigger.new do |t|
     end
     
     args.each_with_index do |arg|
-      stiers << (tiers.index(arg) ? arg.upcase : 'ANY')
+      stiers << (tiers.index(arg.upcase) ? arg.upcase : 'ANY')
     end
     
     stiers = ['ANY'] if stiers == []
     
     next if num > 6
     
-    num.times do
-      mon = mondata.keys.sample
-      redo if fdata[mon].nil?
-      redo if (montier = fdata[mon]['tier']).nil?
-      redo if stiers.all? { |t| tiers.index(t) } && !stiers.index(montier)
+    mons = mondata.keys.keep_if do |mon|
+      next if fdata[mon].nil?
+      next if (montier = fdata[mon]['tier']).nil?
       
-      result << mondata[mon]['name']
+      montier && stiers.index(montier.upcase)
     end
+    
+    result = mons.sample(num).map { |mon| mondata[mon]['name'] }
     
     info[:respond].call("(#{info[:who]}) #{result.join(', ')} (tiers #{stiers.join(', ')})")
   end
