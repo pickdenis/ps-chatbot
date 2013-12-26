@@ -46,9 +46,9 @@ Trigger.new do |t|
     userfound = false
     
     info[:result] == '' and info[:result] = nil
-    who = CBUtils.condense_name(info[:result] || info[:who]) # if no arg specified, then we'll just use whoever asked
+    who = info[:result] || info[:who] # if no arg specified, then we'll just use whoever asked
     
-    fc = FCGetter.get_fc(who)
+    fc = FCGetter.get_fc(CBUtils.condense_name(who))
     
     info[:respond].call(fc ? "#{who}'s FC: #{fc}" : "no FC for #{who}")
     
