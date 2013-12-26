@@ -50,10 +50,14 @@ Trigger.new do |t|
     
     entry = FCGetter.get_fc(CBUtils.condense_name(who))
     
-    realname = entry[:realname]
-    fc = entry[:fc]
-    
-    info[:respond].call(entry ? "#{realname}'s FC: #{fc}" : "no FC for #{realname}")
+    if entry
+      realname = entry[:realname]
+      fc = entry[:fc]
+      
+      info[:respond].call("#{realname}'s FC: #{fc}")
+    else
+      info[:respond].call("No FC for #{who}.")
+    end
     
     FCGetter.load_values
 
