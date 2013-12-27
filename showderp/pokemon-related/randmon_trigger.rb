@@ -45,7 +45,7 @@ Trigger.new do |t|
       next if fdata[mon].nil?
       next if (montier = fdata[mon]['tier']).nil?
       
-      montier && stiers.index(montier.upcase)
+      montier && (stiers.index('ANY') || stiers.index(montier.upcase))
     end
     
     result = mons.sample(num).map { |mon| mondata[mon]['name'] }
