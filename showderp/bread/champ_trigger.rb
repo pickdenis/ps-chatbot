@@ -7,7 +7,7 @@ Trigger.new do |t| # battles
   t[:lastused] = Time.now - t[:cooldown]
   
   t.match { |info| 
-    info[:what].downcase == "!champ"
+    info[:what].downcase == "!champ" || info[:what].downcase == "!chimp" || info[:what].downcase == "!chump"
   }
   
   t.act do |info|
