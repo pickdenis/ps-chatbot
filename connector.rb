@@ -66,6 +66,8 @@ if __FILE__ == $0
   #  exit
   #end
   
+  $0 = "pschatbot"
+  
   EM.run do
     bot = Chatbot.new(
       name: $login[:name], 
