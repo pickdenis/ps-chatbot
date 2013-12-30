@@ -1,6 +1,6 @@
 class Chatbot
   include EM::Deferrable
-  attr_accessor :name, :pass, :ch # chathandler
+  attr_accessor :name, :pass, :connected, :ch # chathandler
   
   PS_URL = 'ws://sim.psim.us:8000/showdown/websocket'
   
@@ -10,6 +10,9 @@ class Chatbot
     @pass = opts[:pass]
     
     @ch = ChatHandler.new(opts[:group])
+    @connected = false
+    
+   
     
     
     # load ignore list
@@ -31,7 +34,12 @@ class Chatbot
       fix_input_server(nil)
       start_console(nil) if @console
     else
-      connect
+      connection_checker = EventMachine::PeriodicTimer.new(10) do
+        # If not connected, try to reconnect
+        if !@connected
+          connect
+        end
+      end
     end
   end
   
@@ -40,6 +48,7 @@ class Chatbot
     
     ws.on :open do |event|
       puts "Connection opened"
+      @connected = true
     end
 
     ws.on :message do |event|
@@ -77,6 +86,7 @@ class Chatbot
 
     ws.on :close do |event|
       puts "connection closed. code=#{event.code}, reason=#{event.reason}"
+      @connected = false
       ws = nil
     end
     
