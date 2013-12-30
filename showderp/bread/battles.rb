@@ -3,24 +3,27 @@ require_relative 'breadfinder.rb'
 require 'open-uri'
 
 module Battles
-  def self.get_battles
-    bread = BreadFinder.get_bread
-    bread[:no] == 0 and return []
-    
-    battles = []
-    thread = nil
-    
-    open("http://a.4cdn.org/vp/res/#{bread[:no]}.json") do |f|
-      thread = JSON.parse(f.read)
-    end
-    
-    
-    thread["posts"].each do |post|
-      if post["com"] && post["com"].gsub('<wbr>', '') =~ %r{(https?\://play\.pokemonshowdown\.com/battle-\w+-\d+)}
-        battles << [$1, post["time"]]
+  def self.get_battles &callback
+    BreadFinder.get_bread do |bread|
+      bread[:no] == 0 and return []
+      
+      battles = []
+      thread = nil
+      
+      EventMachine::HttpRequest.new("http://a.4cdn.org/vp/res/#{bread[:no]}.json").get.callback do |http|
+        thread = JSON.parse(http.response)
+        
+        thread["posts"].each do |post|
+          if post["com"] && post["com"].gsub('<wbr>', '') =~ %r{(https?\://play\.pokemonshowdown\.com/battle-\w+-\d+)}
+            battles << [$1, post["time"]]
+          end
+        end
+        
+        callback.call(battles)
       end
+      
+      
+      
     end
-    
-    battles
   end
 end

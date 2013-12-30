@@ -16,12 +16,13 @@ Trigger.new do |t| # breadfinder
     
     t[:lastused] = Time.now
     
-    bread = BreadFinder.get_bread
-    result = if bread[:no] == 0
-      "couldn't find the bread, sorry"
-    else
-      "bread: http://4chan.org/vp/res/#{bread[:no]}#bottom"
+    BreadFinder.get_bread do |bread|
+      result = if bread[:no] == 0
+        "couldn't find the bread, sorry"
+      else
+        "bread: http://4chan.org/vp/res/#{bread[:no]}#bottom"
+      end
+      info[:respond].call(result)
     end
-    info[:respond].call(result)
   end
 end

@@ -17,16 +17,16 @@ Trigger.new do |t|
     
     t[:lastused] = Time.now
     
-    lastbattle, time = Battles.get_battles.last
+    Battles.get_battles do |battles|
+      lastbattle, time = battles.last
     
-    if !t[:prevbattles].index(lastbattle)
-      t[:prevbattles] << lastbattle
-      if t[:first]
-        t[:first] = false
-      else
-        
-        
-        info[:respond].call("New battle posted in bread: #{lastbattle}")
+      if !t[:prevbattles].index(lastbattle)
+        t[:prevbattles] << lastbattle
+        if t[:first]
+          t[:first] = false
+        else
+          info[:respond].call("New battle posted in bread: #{lastbattle}")
+        end
       end
     end
     
