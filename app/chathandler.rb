@@ -10,11 +10,29 @@ class ChatHandler
     
     initialize_loggers
     
+    initialize_message_queue
+    
   end
   
   def initialize_loggers
     
     @usagelogger = Logger.new("./#{@group}/logs/usage.log", 'daily')
+  end
+  
+  def initialize_message_queue
+    @message_queue = EM::Queue.new
+    
+    timer = EM::PeriodicTimer.new(0.1) do
+      @message_queue.pop do |msg|
+        ws, msg = msg
+        ws.send(msg)
+      end
+    end
+  end
+  
+  def queue_message ws, msg
+    throw "Message queue not initialized" if !@message_queue
+    @message_queue.push([ws, msg])
   end
   
   def load_trigger_files
@@ -69,11 +87,11 @@ class ChatHandler
         m_info[:result] = result
         
         m_info[:respond] = (callback || if m_info[:where] == 'c'
-          proc do |mtext| m_info[:ws].send("#{m_info[:room]}|#{mtext}") end
+          proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
         elsif m_info[:where] == 's'
           proc do |mtext| puts mtext end
         elsif m_info[:where] == 'pm'
-          proc do |mtext| m_info[:ws].send("|/pm #{m_info[:who]},#{mtext}") end
+          proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
         end)
         
         # log the action
