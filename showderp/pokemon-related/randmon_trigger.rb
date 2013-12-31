@@ -33,9 +33,9 @@ Trigger.new do |t|
       num = 1
     end
     
-    args.each_with_index do |arg|
-      stiers << (tiers.index(arg.upcase) ? arg.upcase : 'ANY')
-    end
+    stiers = args.map { |arg|
+      (tiers.index(arg.upcase) ? arg.upcase : stiers.index('ANY') ? 'ANY' : nil)
+    }.compact
     
     stiers = ['ANY'] if stiers == []
     
