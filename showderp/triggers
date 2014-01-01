@@ -6,3 +6,4 @@ pokemon-related/randbats_trigger.rb
 pokemon-related/randmon_trigger.rb
 fsymbols/fsymbols_trigger.rb
 friendcode/fc_trigger.rb
+8ball/8ball_trigger.rb
