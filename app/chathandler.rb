@@ -48,8 +48,8 @@ class ChatHandler
     
   end
   
-  def self.make_info message, ws
-    info = {where: message[1], ws: ws, all: message}
+  def make_info message, ws
+    info = {where: message[1], ws: ws, all: message, ch: self}
     
     info.merge!(if info[:where] == 'c'
       {
@@ -76,7 +76,7 @@ class ChatHandler
   
   
   def handle message, ws, callback = nil
-    m_info = self.class.make_info(message, ws)
+    m_info = self.make_info(message, ws)
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
     @triggers.each do |t|

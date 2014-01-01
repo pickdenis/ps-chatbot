@@ -26,13 +26,18 @@ class Chatbot
     
     # initialize console if requested
     
-    @console = (opts[:console] && Console.new(nil, @ch))
+    @console = Console.new(nil, @ch)
+    @console_option = opts[:console]
     
-    @room = opts[:doom]
+    if !@console_option
+      @console.add_triggers
+    end
+    
+    @room = opts[:room]
     
     if @room == 'none'
       fix_input_server(nil)
-      start_console(nil) if @console
+      start_console(nil) if @console_option
     else
       connection_checker = EventMachine::PeriodicTimer.new(10) do
         # If not connected, try to reconnect
@@ -73,7 +78,7 @@ class Chatbot
         if message[2] == $login[:name]
           puts 'Succesfully logged in!'
           
-          start_console(ws) if @console
+          start_console(ws) if @console_option
         end
         ws.send("|/join #{$options[:room]}")
         
@@ -102,7 +107,14 @@ class Chatbot
   def fix_input_server ws
     v_ch = @ch
     InputServer.send :define_method, :receive_data do |data|
-      @data << data
+      @data ||= ''
+      
+      if data == "\b"
+        @data = @data[0..-2]
+      else
+        @data << data
+      end
+      
       if @data[-1] == "\n"
         message = ['s', @data.strip]
         
