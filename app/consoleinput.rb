@@ -138,7 +138,7 @@ class Console
           @ch.handle(message, @ws)  # the ws field is left blank because there is no ws
         
         end
-      rescue Exception => e
+      rescue => e
         puts e.message
         puts e.backtrace
       end

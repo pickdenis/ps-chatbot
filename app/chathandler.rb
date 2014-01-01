@@ -1,4 +1,5 @@
 require 'logger'
+require 'json'
 
 class ChatHandler
   attr_accessor :triggers, :ignorelist, :group, :usagelogger
@@ -8,15 +9,45 @@ class ChatHandler
     @ignorelist = []
     @group = group
     
+    initialize_ignore_list
+    
+    initialize_usage_stats
+    
     initialize_loggers
     
     initialize_message_queue
     
   end
   
+  def initialize_ignore_list
+    @ignore_path = "./#{@group}/ignored.txt"
+    FileUtils.touch(@ignore_path)
+    @ignorelist = IO.readlines(@ignore_path).map(&:chomp)
+  end
+  
   def initialize_loggers
     
     @usagelogger = Logger.new("./#{@group}/logs/usage.log", 'daily')
+  end
+  
+  def initialize_usage_stats
+    @usage_stats = {"c" => {}, "s" => {}, "pm" => {}}
+    
+    @usage_path = "./#{@group}/logs/usagestats.txt"
+    
+    FileUtils.touch(@usage_path)
+    
+    if File.zero?(@usage_path)
+      File.open(@usage_path, "w") do |f|
+        f.puts(JSON.dump(@usage_stats))
+      end
+    else
+      File.open(@usage_path, "r") do |f|
+        @usage_stats = JSON.parse(f.gets)
+      end
+    end
+    
+    
   end
   
   def initialize_message_queue
@@ -97,6 +128,13 @@ class ChatHandler
         # log the action
         if t[:id] && !t[:nolog] # only log triggers with IDs
           @usagelogger.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
+          
+          # Add to the stats
+          usage_stats_here = @usage_stats[m_info[:where]]
+          
+          usage_stats_here[m_info[:who]] ||= []
+          usage_stats_here[m_info[:who]] << t[:id]
+          p @usage_stats
         end
         
         t.do_act(m_info)
@@ -115,6 +153,21 @@ class ChatHandler
     end
     
     false
+  end
+  
+  def exit_gracefully
+    # Write the usage stats to the file
+    
+    File.open(@usage_path, 'w') do |f|
+      f.puts(JSON.dump(@usage_stats))
+    end
+    
+    # Write ignore list to the file
+    
+    IO.write(@ignore_path, @ignorelist.join("\n"))
+    
+    puts "Done with exit sequence"
+    
   end
   
   def << trigger

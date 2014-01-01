@@ -127,5 +127,9 @@ class Chatbot
       end
     end
   end
+  
+  def exit_gracefully
+    @ch.exit_gracefully
+  end
     
 end

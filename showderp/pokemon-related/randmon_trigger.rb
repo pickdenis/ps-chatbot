@@ -3,6 +3,7 @@ require './showderp/pokemon-related/pokedata.rb'
 Trigger.new do |t|
   t[:cooldown] = 3 # seconds
   t[:lastused] = Time.now - t[:cooldown]
+  t[:id] = "rmon"
   
   t.match { |info|
     (info[:what][0..5] == '!rmon ' && info[:what][6..-1].gsub(/,/, '').split(' ').map(&:strip)) ||

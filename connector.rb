@@ -76,6 +76,11 @@ if __FILE__ == $0
       room: $options[:room], 
       console: $options[:console])
     
+    Signal.trap("INT") do
+      bot.exit_gracefully
+      Process.exit
+    end
+    
     if $options[:socket]
       EM.start_server('127.0.0.1', 8081, InputServer)
     end
