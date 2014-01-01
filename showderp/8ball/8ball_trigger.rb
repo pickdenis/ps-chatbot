@@ -6,7 +6,7 @@ Trigger.new do |t|
   responses = IO.readlines('showderp/8ball/responses.txt').map(&:chomp)
   
   t.match { |info|
-    info[:what][0..5].downcase == '!8ball'
+    info[:what][0..5].downcase == '!8ball' && info[:what][-1] == '?'
   }
   
   t.act do |info|
