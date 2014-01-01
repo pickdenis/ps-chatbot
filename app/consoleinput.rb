@@ -116,6 +116,17 @@ class Console
     t.act { |info| 
       binding.pry
     }
+  end, Trigger.new do |t|
+    t[:id] = 'console_usagestats'
+    t[:nolog] = true
+    
+    t.match { |info| 
+      info[:what] == 'usage' && info[:where] == 's'
+    }
+    
+    t.act { |info| 
+      info[:respond].call(info[:ch].print_usage_stats(5))
+    }
   end]
   
   def initialize ws, ch

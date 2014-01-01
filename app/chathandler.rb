@@ -50,6 +50,17 @@ class ChatHandler
     
   end
   
+  def print_usage_stats howmany
+    relevant_stats = @usage_stats['c'].to_a
+    p @usage_stats
+    buf =  "Top #{howmany} (ab)users: \n"
+    
+    relevant_stats.sort! {|(x, y)| y.length }
+    
+    buf << '  ' << relevant_stats.take(howmany).map { |(x, y)| [x, y.size] }.join("\t") << "\n"
+    buf
+  end
+  
   def initialize_message_queue
     @message_queue = EM::Queue.new
     
@@ -134,7 +145,6 @@ class ChatHandler
           
           usage_stats_here[m_info[:who]] ||= []
           usage_stats_here[m_info[:who]] << t[:id]
-          p @usage_stats
         end
         
         t.do_act(m_info)
