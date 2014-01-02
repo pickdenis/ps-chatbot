@@ -1,7 +1,7 @@
 require './showderp/pokemon-related/pokedata.rb'
 
 Trigger.new do |t|
-  t[:cooldown] = 3 # seconds
+  t[:cooldown] = 5 # seconds
   t[:lastused] = Time.now - t[:cooldown]
   t[:id] = "rmon"
   
@@ -12,8 +12,11 @@ Trigger.new do |t|
   }
   
   t.act do |info|
-    t[:lastused] + t[:cooldown] < Time.now or next
-    t[:lastused] = Time.now
+    # ignores the cooldown check if user is PMing
+    if info[:where] != 'pm'
+      t[:lastused] + t[:cooldown] < Time.now or next
+      t[:lastused] = Time.now
+    end
     
     # aliases
     mondata = Pokedex::POKEMONDATA
