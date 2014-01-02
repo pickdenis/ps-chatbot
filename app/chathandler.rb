@@ -52,7 +52,7 @@ class ChatHandler
   
   def print_usage_stats howmany
     relevant_stats = @usage_stats['c'].to_a
-    p @usage_stats
+    
     buf =  "Top #{howmany} (ab)users: \n"
     
     relevant_stats.sort! {|(x, y)| y.length }
@@ -92,26 +92,33 @@ class ChatHandler
   
   def make_info message, ws
     info = {where: message[1], ws: ws, all: message, ch: self}
-    
-    info.merge!(if info[:where] == 'c'
-      {
-        room: message[0][1..-2],
-        who: message[2][1..-1],
-        what: message[3],
-      }
-    elsif info[:where] == 'pm'
-      {
-        what: message[4],
-        to: message[3][1..-1],
-        who: message[2][1..-1],
-      }
-    elsif info[:where] = 's'
-      {
-        room: $room,
-        who: $login[:name],
-        what: message[1],
-      }
-    end)
+    info.merge!(
+      case info[:where].downcase
+      when "c"
+        {
+          room: message[0][1..-2],
+          who: message[2][1..-1],
+          what: message[3],
+        }
+      when 'j', 'n', 'l'
+        {
+          room: message[0][1..-2],
+          who: message[2][1..-1].chomp,
+          what: ""
+        }
+      when 'pm'
+        {
+          what: message[4],
+          to: message[3][1..-1],
+          who: message[2][1..-1],
+        }
+      when 's'
+        {
+          room: message[0],
+          who: $login[:name],
+          what: message[2],
+        }
+      end)
     
     info
   end
@@ -128,13 +135,15 @@ class ChatHandler
       if result
         m_info[:result] = result
         
-        m_info[:respond] = (callback || if m_info[:where] == 'c'
-          proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
-        elsif m_info[:where] == 's'
-          proc do |mtext| puts mtext end
-        elsif m_info[:where] == 'pm'
-          proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
-        end)
+        m_info[:respond] = (callback || 
+          case m_info[:where].downcase
+          when 'c', 'j', 'n', 'l'
+            proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
+          when 's'
+            proc do |mtext| puts mtext end
+          when 'pm'
+            proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
+          end)
         
         # log the action
         if t[:id] && !t[:nolog] # only log triggers with IDs

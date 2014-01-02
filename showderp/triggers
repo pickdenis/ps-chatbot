@@ -7,3 +7,6 @@ pokemon-related/randmon_trigger.rb
 fsymbols/fsymbols_trigger.rb
 friendcode/fc_trigger.rb
 8ball/8ball_trigger.rb
+autoban/ban_trigger.rb
+autoban/unban_trigger.rb
+autoban/autoban_join_trigger.rb

@@ -145,7 +145,7 @@ class Console
       begin
         
         while input = Readline.readline("console> ", true).strip
-          message = ['s', input]
+          message = [">console\n", 's', input]
           @ch.handle(message, @ws)  # the ws field is left blank because there is no ws
         
         end

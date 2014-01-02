@@ -15,10 +15,6 @@ class Chatbot
    
     
     
-    # load ignore list
-    
-    FileUtils.touch("./#{@ch.group}/ignored.txt")
-    @ch.ignorelist = IO.readlines("./#{@ch.group}/ignored.txt").map(&:chomp)
     
     # load all of the triggers
     
@@ -58,8 +54,8 @@ class Chatbot
 
     ws.on :message do |event|
       message = event.data.split("|")
-      
-      case message[1]
+      next if !message[1]
+      case message[1].downcase
       when 'challstr'
         puts "Attempting to login..."
         $data[:challenge] = message[3]
@@ -83,7 +79,7 @@ class Chatbot
         ws.send("|/join #{$options[:room]}")
         
         
-      when 'c', 'pm'
+      when 'c', 'pm', 'j', 'n', 'l'
         @ch.handle(message, ws)
         
       end
@@ -116,7 +112,7 @@ class Chatbot
       end
       
       if @data[-1] == "\n"
-        message = ['s', @data.strip]
+        message = ['>socket\n', 's', @data.strip]
         
         callback = proc do |mtext|
           send_data "#{mtext}\r\n"
