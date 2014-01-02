@@ -3,7 +3,7 @@ Trigger.new do |t|
   t[:id] = "ban"
   
   t.match { |info|
-    info[:what] =~ /\A!ab (.*?)\z/ && $1
+    info[:what] =~ /\A!ab ([^,]+)\z/ && $1
   }
   
   banlist_path = './showderp/autoban/banlist.txt'
@@ -21,7 +21,7 @@ Trigger.new do |t|
     
     info[:respond].call("/roomban #{who}")
     
-    next if File.read(banlist_path).split("\n").contains(who)
+    next if File.read(banlist_path).split("\n").index(who)
     
     File.open(banlist_path, "a") do |f|
       f.puts(who)

@@ -3,7 +3,7 @@ Trigger.new do |t|
   t[:id] = "unban"
   
   t.match { |info|
-    info[:what] =~ /\A!(?:uab|aub) (.*?)\z/ && $1
+    info[:what] =~ /\A!(?:uab|aub) ([^,]+)\z/ && $1
   }
   
   banlist_path = './showderp/autoban/banlist.txt'
