@@ -10,3 +10,4 @@ friendcode/fc_trigger.rb
 autoban/ban_trigger.rb
 autoban/unban_trigger.rb
 autoban/autoban_join_trigger.rb
+autoban/viewbanlist_trigger.rb

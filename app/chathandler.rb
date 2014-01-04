@@ -81,13 +81,21 @@ class ChatHandler
     
     files = IO.readlines("./#{@group}/triggers").map(&:chomp)
     
+    Dir["./essentials/*_trigger.rb"].each do |f|
+      load_trigger(f)
+    end
+    
     if files
       files.each do |f|
-        puts "loading:  ./#{@group}/#{f}"
-        @triggers << eval(File.read("./#{@group}/#{f}"))
+        load_trigger("./#{@group}/#{f}")
       end
     end
     
+  end
+  
+  def load_trigger(file)
+    puts "loading:  #{file}"
+    @triggers << eval(File.read("#{file}"))
   end
   
   def make_info message, ws

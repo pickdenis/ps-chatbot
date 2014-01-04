@@ -27,5 +27,8 @@ Trigger.new do |t|
       f.puts(banlist)
     end
     
+    info[:respond].call("Removed #{who} from list.")
+
+    
   end
 end

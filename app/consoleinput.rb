@@ -38,45 +38,6 @@ class Console
       end
     }
   end, Trigger.new do |t|
-    t[:id] = 'console_ignore'
-    t[:nolog] = true
-    
-    t.match { |info| 
-      info[:where] == 's' &&
-      info[:what][0..5] == "ignore" &&
-      info[:what][7..-1]
-    }
-    
-    t.act { |info| 
-      realname = CBUtils.condense_name(info[:result])
-      
-      if info[:ch].ignorelist.index(realname)
-        info[:respond].call("#{info[:result]} is already on the ignore list.")
-      else
-        info[:ch].ignorelist << info[:result]
-        info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
-      end
-    }
-  end, Trigger.new do |t|
-    t[:id] = 'console_unignore'
-    t[:nolog] = true
-    
-    t.match { |info| 
-      info[:where] == 's' &&
-      info[:what][0..7] == "unignore" &&
-      info[:what][9..-1]
-    }
-    
-    t.act { |info| 
-      realname = CBUtils.condense_name(info[:result])
-      
-      if info[:ch].ignorelist.delete(realname)
-        info[:respond].call("Removed #{info[:result]} from ignore list. (case insensitive)")
-      else
-        info[:respond].call("#{info[:result]} is not on the ignore list")
-      end
-    }
-  end, Trigger.new do |t|
     t[:id] = 'console_customsend'
     t[:nolog] = true
     

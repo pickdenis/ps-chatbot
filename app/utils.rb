@@ -1,6 +1,6 @@
 module CBUtils
   def self.condense_name name
-    name.downcase.gsub(/[^\w\d]/, '')
+    name.downcase.gsub(/[^A-Za-z0-9]/, '')
   end
   
   def self.login name, pass

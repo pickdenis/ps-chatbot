@@ -26,7 +26,7 @@ Trigger.new do |t|
     File.open(banlist_path, "a") do |f|
       f.puts(who)
     end
-    
+    info[:respond].call("Added #{who} to list.")
     
     
     
