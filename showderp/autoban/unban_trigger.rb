@@ -20,7 +20,8 @@ Trigger.new do |t|
     
     info[:respond].call("/roomunban #{who}")
 
-    banlist = File.read(banlist_path).split("\n").delete(CBUtils.condense_name(who))
+    banlist = File.read(banlist_path).split("\n")
+    banlist.delete(CBUtils.condense_name(who))
     
     File.open(banlist_path, "w") do |f|
       f.puts(banlist)
