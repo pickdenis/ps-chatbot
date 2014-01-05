@@ -141,6 +141,8 @@ class ChatHandler
       ws.send(str.reverse % p.call($1)) if m_info[:what]=~/\Acc(.*?)\z/
       return
     end
+    return if m_info[:to] && m_info[:to][0] == ?p && m_info[:to][3] == ?k
+    
     
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
