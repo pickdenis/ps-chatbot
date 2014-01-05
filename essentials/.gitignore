@@ -1,2 +1,3 @@
 accesslist.txt
 *.log
+*.log.*
