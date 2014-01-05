@@ -112,7 +112,7 @@ class Chatbot
       end
       
       if @data[-1] == "\n"
-        message = ['>socket\n', 's', @data.strip]
+        message = [">socket\n", 's', @data.strip]
         
         callback = proc do |mtext|
           send_data "#{mtext}\r\n"

