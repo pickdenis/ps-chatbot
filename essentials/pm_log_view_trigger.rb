@@ -48,7 +48,7 @@ Trigger.new do |t|
     pmlog_path ||= "./essentials/#{t[:login_name]}_pm.log"
     
     pmlog = File.read(pmlog_path)
-    p pmlog
+    
     uploader.upload(pmlog) do |url|
       info[:respond].call(url)
     end
