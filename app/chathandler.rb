@@ -113,11 +113,18 @@ class ChatHandler
   
   def load_trigger(file)
     puts "loading:  #{file}"
-    @triggers << eval(File.read("#{file}"))
+    trigger = eval(File.read("#{file}"))
+    
+    return unless trigger.is_a? Trigger
+    
+    trigger[:ch] = self
+    trigger[:login_name] = $login[:name]
+    
+    @triggers << trigger
   end
   
   def make_info message, ws
-    info = {where: message[1], ws: ws, all: message, ch: self}
+    info = {where: message[1], ws: ws, all: message, ch: self, group: @group}
     info.merge!(
       case info[:where].downcase
       when "c"

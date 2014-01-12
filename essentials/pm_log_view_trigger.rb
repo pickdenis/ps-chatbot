@@ -17,29 +17,39 @@
 
 
 Trigger.new do |t|
-  t[:id] = "banlist"
+  
+  
+  
   t[:nolog] = true
   
   t.match { |info|
-    (info[:where].downcase == 'pm' || info[:where] == 's') &&
-    info[:what].downcase == 'banlist'
+    access_path = "./#{info[:ch].group}/accesslist.txt"
+    FileUtils.touch(access_path)
+    t[:who_can_access] ||= File.read(access_path).split("\n")
+    
+    who = CBUtils.condense_name(info[:who])
+    
+    (info[:where].downcase == 'pm' || info[:where].downcase == 's') && 
+    info[:what].downcase == 'pmlog' && t[:who_can_access].index(who)
   }
   
-  banlist_path = './showderp/autoban/banlist.txt'
-  FileUtils.touch(banlist_path)
+  pmlog_path = nil
+  
+  begin
+    FileUtils.touch(pmlog_path)
+  rescue => e
+    puts "#{e}, ignoring"
+  end
+  
   uploader = CBUtils::HasteUploader.new
   
   t.act do |info|
     
-    banlist = File.read(banlist_path)
+    pmlog_path ||= "./essentials/#{t[:login_name]}_pm.log"
     
-    banlist_text = if banlist.strip.empty?
-      'nobody'
-    else
-      banlist
-    end
-    
-    uploader.upload(banlist_text) do |url|
+    pmlog = File.read(pmlog_path)
+    p pmlog
+    uploader.upload(pmlog) do |url|
       info[:respond].call(url)
     end
     

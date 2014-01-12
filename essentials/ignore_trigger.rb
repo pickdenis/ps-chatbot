@@ -20,11 +20,13 @@ Trigger.new do |t|
   t[:id] = 'ignore'
   t[:nolog] = true
   
-  access_path = './essentials/accesslist.txt'
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
   
-  t.match { |info| 
+  
+  t.match { |info|
+    access_path = "./#{info[:ch].group}/accesslist.txt"
+    FileUtils.touch(access_path)
+    t[:who_can_access] = File.read(access_path).split("\n")
+    
     who = CBUtils.condense_name(info[:who])
     
     if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'

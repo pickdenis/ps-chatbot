@@ -15,6 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+require 'JSON'
 
 module CBUtils
   def self.condense_name name
@@ -37,4 +38,21 @@ module CBUtils
   
     JSON.parse(http.request(request).body[1..-1]) # PS returns a ']' before the json
   end
+  
+  
+
+  class HasteUploader # Asynchronous with eventmachine!
+    def initialize
+      @url = 'http://hastebin.com/documents'
+    end
+    
+    def upload text, &callback
+      EM::HttpRequest.new(@url).post(body: text).callback do |http|
+        haste_id = JSON.parse(http.response)['key']
+        haste_url = "http://hastebin.com/#{haste_id}"
+        callback.call(haste_url)
+      end
+    end
+  end
+
 end
