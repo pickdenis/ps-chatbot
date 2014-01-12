@@ -49,6 +49,8 @@ class Chatbot
     
     @room = opts[:room]
     
+    @server = (opts[:server] || PS_URL)
+    
     if @room == 'none'
       fix_input_server(nil)
       start_console(nil) if @console_option
@@ -63,7 +65,7 @@ class Chatbot
   end
   
   def connect
-    ws = Faye::WebSocket::Client.new(PS_URL)
+    ws = Faye::WebSocket::Client.new(@server)
     
     ws.on :open do |event|
       puts "Connection opened"

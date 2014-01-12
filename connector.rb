@@ -51,6 +51,10 @@ op = OptionParser.new do |opts|
     $options[:room] = v
   end
   
+  opts.on('-w', '--server SERVER', 'specify server (default is main)') do |v|
+    $options[:server] = v
+  end
+  
   opts.on('-c', '--[no-]console-input', 'console input') do |v|
     $options[:console] = v
   end
@@ -92,7 +96,8 @@ if __FILE__ == $0
       pass: $login[:pass], 
       group: $options[:tgroup], 
       room: $options[:room], 
-      console: $options[:console])
+      console: $options[:console],
+      server: ($options[:server] || nil))
     
     Signal.trap("INT") do
       bot.exit_gracefully
