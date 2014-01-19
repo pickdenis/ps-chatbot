@@ -22,8 +22,7 @@ Trigger.new do |t|
   t[:id] = "rspd"
   
   t.match { |info|
-    info[:what][0..4] == "!rspd" && info[:what].size > 4 &&
-    info[:what][6..-1]
+    info[:what] =~ /\A!rsp[de] (.*?)\z/ && $1
   }
   
   t.act do |info|

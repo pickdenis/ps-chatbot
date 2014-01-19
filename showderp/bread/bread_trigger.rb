@@ -26,7 +26,7 @@ Trigger.new do |t| # breadfinder
   t[:cooldown] = 5 # seconds
   
   t.match { |info| 
-    info[:what].downcase == "!bread" || info[:what].downcase == "!thread"
+    info[:what].downcase =~ /\A(!bread|!thread)/
   }
   
   t.act do |info|
