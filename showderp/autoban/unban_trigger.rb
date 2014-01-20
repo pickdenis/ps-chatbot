@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+require './showderp/autoban/banlist.rb'
 
 Trigger.new do |t|
   
@@ -24,26 +24,18 @@ Trigger.new do |t|
     info[:what] =~ /\A!(?:uab|aub) ([^,]+)\z/ && $1
   }
   
-  banlist_path = './showderp/autoban/banlist.txt'
-  FileUtils.touch(banlist_path)
-  
   t.act do |info|
     
     # First check if :who is a mod
     
-    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#'
+    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || info[:who].downcase == "stretcher"
     
-    # Remove info[:result] from the ban list
-    who = info[:result]
+    # Remove :result from the ban list
+    who = CBUtils.condense_name(info[:result])
     
     info[:respond].call("/roomunban #{who}")
-
-    banlist = File.read(banlist_path).split("\n")
-    banlist.delete(CBUtils.condense_name(who))
     
-    File.open(banlist_path, "w") do |f|
-      f.puts(banlist)
-    end
+    Banlist.uab(who)
     
     info[:respond].call("Removed #{who} from list.")
 

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+require './showderp/autoban/banlist.rb'
 
 Trigger.new do |t|
   t[:id] = "autoban_join"
@@ -24,12 +24,10 @@ Trigger.new do |t|
     info[:where].downcase =~ /\A[jnl]\z/
   }
   
-  banlist_path = './showderp/autoban/banlist.txt'
-  FileUtils.touch(banlist_path)
   
   t.act do |info|
     
-    banlist = File.read(banlist_path).split("\n")
+    banlist = Banlist.list
     messages = info[:all]
     
     while messages.size > 0
