@@ -15,6 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+require './showderp/autoban/banlist.rb'
 
 Trigger.new do |t|
   t[:id] = "banlist"
@@ -25,13 +26,11 @@ Trigger.new do |t|
     info[:what].downcase == 'banlist'
   }
   
-  banlist_path = './showderp/autoban/banlist.txt'
-  FileUtils.touch(banlist_path)
   uploader = CBUtils::HasteUploader.new
   
   t.act do |info|
     
-    banlist = File.read(banlist_path)
+    banlist = Banlist.list.join("\n")
     
     banlist_text = if banlist.strip.empty?
       'nobody'

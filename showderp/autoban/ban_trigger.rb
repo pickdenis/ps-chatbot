@@ -31,7 +31,7 @@ Trigger.new do |t|
     
     # First check if :who is a mod
     
-    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || info[:who] == "stretcher"
+    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || info[:who].downcase == "stretcher"
       
     # Add :result to the ban list
   

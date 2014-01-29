@@ -20,7 +20,7 @@ class Chatbot
   include EM::Deferrable
   attr_accessor :name, :pass, :connected, :ch # chathandler
   
-  PS_URL = 'ws://sim.psim.us:8000/showdown/websocket'
+  PS_URL = 'ws://sim.smogon.com:8000/showdown/websocket'
   
   
   def initialize opts # possible keys: name, pass, group, room, console

@@ -34,9 +34,8 @@ module Banlist
   def get &callback
     @@banlist = []
     
-    EM::HttpRequest.new(SS_URL).get(query: {single: true, gid: 1, output: "csv"}).callback do |http|
+    EM::HttpRequest.new(SS_URL).get(query: {key: SS_KEY, single: true, gid: 1, output: "csv"}).callback do |http|
       @@banlist.push(*http.response.split("\n"))
-      
       callback.call(@@banlist) if block_given?
     end
   end
@@ -49,8 +48,9 @@ module Banlist
     # name = CBUtils.condense_name(name)
     if act == "ab"
       @@banlist << name
-    elsif act == "aub"
+    elsif act == "uab"
       @@banlist.delete(name)
+      
     end
     pw_path = './showderp/autoban/pw'
     EM::HttpRequest.new(FORM_URL).post(query: {
