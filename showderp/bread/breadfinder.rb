@@ -27,7 +27,12 @@ module BreadFinder
     catalog = ''
     
     EventMachine::HttpRequest.new(CATALOG_URI).get.callback do |http|
-      catalog = JSON.parse(http.response)
+      begin
+        catalog = JSON.parse(http.response)
+      rescue JSON::ParseError => e
+        puts "Could not parse response, possibly because of a 403."
+        next
+      end
       
       current_candidate = {no: 0, lr_time: 0}
     
