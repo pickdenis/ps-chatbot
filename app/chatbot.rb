@@ -86,15 +86,15 @@ class Chatbot
         puts "Attempting to login..."
         $data[:challenge] = message[3]
         $data[:challengekeyid] = message[2]
-        $data[:response] = CBUtils.login @name, @pass
+        $data[:response] = CBUtils.login(@name, @pass) do |assertion|
+          
+          if assertion.nil? 
+            raise "Could not login"
+          end      
+          
+          ws.send("|/trn #{$login[:name]},0,#{assertion}")
         
-        assertion = $data[:response]["assertion"]
-        
-        if assertion.nil? 
-          raise "Could not login"
-        end      
-        
-        ws.send("|/trn #{$login[:name]},0,#{assertion}")
+        end
         
       when 'updateuser'
         if message[2] == $login[:name]

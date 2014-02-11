@@ -17,26 +17,23 @@
 
 require 'json'
 
+
 module CBUtils
   def self.condense_name name
     name.downcase.gsub(/[^A-Za-z0-9]/, '')
   end
   
-  def self.login name, pass, callback
-    uri = URI.parse("https://play.pokemonshowdown.com/action.php")
-        
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    
-    request = Net::HTTP::Post.new(uri.request_uri)
-    request.set_form_data 'act' => 'login',
+  def self.login name, pass, &callback
+    EM::HttpRequest.new("https://play.pokemonshowdown.com/action.php").post(body: {
+      'act' => 'login',
       'name' => name,
       'pass' => pass,
       'challengekeyid' => $data[:challengekeyid].to_i,
-      'challenge' => $data[:challenge]
+      'challenge' => $data[:challenge]} ).callback { |http| 
+      
+      callback.call(JSON.parse(http.response[1..-1])["assertion"]) # PS returns a ']' before the json
+    }
   
-    JSON.parse(http.request(request).body[1..-1]) # PS returns a ']' before the json
   end
   
   
