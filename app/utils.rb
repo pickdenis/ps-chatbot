@@ -15,14 +15,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-require 'JSON'
+require 'json'
 
 module CBUtils
   def self.condense_name name
     name.downcase.gsub(/[^A-Za-z0-9]/, '')
   end
   
-  def self.login name, pass
+  def self.login name, pass, callback
     uri = URI.parse("https://play.pokemonshowdown.com/action.php")
         
     http = Net::HTTP.new(uri.host, uri.port)

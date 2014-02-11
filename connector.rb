@@ -26,6 +26,7 @@ require 'optparse'
 
 require './app/chatbot.rb'
 require './app/chathandler.rb'
+require './app/battle.rb'
 require './app/consoleinput.rb'
 require './app/socketinput.rb'
 require './app/utils.rb'
@@ -63,6 +64,10 @@ op = OptionParser.new do |opts|
     $options[:socket] = v
   end
   
+  opts.on('-l', '--log', 'show') do |v|
+    $options[:log] = v
+  end
+  
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
     Process.exit
@@ -97,7 +102,8 @@ if __FILE__ == $0
       group: $options[:tgroup], 
       room: $options[:room], 
       console: $options[:console],
-      server: ($options[:server] || nil))
+      server: ($options[:server] || nil),
+      log: $options[:log])
     
     Signal.trap("INT") do
       bot.exit_gracefully

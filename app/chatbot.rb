@@ -26,8 +26,10 @@ class Chatbot
   def initialize opts # possible keys: name, pass, group, room, console
     @name = opts[:name]
     @pass = opts[:pass]
+    @log_messages = opts[:log]
     
     @ch = ChatHandler.new(opts[:group])
+    @bh = BattleHandler.new
     @connected = false
     
    
@@ -73,6 +75,10 @@ class Chatbot
     end
 
     ws.on :message do |event|
+      if @log_messages
+        puts event.data
+      end
+      
       message = event.data.split("|")
       next if !message[1]
       case message[1].downcase
@@ -101,8 +107,16 @@ class Chatbot
         
       when 'c', 'pm', 'j', 'n', 'l'
         @ch.handle(message, ws)
-        
+      
+      when 'updatechallenges'
+        @bh.handle_challenge(message, ws)
+      else
+        if message[0] =~ />battle-/
+          @bh.handle(message, ws)
+        end
       end
+      
+      
     end
 
     ws.on :close do |event|

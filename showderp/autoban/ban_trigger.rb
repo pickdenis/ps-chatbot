@@ -20,7 +20,9 @@ Banlist.get
 
 Trigger.new do |t|
   
-  t[:id] = "ban"
+  t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
+  
+  t[:id] = 'ban'
   
   t.match { |info|
     info[:what] =~ /\A!ab ([^,]+)\z/ && $1
@@ -31,7 +33,7 @@ Trigger.new do |t|
     
     # First check if :who is a mod
     
-    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || info[:who].downcase == "stretcher"
+    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
       
     # Add :result to the ban list
   

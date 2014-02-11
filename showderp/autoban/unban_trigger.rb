@@ -18,7 +18,9 @@ require './showderp/autoban/banlist.rb'
 
 Trigger.new do |t|
   
-  t[:id] = "unban"
+  t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
+
+  t[:id] = 'unban'
   
   t.match { |info|
     info[:what] =~ /\A!(?:uab|aub) ([^,]+)\z/ && $1
@@ -28,8 +30,8 @@ Trigger.new do |t|
     
     # First check if :who is a mod
     
-    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || info[:who].downcase == "stretcher"
-    
+    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || !!t[:who_can_access].index(CBUtils.condense_name(info[:who])) 
+       
     # Remove :result from the ban list
     who = CBUtils.condense_name(info[:result])
     

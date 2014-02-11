@@ -23,7 +23,10 @@ require 'open-uri'
 module Battles
   def self.get_battles &callback
     BreadFinder.get_bread do |bread|
-      bread[:no] == 0 and return []
+      if bread[:no] == 0 
+        callback.call([])
+        next
+      end
       
       battles = []
       thread = nil

