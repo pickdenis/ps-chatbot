@@ -29,6 +29,8 @@ Trigger.new do |t|
     
     who = CBUtils.condense_name(info[:who])
     
+    
+    info[:where] &&
     (info[:where].downcase == 'pm' || info[:where].downcase == 's') && 
     info[:what].downcase == 'pmlog' && t[:who_can_access].index(who)
   }
