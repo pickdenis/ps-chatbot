@@ -20,7 +20,7 @@ require 'logger'
 require 'json'
 
 class ChatHandler
-  attr_accessor :triggers, :ignorelist, :group, :usagelogger
+  attr_accessor :triggers, :ignorelist, :group, :usagelogger, :chatlogger
   
   def initialize group
     @triggers = []
@@ -45,7 +45,9 @@ class ChatHandler
   
   def initialize_loggers
     
-    @usagelogger = Logger.new("./#{@group}/logs/usage.log", 'daily')
+    @usagelogger = Logger.new("./#{@group}/logs/usage/usage.log", 'monthly')
+    @chatlogger = Logger.new("./#{@group}/logs/chat/chat.log", 'monthly')
+
   end
   
   def initialize_usage_stats
@@ -192,6 +194,11 @@ class ChatHandler
           when 'pm'
             proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
           end)
+        
+        # Log any chat messages
+        if m_info[:where] == 'c'
+          @chatlogger.info(m_info[:all].join('|'))
+        end
         
         # log the action
         if t[:id] && !t[:nolog] # only log triggers with IDs
