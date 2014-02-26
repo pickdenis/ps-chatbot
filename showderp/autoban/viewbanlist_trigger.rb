@@ -23,7 +23,7 @@ Trigger.new do |t|
   
   t.match { |info|
     (info[:where].downcase == 'pm' || info[:where] == 's') &&
-    info[:what].downcase == 'banlist'
+    info[:what].downcase == 'blist'
   }
   
   uploader = CBUtils::HasteUploader.new
