@@ -1,0 +1,14 @@
+bread/bread_trigger.rb
+bread/champ_trigger.rb
+bread/battle_reporter_trigger.rb
+statcalc/statcalc_trigger.rb
+pokemon-related/randbats_trigger.rb
+pokemon-related/randmon_trigger.rb
+pokemon-related/randbat_moves_trigger.rb
+fsymbols/fsymbols_trigger.rb
+friendcode/fc_trigger.rb
+8ball/8ball_trigger.rb
+autoban/ban_trigger.rb
+autoban/unban_trigger.rb
+autoban/autoban_join_trigger.rb
+autoban/viewbanlist_trigger.rb

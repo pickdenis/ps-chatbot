@@ -1,85 +1,120 @@
+# ps-chatbot: a chatbot that responds to commands on Pokemon Showdown chat
+# Copyright (C) 2014 pickdenis
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
 require 'faye/websocket'
 require 'eventmachine'
 require 'net/http'
 require 'json'
-require './chathandler.rb'
-require './consoleinput.rb'
-require './logger.rb'
+require 'fileutils'
+require 'optparse'
 
-# USAGE: connector.rb user pass room
+
+require './app/chatbot.rb'
+require './app/chathandler.rb'
+require './app/battle.rb'
+require './app/consoleinput.rb'
+require './app/socketinput.rb'
+require './app/utils.rb'
+
 
 $data = {}
-$login = {
-  name: ARGV.shift,
-  pass: ARGV.shift
-}
-$room = ARGV.shift || 'showderp'
+$login = {}
+$options = {room: 'showderp', tgroup: 'showderp'}
+
+
+op = OptionParser.new do |opts|
+  opts.banner = 'Usage: connector.rb [options]'
+  
+  opts.on('-n', '--name NAME', 'specify name (required)') do |v|
+    $login[:name] = v
+  end
+  
+  opts.on('-p', '--pass PASS', 'specify password (required)') do |v|
+    $login[:pass] = v
+  end
+  
+  opts.on('-r', '--room ROOM', 'specify room to join (default is showderp)') do |v|
+    $options[:room] = v
+  end
+  
+  opts.on('-w', '--server SERVER', 'specify server (default is main)') do |v|
+    $options[:server] = v
+  end
+  
+  opts.on('-c', '--[no-]console-input', 'console input') do |v|
+    $options[:console] = v
+  end
+  
+  opts.on('-s', '--[no-]socket-input', 'socket input') do |v|
+    $options[:socket] = v
+  end
+  
+  opts.on('-l', '--log', 'show') do |v|
+    $options[:log] = v
+  end
+  
+  opts.on_tail('-h', '--help', 'Show this message') do
+    puts opts
+    Process.exit
+  end
+end
+
+if ARGV.empty?
+  puts op
+  Process.exit
+end
+
+op.parse!(ARGV)
 
 
 
 if __FILE__ == $0
-
   
-  EM.run {
-    ws = Faye::WebSocket::Client.new('ws://sim.psim.us:8000/showdown/websocket')
-
-    ws.on :open do |event|
-      $logger.log 1, "Connection opened"
-    end
-
-    ws.on :message do |event|
-      message = event.data.split("|")
-      #puts event.data
-      case message[1]
-      when "challstr"
-        $logger.log 1, "Attempting to login..."
-        $data[:challenge] = message[3]
-        $data[:challengekeyid] = message[2]
-        uri = URI.parse("https://play.pokemonshowdown.com/action.php")
-        
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        
-        request = Net::HTTP::Post.new(uri.request_uri)
-        request.set_form_data "act" => "login",
-          "name" => $login[:name],
-          "pass" => $login[:pass],
-          "challengekeyid" => $data[:challengekeyid].to_i,
-          "challenge" => $data[:challenge]
-      
-        $data[:response] = JSON.parse(http.request(request).body[1..-1]) # PS returns a ']' before the json
-        
-        assertion = $data[:response]["assertion"]
-        
-        if assertion.nil? 
-          raise "Could not login"
-        end      
-        
-        ws.send("|/trn #{$login[:name]},0,#{assertion}")
-        
-      when "updateuser"
-        
-        if message[2] == $login[:name]
-          $logger.log 1, 'succesfully logged in!'
-          $logger.log 1, 'started console'
-          ci_thread = ConsoleInput.start_loop(ws)
-        end
-        ws.send("|/join #{$room}")
-        
-      when "c", "pm"
-        ChatHandler.handle(message, ws)
-      end
+  
+  #trap("INT") do
+  #  puts "\nExiting"
+  #  puts "Writing ignore list to file..."
+  #  IO.write("./#{$chat.group}/ignored.txt", $chat.ignorelist.join("\n"))
+  #  exit
+  #end
+  
+  $0 = "pschatbot"
+  
+  EM.run do
+    bot = Chatbot.new(
+      name: $login[:name], 
+      pass: $login[:pass], 
+      group: $options[:tgroup], 
+      room: $options[:room], 
+      console: $options[:console],
+      server: ($options[:server] || nil),
+      log: $options[:log])
     
-      
+    Signal.trap("INT") do
+      bot.exit_gracefully
+      Process.exit
     end
+    
+    if $options[:socket]
+      EM.start_server('127.0.0.1', 8081, InputServer)
+    end
+  end
+  
 
-    ws.on :close do |event|
-      $logger.log 1, "connection closed. code=#{event.code}, reason=#{event.reason}"
-      ws = nil
-    end
-  }
-  
-  
 
 end

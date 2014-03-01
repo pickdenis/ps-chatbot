@@ -1,36 +1,42 @@
 # Introduction
 
-[Pokemon Showdown][0] chat needs some features, so this supplements it by running a bot that responds to some commands in the chat or pms it recieves.
+[Pokemon Showdown][0] chat needs some features, so this supplements it by running a bot that responds to some commands in the chat or pms it recieves. If you would like to contribute, check the [Wiki][1]
 
   [0]: http://pokemonshowdown.com
+  [1]: https://github.com/pickdenis/ps-chatbot/wiki
 
 # Features
 
-## Stat calculator
-The stat calculator can do these things:
-  1. calculate final stat from base stat and evs
-  2. calculate effective base stat after boosts/modifiers
-    * currently supported modifiers: scarf, doubled
+  * [Stat calculator](./statcalc)
+  * Friend code searcher
+  * Random battle speed calculator
+  * ASCII art large text generator
 
-### Examples
+# Installation of dependencies
 
-The bot will respond to any command starting with `base:number`: 
+## bundler (recommended)
 
-    base:120 invested 
-    base:105 invested doubled asbase       (Mega-Mawile's base attack)
-    base:80 invested scarf asbase          (Effective base of 80 scarfed mon)
-
-# Installation
-
-Note: If you have `faye-websocket` and `eventmachine` installed, you can skip this step.
+If you have bundler (`gem install bundler`), you can do this:
 
     bundle install
 
- 
+## Manual
+
+    gem install eventmachine
+    gem install faye-websocket
+    # there might me more, check the Gemfile
+
 # Usage
 
    
-    ruby connector.rb USER PASS ROOM
+    ruby connector.rb -n USER -p PASS [more options]
+
+Some more options are
+    
+    -s: run a socket server to accept input (used to turn off triggers, etc)
+    -c: run an input loop to accept input
+    -r ROOM: join a room. Joins showderp by default
+
 
 # Contact
 
