@@ -30,17 +30,21 @@ Trigger.new do |t| # breadfinder
   }
   
   t.act do |info|
-    t[:lastused] + t[:cooldown] < Time.now or next # This should break out of the block
     
-    t[:lastused] = Time.now
+    if info[:where] == 'pm' # ensures it only works in PM
     
-    BreadFinder.get_bread do |bread|
-      result = if bread[:no] == 0
-        "couldn't find the bread, sorry"
-      else
-        "bread: http://4chan.org/vp/res/#{bread[:no]}#bottom"
+      t[:lastused] + t[:cooldown] < Time.now or next # This should break out of the block
+      
+      t[:lastused] = Time.now
+      
+      BreadFinder.get_bread do |bread|
+        result = if bread[:no] == 0
+          "couldn't find the bread, sorry"
+        else
+          "bread: http://4chan.org/vp/res/#{bread[:no]}#bottom"
+        end
+        info[:respond].call(result)
       end
-      info[:respond].call(result)
     end
   end
 end
