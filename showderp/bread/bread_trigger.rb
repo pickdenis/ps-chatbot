@@ -26,25 +26,22 @@ Trigger.new do |t| # breadfinder
   t[:cooldown] = 5 # seconds
   
   t.match { |info| 
-    info[:what].downcase =~ /\A(!bread|!thread)/
+    info[:where] == 'pm' && info[:what].downcase =~ /\A(!bread|!thread)/
   }
   
   t.act do |info|
     
-    if info[:where] == 'pm' # ensures it only works in PM
-    
-      t[:lastused] + t[:cooldown] < Time.now or next # This should break out of the block
+    t[:lastused] + t[:cooldown] < Time.now or next # This should break out of the block
       
-      t[:lastused] = Time.now
+    t[:lastused] = Time.now
       
-      BreadFinder.get_bread do |bread|
-        result = if bread[:no] == 0
-          "couldn't find the bread, sorry"
-        else
-          "bread: http://4chan.org/vp/res/#{bread[:no]}#bottom"
-        end
-        info[:respond].call(result)
+    BreadFinder.get_bread do |bread|
+      result = if bread[:no] == 0
+        "couldn't find the bread, sorry"
+      else
+        "bread: http://4chan.org/vp/res/#{bread[:no]}#bottom"
       end
+      info[:respond].call(result)
     end
   end
 end
