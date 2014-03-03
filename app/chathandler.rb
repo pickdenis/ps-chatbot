@@ -46,7 +46,11 @@ class ChatHandler
   def initialize_loggers
     
     @usagelogger = Logger.new("./#{@group}/logs/usage/usage.log", 'monthly')
-    @chatlogger = Logger.new("./#{@group}/logs/chat/chat.log", 'monthly')
+    @pmlogger = Logger.new("./#{@group}/logs/pms/pms.log", 'monthly')
+    @pmlogger.formatter = proc do |severity, datetime, progname, msg|
+      "#{datetime}: #{msg}\n"
+    end
+    @chatloggers = {} # add one for every new room
 
   end
   
@@ -195,10 +199,9 @@ class ChatHandler
             proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
           end)
         
-        # Log any chat messages
-        if m_info[:where] == 'c'
-          @chatlogger.info(m_info[:all].join('|'))
-        end
+        
+        
+        
         
         # log the action
         if t[:id] && !t[:nolog] # only log triggers with IDs
@@ -214,6 +217,25 @@ class ChatHandler
         t.do_act(m_info)
         
       end
+      
+    end
+    
+    
+    # Log any chat messages
+    if m_info[:where] == 'c'
+      logger = @chatloggers[m_info[:room]]
+      if !logger
+        logger = @chatloggers[m_info[:room]] = Logger.new("./#{@group}/logs/chat/#{m_info[:room]}.log", 'monthly')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+          "#{datetime}: #{msg}\n"
+        end
+      end
+      
+      logger.info("#{m_info[:who]}: #{m_info[:what]}")
+    end
+    
+    if m_info[:where] == 'pm'
+      @pmlogger.info("#{m_info[:who]}: #{m_info[:what]}")
       
     end
   end
