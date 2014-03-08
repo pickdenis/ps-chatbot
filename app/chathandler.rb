@@ -210,10 +210,10 @@ class ChatHandler
           @usagelogger.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
           
           # Add to the stats
-          usage_stats_here = @usage_stats[m_info[:where]]
-          
-          usage_stats_here[m_info[:who]] ||= []
-          usage_stats_here[m_info[:who]] << t[:id]
+          #usage_stats_here = @usage_stats[m_info[:where]]
+          #
+          #usage_stats_here[m_info[:who]] ||= []
+          #usage_stats_here[m_info[:who]] << t[:id]
         end
         
         t.do_act(m_info)
