@@ -29,7 +29,8 @@ class ChatHandler
     
     initialize_ignore_list
     
-    initialize_usage_stats
+    # useless and redundant feature
+    #initialize_usage_stats
     
     initialize_loggers
     
@@ -75,14 +76,15 @@ class ChatHandler
   end
   
   def print_usage_stats howmany
-    relevant_stats = @usage_stats['c'].to_a
-    
-    buf =  "Top #{howmany} (ab)users: \n"
-    
-    relevant_stats.sort! {|(x, y)| y.length }
-    
-    buf << '  ' << relevant_stats.take(howmany).map { |(x, y)| [x, y.size] }.join("\t") << "\n"
-    buf
+    "deprecated"
+    #relevant_stats = @usage_stats['c'].to_a
+    # 
+    #buf =  "Top #{howmany} (ab)users: \n"
+    # 
+    #relevant_stats.sort! {|(x, y)| y.length }
+    # 
+    #buf << '  ' << relevant_stats.take(howmany).map { |(x, y)| [x, y.size] }.join("\t") << "\n"
+    #buf
   end
   
   def initialize_message_queue
