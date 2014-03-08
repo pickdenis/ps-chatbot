@@ -37,8 +37,10 @@ Trigger.new do |t|
     who = CBUtils.condense_name(info[:result])
     
     info[:respond].call("/roomban #{who}")
-    sleep(1)
-    info[:respond].call("/roomunban #{who}")
+    
+    EM.add_timer(1) do
+      info[:respond].call("/roomunban #{who}")
+    end
     
   end
 end
