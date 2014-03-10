@@ -203,7 +203,7 @@ class BattleLogic
 end
 
 class CC1vs1Logic < BattleLogic
-  def chooselead rqid=
+  def chooselead rqid
     
     # Randomly choose a lead
     lead = rand(1..6)
