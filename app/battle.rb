@@ -81,6 +81,8 @@ class BattleAdapter
   
   def handle message # message is already split by |
     case message[0]
+    when 'init'
+      respond('/timer')
     when 'poke'
       # for now, this stuff doesn't matter
     when 'request'
@@ -90,7 +92,7 @@ class BattleAdapter
       sidedata = request['side']
       player = sidedata['id']
       
-      # let the battle know who it's controlling
+      # let the Battle object know who it's controlling
       @battle.set_me(player)
       
       # set the data
@@ -140,6 +142,7 @@ class Battle # Hold the logical state of the battle
     
     
   end
+  
   
   def add_to_team player, poke
     player.team << poke
