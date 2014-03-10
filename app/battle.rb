@@ -51,6 +51,12 @@ class BattleHandler
     { format: parts.shift, number: parts.shift}
   end
   
+  def battle_loop format, ws
+    EM::PeriodicTimer.new(30) do
+      ws.send("|/search #{format}")
+    end
+  end
+  
 end
 
 class BattleAdapter
