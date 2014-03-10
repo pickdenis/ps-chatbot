@@ -256,9 +256,9 @@ class ChatHandler
   def exit_gracefully
     # Write the usage stats to the file
     
-    File.open(@usage_path, 'w') do |f|
-      f.puts(JSON.dump(@usage_stats))
-    end
+    #File.open(@usage_path, 'w') do |f|
+    #  f.puts(JSON.dump(@usage_stats))
+    #end
     
     # Write ignore list to the file
     
