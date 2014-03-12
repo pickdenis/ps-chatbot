@@ -51,6 +51,12 @@ class BattleHandler
     { format: parts.shift, number: parts.shift}
   end
   
+  def self.parse_poke_details details
+    parts = details.split(', ')
+    
+    { species: parts.shift, level: parts.shift[1..-1], gender: parts.shift }
+  end
+  
   def battle_loop format, ws
     EM::PeriodicTimer.new(30) do
       ws.send("|/search #{format}")
@@ -84,7 +90,19 @@ class BattleAdapter
     when 'init'
       respond('/timer')
     when 'poke'
-      # for now, this stuff doesn't matter
+      whose = message[1]
+      details = BattleHandler.parse_poke_details(message[2])
+      ident = "#{whose}: #{details[:species]}"
+      
+      p_object = @battle.send(whose)
+      p_object.team ||= {}
+      p_object.team[ident] ||= details[:species]
+    when 'switch'
+      switched = message[1]
+      who = switched[0..1]
+      species = switched[5..-1]
+      
+      @battle.send(who).side ||= species
     when 'request'
       request = JSON.parse(message[1])
       @rqid = request['rqid']
@@ -108,7 +126,6 @@ class BattleAdapter
             can_mega_evo: poke['canmegaevo'])
         
         p_object.team[poke['ident']] = poke_object
-        
         p_object.side << if request['active']
           
           {object: poke_object, moves: request['active'][index]['moves']}
@@ -122,7 +139,7 @@ class BattleAdapter
       respond(@battle.logic.chooselead(@rqid))
     when 'turn'
       respond(@battle.logic.move(@rqid))
-    when 'win'
+    when 'win', 'tie'
       if (message[1] == $login[:name])
         respond('git gud')
       else
@@ -209,13 +226,25 @@ class BattleLogic
   end
 end
 
+require_relative 'battleutil/cc1vs1helper.rb'
+
 class CC1vs1Logic < BattleLogic
   def chooselead rqid
     
-    # Randomly choose a lead
-    lead = rand(1..6)
+    bestmonindex = nil
+    highestscore = 0
+    @me.team.values.each_with_index do |poke, index| 
+      species = BattleHandler.parse_poke_details(poke.details)[:species]
+      poke.moves.each do |move|
+        if (score = CC1vs1.calculate_move_score(species, move, @other.team.values)) > highestscore
+          highestscore = score
+          bestmonindex = index
+        end
+      end
+    end
+    
     rest = (1..6).to_a
-    rest.unshift(rest.delete(lead))
+    rest.unshift(rest.delete(bestmonindex))
     
     "/team #{rest.join('')}|#{rqid}"
     
@@ -223,7 +252,12 @@ class CC1vs1Logic < BattleLogic
   
   def move rqid
     
-    chosen = @me.side.first[:moves].select { |move| !move['disabled'] }.sample['move']
+    moves = @me.side.first[:moves].select { |move| !move['disabled'] }.map { |o| o['id'] }
+    otherside = [@other.side] # put it in an array because calculate_move_score takes an array
+    my_species = BattleHandler.parse_poke_details(@me.side.first[:object].details)[:species]
+    
+    chosen = moves.max { |move| CC1vs1.calculate_move_score(my_species, move, otherside) }
+    
     "/choose move #{chosen}|#{rqid}"
   end
 end

@@ -121,7 +121,7 @@ class ChatHandler
   
   def load_trigger(file)
     puts "loading:  #{file}"
-    trigger = eval(File.read("#{file}"))
+    trigger = eval(File.read(file))
     
     return unless trigger.is_a? Trigger
     
