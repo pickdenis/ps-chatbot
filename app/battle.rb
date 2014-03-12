@@ -98,13 +98,14 @@ class BattleAdapter
       # set the data
       p_object = @battle.send(player)
       p_object.name = sidedata[:name]
-      p_object.team = {}
+      p_object.team ||= {}
       
       p_object.side = []
       sidedata['pokemon'].each_with_index do |poke, index|
         poke_object = Pokemon.new(
             ident: poke['ident'], details: poke['details'],condition: poke['condition'], active: poke['active'],
-            stats: poke['stats'], moves: poke['moves'],base_ability: poke['baseability'], item: poke['item'], can_mega_evo: poke['canmegaevo'])
+            stats: poke['stats'], moves: poke['moves'],base_ability: poke['baseability'], item: poke['item'],
+            can_mega_evo: poke['canmegaevo'])
         
         p_object.team[poke['ident']] = poke_object
         
@@ -124,7 +125,6 @@ class BattleAdapter
     when 'win'
       if (message[1] == $login[:name])
         respond('git gud')
-        respond('/savereplay')
       else
         respond('ok')
       end
