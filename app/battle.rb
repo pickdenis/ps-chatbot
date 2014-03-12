@@ -124,6 +124,7 @@ class BattleAdapter
     when 'win'
       if (message[1] == $login[:name])
         respond('git gud')
+        respond('/savereplay')
       else
         respond('ok')
       end
