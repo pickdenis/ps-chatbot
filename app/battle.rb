@@ -122,6 +122,12 @@ class BattleAdapter
     when 'turn'
       respond(@battle.logic.move(@rqid))
     when 'win'
+      if (message[1] == $login[:name])
+        respond('git gud')
+      else
+        respond('ok')
+      end
+      
       respond('/leave')
     end
   end
