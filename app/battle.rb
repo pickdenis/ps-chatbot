@@ -236,11 +236,7 @@ class CC1vs1Logic < BattleLogic
   def chooselead rqid
     
     best = @me.team.values.max_by do |poke|
-      if poke == 'Floette-Eternal-Flower'
-        species = Pokedex::POKEMONDATA['floetteeternalflower']
-      else
-        species = BattleHandler.parse_poke_details(poke.details)[:species]
-      end
+      next if poke == 'Floette-Eternal-Flower' # Not even going to deal with this 
       
       poke.moves.map { |move| CC1vs1.calculate_move_score(species, move, @other.team.values) }.reduce(:+)
     end
