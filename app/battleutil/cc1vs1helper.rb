@@ -5,16 +5,7 @@ module CC1vs1
   BLACKLIST = %w{
     focuspunch
     
-    dynamicpunch
-    zapcannon
-    inferno
     
-    gigaimpact
-    hyperbeam
-    rockwrecker
-    frenzyplant
-    hydrocannon
-    blastburn
     
     solarbeam
     skyattack
@@ -56,6 +47,12 @@ module CC1vs1
     score *= 1.5 if (species_h['types'].index(move_h['type']))
     
     score *= move_h['basePower']
+    
+    if %w{ gigaimpact hyperbeam rockwrecker frenzyplant hydrocannon blastburn roaroftime }.index(move)
+      score /= 2.0
+    end
+    
+    score *= move_h['accuracy']/100.0
     score *= species_h['baseStats'][category == 'Physical' ? 'atk' : 'spa']
     score *= otherteam_h.map { |poke| TypeChart.effectiveness(move_h['type'], poke['types']) }.reduce(:*)
     
