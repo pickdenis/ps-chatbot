@@ -56,7 +56,7 @@ module CC1vs1
       score /= 2.0
     end
     
-    score *= move_h['accuracy']/100.0
+    score *= move_h['accuracy']/100.0 if move_h['accuracy'].is_a? Numeric
     score *= species_h['baseStats'][category == 'Physical' ? 'atk' : 'spa']
     
     # This should be dampened - Pokemon such as Talonflame give a huge boost to rock moves, boosting the score of
