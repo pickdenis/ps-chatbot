@@ -48,7 +48,7 @@ module CC1vs1
     plist = Pokedex::POKEMONDATA.values
     
     species_h = plist.find { |poke| poke['name'] == species }
-    otherteam_h = otherteam.map { |teampoke| plist.find { |poke| poke['name'] == teampoke } }
+    otherteam_h = otherteam.map { |teampoke| plist.find { |poke| (poke||{})['name'] == teampoke } }
     
     score *= 1.5 if (species_h['types'].index(move_h['type']))
     
