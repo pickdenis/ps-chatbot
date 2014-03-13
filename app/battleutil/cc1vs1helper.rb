@@ -2,11 +2,38 @@ require_relative 'typechart.rb'
 
 module CC1vs1
   
+  BLACKLIST = %w{
+    focuspunch
+    
+    dynamicpunch
+    zapcannon
+    inferno
+    
+    gigaimpact
+    hyperbeam
+    rockwrecker
+    frenzyplant
+    hydrocannon
+    blastburn
+    
+    solarbeam
+    skyattack
+    
+    fakeout
+    
+    return
+    frustration
+    
+    snore
+    dreameater
+    
+  }
+  
   def self.calculate_move_score species, move, otherteam 
     # Note: all of these arguments should be strings. All pokemon should be specified
     # by their species name (eg. Rufflet, not rufflet) and the move must be given by
     # its ID (eg. focuspunch, not Focus Punch)
-    
+    return 0 if BLACKLIST.index(move)
     
     score = 1
     

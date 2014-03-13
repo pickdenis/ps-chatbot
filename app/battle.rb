@@ -231,17 +231,12 @@ require_relative 'battleutil/cc1vs1helper.rb'
 class CC1vs1Logic < BattleLogic
   def chooselead rqid
     
-    bestmonindex = nil
-    highestscore = 0
-    @me.team.values.each_with_index do |poke, index| 
+    best = @me.team.values.max_by do |poke| 
       species = BattleHandler.parse_poke_details(poke.details)[:species]
-      poke.moves.each do |move|
-        if (score = CC1vs1.calculate_move_score(species, move, @other.team.values)) > highestscore
-          highestscore = score
-          bestmonindex = index
-        end
-      end
+      poke.moves.map { |move| CC1vs1.calculate_move_score(species, move, @other.team.values) }.reduce(:+)
     end
+    
+    bestmonindex = @me.team.values.index(best)
     
     rest = (1..6).to_a
     rest.unshift(rest.delete(bestmonindex))
@@ -256,7 +251,8 @@ class CC1vs1Logic < BattleLogic
     otherside = [@other.side] # put it in an array because calculate_move_score takes an array
     my_species = BattleHandler.parse_poke_details(@me.side.first[:object].details)[:species]
     
-    chosen = moves.max { |move| CC1vs1.calculate_move_score(my_species, move, otherside) }
+    
+    chosen = moves.max_by { |move| CC1vs1.calculate_move_score(my_species, move, otherside) }
     
     "/choose move #{chosen}|#{rqid}"
   end
