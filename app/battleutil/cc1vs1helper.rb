@@ -29,6 +29,9 @@ module CC1vs1
     
     lastresort
     
+    explosion
+    selfdestruct
+    
   }
   
   def self.calculate_move_score species, move, otherteam 
