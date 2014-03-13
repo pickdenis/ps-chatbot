@@ -236,12 +236,14 @@ class CC1vs1Logic < BattleLogic
   def chooselead rqid
     
     best = @me.team.values.max_by do |poke|
-      next if poke == 'Floette-Eternal-Flower'
-      
-      species = BattleHandler.parse_poke_details(poke.details)[:species]
-      
-      
-      poke.moves.map { |move| CC1vs1.calculate_move_score(species, move, @other.team.values) }.reduce(:+)
+      if poke == 'Floette-Eternal-Flower'
+        0
+      else
+        species = BattleHandler.parse_poke_details(poke.details)[:species]
+        
+        
+        poke.moves.map { |move| CC1vs1.calculate_move_score(species, move, @other.team.values) }.reduce(:+)
+      end
     end
     
     bestmonindex = @me.team.values.index(best) + 1
