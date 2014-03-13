@@ -237,7 +237,7 @@ class CC1vs1Logic < BattleLogic
     
     best = @me.team.values.max_by do |poke|
       if poke == 'Floette-Eternal-Flower'
-        species = poke
+        species = Pokedex::POKEMONDATA['floetteeternalflower']
       else
         species = BattleHandler.parse_poke_details(poke.details)[:species]
       end
