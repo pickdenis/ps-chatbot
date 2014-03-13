@@ -236,7 +236,7 @@ class CC1vs1Logic < BattleLogic
       poke.moves.map { |move| CC1vs1.calculate_move_score(species, move, @other.team.values) }.reduce(:+)
     end
     
-    bestmonindex = @me.team.values.index(best)
+    bestmonindex = @me.team.values.index(best) + 1
     
     rest = (1..6).to_a
     rest.unshift(rest.delete(bestmonindex))
