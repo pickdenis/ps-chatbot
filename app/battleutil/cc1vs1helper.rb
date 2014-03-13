@@ -27,6 +27,8 @@ module CC1vs1
     snore
     dreameater
     
+    lastresort
+    
   }
   
   def self.calculate_move_score species, move, otherteam 
