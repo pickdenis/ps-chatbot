@@ -185,39 +185,45 @@ class ChatHandler
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
     @triggers.each do |t|
-      t[:off] and next
-      result = t.is_match?(m_info)
-      
-      if result
-        m_info[:result] = result
+      begin
+        t[:off] and next
+        result = t.is_match?(m_info)
         
-        m_info[:respond] = (callback || 
-          case m_info[:where].downcase
-          when 'c', 'j', 'n', 'l'
-            proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
-          when 's'
-            proc do |mtext| puts mtext end
-          when 'pm'
-            proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
-          end)
-        
-        
-        
-        
-        
-        # log the action
-        if t[:id] && !t[:nolog] # only log triggers with IDs
-          @usagelogger.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
+        if result
+          m_info[:result] = result
           
-          # Add to the stats
-          #usage_stats_here = @usage_stats[m_info[:where]]
-          #
-          #usage_stats_here[m_info[:who]] ||= []
-          #usage_stats_here[m_info[:who]] << t[:id]
+          m_info[:respond] = (callback || 
+            case m_info[:where].downcase
+            when 'c', 'j', 'n', 'l'
+              proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
+            when 's'
+              proc do |mtext| puts mtext end
+            when 'pm'
+              proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
+            end)
+          
+          
+          
+          
+          
+          # log the action
+          if t[:id] && !t[:nolog] # only log triggers with IDs
+            @usagelogger.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
+            
+            # Add to the stats
+            #usage_stats_here = @usage_stats[m_info[:where]]
+            #
+            #usage_stats_here[m_info[:who]] ||= []
+            #usage_stats_here[m_info[:who]] << t[:id]
+          end
+          
+          t.do_act(m_info)
+          
         end
-        
-        t.do_act(m_info)
-        
+      rescue => e
+        puts "Crashed in trigger #{t[:id]}"
+        puts e.message
+        puts e.backtrace
       end
       
     end
