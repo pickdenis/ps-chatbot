@@ -16,8 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-require './showderp/pokemon-related/pokedata.rb'
-
 Trigger.new do |t|
   t[:id] = "rspd"
   

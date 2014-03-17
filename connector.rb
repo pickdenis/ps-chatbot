@@ -30,6 +30,7 @@ require './app/battle.rb'
 require './app/consoleinput.rb'
 require './app/socketinput.rb'
 require './app/utils.rb'
+require './app/pokedata.rb'
 
 
 $data = {}
