@@ -71,7 +71,7 @@ module CC1vs1
     # These look up the species names in the POKEMONDATA table to get a hash
     
     species_h = plist.find { |poke| poke['name'] == species }
-    otherteam_h = otherteam.map { |teampoke| plist.find { |poke| (poke||{})['name'] == teampoke } }
+    otherteam_h = otherteam.map { |teampoke| plist.find { |poke| (poke||{})['name'] == teampoke.gsub('-*', '') } }
     
     # Now, calculate the score
     
@@ -88,7 +88,6 @@ module CC1vs1
     
     # This should be dampened - Pokemon such as Talonflame give a huge boost to rock moves, boosting the score of
     # bad pokemon that happen to have them.
-    
     score *= otherteam_h.map { |poke| (TypeChart.effectiveness(move_h['type'], poke['types']) - 1)/2.0 + 1 }.reduce(:*)
     
     # And finally, abilities
