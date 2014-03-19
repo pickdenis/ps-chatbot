@@ -37,7 +37,7 @@ class Chatbot
     
     
     # load all of the triggers
-    if $options[:triggers]
+    if opts[:triggers]
       @ch.load_trigger_files
     end
     

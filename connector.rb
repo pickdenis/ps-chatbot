@@ -109,7 +109,7 @@ if __FILE__ == $0
       console: $options[:console],
       server: ($options[:server] || nil),
       log: $options[:log],
-      triggers: $options[:triggers])
+      triggers: !$options[:triggers])
     
     Signal.trap("INT") do
       bot.exit_gracefully
