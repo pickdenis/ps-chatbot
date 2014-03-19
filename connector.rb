@@ -65,7 +65,7 @@ op = OptionParser.new do |opts|
   end
   
   opts.on('-t', '--no-triggers', 'no triggers') do |v|
-    $options[:triggers] = !v
+    $options[:triggers] = v
   end
   
   opts.on('-l', '--log', 'show everything sent from server') do |v|
