@@ -18,7 +18,7 @@
 
 require 'faye/websocket'
 require 'eventmachine'
-require 'net/http'
+require 'em-http-request'
 require 'json'
 require 'fileutils'
 require 'optparse'
@@ -30,7 +30,6 @@ require './app/battle.rb'
 require './app/consoleinput.rb'
 require './app/socketinput.rb'
 require './app/utils.rb'
-require './app/pokedata.rb'
 
 
 $data = {}
@@ -65,7 +64,11 @@ op = OptionParser.new do |opts|
     $options[:socket] = v
   end
   
-  opts.on('-l', '--log', 'show') do |v|
+  opts.on('-t', '--no-triggers', 'no triggers') do |v|
+    $options[:triggers] = v
+  end
+  
+  opts.on('-l', '--log', 'show everything sent from server') do |v|
     $options[:log] = v
   end
   
@@ -83,6 +86,7 @@ end
 op.parse!(ARGV)
 
 
+require './app/pokedata.rb'
 
 if __FILE__ == $0
   
@@ -104,7 +108,8 @@ if __FILE__ == $0
       room: $options[:room], 
       console: $options[:console],
       server: ($options[:server] || nil),
-      log: $options[:log])
+      log: $options[:log],
+      triggers: $options[:triggers])
     
     Signal.trap("INT") do
       bot.exit_gracefully
