@@ -54,7 +54,7 @@ class BattleHandler
   def self.parse_poke_details details
     parts = details.split(', ')
     
-    { species: parts.shift, level: parts.shift[1..-1], gender: parts.shift }
+    { species: parts.shift.gsub('-*', ''), level: parts.shift[1..-1], gender: parts.shift }
   end
   
   def battle_loop format, ws
