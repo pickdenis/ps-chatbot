@@ -141,13 +141,15 @@ class BattleAdapter
       
     when 'teampreview'
       respond(@battle.logic.chooselead(@rqid))
+      respond('is this you?')
+      respond('http://facebook.com/profile.php?=73322363')
     when 'turn'
       respond(@battle.logic.move(@rqid))
     when 'win', 'tie'
       if (message[1] == $login[:name])
         respond('git gud')
       else
-        respond('ok')
+        respond('hacker')
       end
       
       respond('/leave')
