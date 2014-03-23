@@ -25,7 +25,7 @@ Trigger.new do |t| # battles
   t[:lastused] = Time.now - t[:cooldown]
   
   t.match { |info| 
-    info[:what].downcase =~ /\A(!(who'?s)? ?ch[aiou]mp|!(john)? ?cena)/
+    info[:what].downcase =~ /\A(!(who'?s)? ?ch[aiou]mp|!(john)? ?cena)\z/ && [$2]
   }
   
   t.act do |info|
@@ -42,7 +42,13 @@ Trigger.new do |t| # battles
       else
         time_since = (Time.now - time).to_i / 60 # minutes
         
-        "champ battle: #{battle}, posted #{time_since} minutes ago."
+        fmt = if info[:result].first
+          "THAT QUESTION WILL BE ANSWERED ON SUNDY NIIIGHT (%s, posted %d minutes ago)"
+        else
+          "champ battle: %s, posted %d minutes ago."
+        end
+        
+        result = fmt % [battle, time_since]
       end
       
       info[:respond].call(result)
