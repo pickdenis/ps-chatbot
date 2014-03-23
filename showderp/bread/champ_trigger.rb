@@ -25,7 +25,7 @@ Trigger.new do |t| # battles
   t[:lastused] = Time.now - t[:cooldown]
   
   t.match { |info| 
-    info[:what].downcase =~ /\A(!(who'?s)? ?ch[aiou]mp|!(john)? ?cena)\z/ && [$2]
+    info[:what].downcase =~ /\A(!((who'?s)? ?ch[aiou]mp|(jo+hn)? ?ce+na+))/ && [$2]
   }
   
   t.act do |info|
@@ -35,7 +35,6 @@ Trigger.new do |t| # battles
     
     Battles.get_battles do |battles|
       battle, time = battles.last
-      
       
       result = if battle.nil?
         "couldn't find any battles, sorry"
