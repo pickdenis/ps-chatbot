@@ -46,7 +46,7 @@ module StatCalc
         ev = o_ev if !asbase
       when /(?:iv|ivs):(\d+)/
         o_iv = $1.to_f
-        iv = o_ev if !asbase
+        iv = o_iv if !asbase
       when /\+(\d+)/
         if asbase
           o_plus = $1.to_f
