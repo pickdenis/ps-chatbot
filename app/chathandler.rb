@@ -224,7 +224,7 @@ class ChatHandler
         puts "Crashed in trigger #{t[:id]}"
         puts e.message
         puts e.backtrace
-      end
+      end   
       
     end
     
@@ -246,6 +246,32 @@ class ChatHandler
       @pmlogger.info("#{m_info[:who]}: #{m_info[:what]}")
       
     end
+  end
+  
+  def handle_tournament message, ws
+    
+    # Code adapted from
+    # https://github.com/raymoo/ps-chatbot-llewd/commit/914f952a7371a6cfbcdf75fa87e349f0539a616a
+    
+    room = message[1..-1]
+    action = message[2]
+    
+    if room == 'create' && message[3] == 'challengecup1vs1'
+      ws.send('/tour join')
+    end
+    
+    if action == 'update'
+      info = JSON.parse(info[:data][3])
+      
+      if info['challenged']
+        ws.send('/tour acceptchallenge')
+      end
+      
+      if info["challenges"] && info["challenges"].length != 0
+        ws.send("/tour challenge #{info["challenges"][0]}")
+      end
+    end
+      
   end
   
   def turn_by_id id, on
