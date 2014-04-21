@@ -39,7 +39,6 @@ module Markov
       if !seed
         seed = @nodes.keys.sample
       end
-      
       current_key = seed
       result = []
       
@@ -52,4 +51,12 @@ module Markov
       return result
     end
   end
+end 
+
+if $0 == __FILE__
+  c = Markov::Chain.new
+  c.add_words("Hi my name is Bob and I am a robot")
+  c.add_words("Hi my name is Julie and I live in a house")
+  
+  p c.generate(10)
 end

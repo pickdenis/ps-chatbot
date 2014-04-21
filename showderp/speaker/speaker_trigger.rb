@@ -2,29 +2,32 @@ require "./showderp/speaker/markovchains.rb"
 
 Trigger.new do |t|
   t.match { |info|
-    (info[:where] == 'c' || info[:where] == 'pm') && info[:what]
+    (info[:where] == 'c') && info[:what]
   }
   
-  chain = Markov::Chain.new
+  t[:chain] = Markov::Chain.new
   
   t.act do |info|
     text = info[:result]
     
-    chain.add_words(text)
+    name = $login[:name]
     
-    next if !(text =~ /#{$login[:name].downcase}, (.*?)/i)
+    if text[0..name.size-1] == name && text[name.size] == ','
+      next if info[:who] == $login[:name]
     
-    words = $1.split(' ')
-    seed = nil
-    
-    chain.nodes.each do |keys, values|
-      if words.any? { |word| keys.index(word) }
-        seed = keys
-        break
+      words = text[name.size..-1].split(' ')
+      seed = nil
+      
+      chain.nodes.each do |keys, values|
+        if words.any? { |word| keys.index(word) }
+          seed = keys
+          break
+        end
       end
+      
+      info[:respond].call("#{chain.generate(10, seed).join(' ')}.".capitalize)
+    else
+      chain.add_words(text)
     end
-    
-    info[:respond].call("#{chain.generate(10, seed).join(' ')}.".capitalize)
-    
   end
 end
