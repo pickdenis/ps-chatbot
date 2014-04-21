@@ -12,7 +12,7 @@ Trigger.new do |t|
     
     chain.add_words(text)
     
-    next if !(text =~ /#{$login[:name].downcase},\s+(.*?)/i)
+    next if !(text =~ /#{$login[:name].downcase}, (.*?)/i)
     
     words = $1.split(' ')
     seed = nil
