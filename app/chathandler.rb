@@ -296,6 +296,10 @@ class ChatHandler
     
     IO.write(@ignore_path, @ignorelist.join("\n"))
     
+    @triggers.each do |trigger|
+      trigger.exit
+    end
+    
     puts "Done with exit sequence"
     
   end
@@ -322,12 +326,22 @@ class Trigger
     @action = blk
   end
   
+  def exit &blk
+    @exit = blk
+  end
+  
   def is_match? m_info
     @match.call(m_info)
   end
   
   def do_act m_info
     @action.call(m_info)
+  end
+  
+  def exit
+    if @exit
+      @exit.call
+    end
   end
   
   def get var
@@ -337,6 +351,7 @@ class Trigger
   def set var, to
     @vars[var] = to
   end
+  
   
   alias_method :[], :get
   alias_method :[]=, :set
