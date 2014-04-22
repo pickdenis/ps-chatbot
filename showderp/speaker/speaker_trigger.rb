@@ -5,21 +5,21 @@ Trigger.new do |t|
     (info[:where] == 'c') && info[:what]
   }
   
-  t[:chain] = Markov::Chain.new
+  chain = Markov::Chain.new
   
   t.act do |info|
     text = info[:result]
     
     name = $login[:name]
     
-    if text[0..name.size-1] == name && text[name.size] == ','
+    if text[0..name.size] == "#{name},"
       next if info[:who] == $login[:name]
     
       words = text[name.size..-1].split(' ')
       seed = nil
       
       chain.nodes.each do |keys, values|
-        if words.any? { |word| keys.index(word) }
+        if words.reverse.any? { |word| keys.index(word) }
           seed = keys
           break
         end
