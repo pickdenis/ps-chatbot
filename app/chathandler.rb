@@ -29,7 +29,8 @@ class ChatHandler
     
     initialize_ignore_list
     
-    initialize_usage_stats
+    # useless and redundant feature
+    #initialize_usage_stats
     
     initialize_loggers
     
@@ -46,7 +47,11 @@ class ChatHandler
   def initialize_loggers
     
     @usagelogger = Logger.new("./#{@group}/logs/usage/usage.log", 'monthly')
-    @chatlogger = Logger.new("./#{@group}/logs/chat/chat.log", 'monthly')
+    @pmlogger = Logger.new("./#{@group}/logs/pms/pms.log", 'monthly')
+    @pmlogger.formatter = proc do |severity, datetime, progname, msg|
+      "#{datetime}: #{msg}\n"
+    end
+    @chatloggers = {} # add one for every new room
 
   end
   
@@ -71,14 +76,15 @@ class ChatHandler
   end
   
   def print_usage_stats howmany
-    relevant_stats = @usage_stats['c'].to_a
-    
-    buf =  "Top #{howmany} (ab)users: \n"
-    
-    relevant_stats.sort! {|(x, y)| y.length }
-    
-    buf << '  ' << relevant_stats.take(howmany).map { |(x, y)| [x, y.size] }.join("\t") << "\n"
-    buf
+    "deprecated"
+    #relevant_stats = @usage_stats['c'].to_a
+    # 
+    #buf =  "Top #{howmany} (ab)users: \n"
+    # 
+    #relevant_stats.sort! {|(x, y)| y.length }
+    # 
+    #buf << '  ' << relevant_stats.take(howmany).map { |(x, y)| [x, y.size] }.join("\t") << "\n"
+    #buf
   end
   
   def initialize_message_queue
@@ -115,7 +121,7 @@ class ChatHandler
   
   def load_trigger(file)
     puts "loading:  #{file}"
-    trigger = eval(File.read("#{file}"))
+    trigger = eval(File.read(file))
     
     return unless trigger.is_a? Trigger
     
@@ -179,43 +185,93 @@ class ChatHandler
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
     @triggers.each do |t|
-      t[:off] and next
-      result = t.is_match?(m_info)
-      
-      if result
-        m_info[:result] = result
+      begin
+        t[:off] and next
+        result = t.is_match?(m_info)
         
-        m_info[:respond] = (callback || 
-          case m_info[:where].downcase
-          when 'c', 'j', 'n', 'l'
-            proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
-          when 's'
-            proc do |mtext| puts mtext end
-          when 'pm'
-            proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
-          end)
-        
-        # Log any chat messages
-        if m_info[:where] == 'c'
-          @chatlogger.info(m_info[:all].join('|'))
-        end
-        
-        # log the action
-        if t[:id] && !t[:nolog] # only log triggers with IDs
-          @usagelogger.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
+        if result
+          m_info[:result] = result
           
-          # Add to the stats
-          usage_stats_here = @usage_stats[m_info[:where]]
+          m_info[:respond] = (callback || 
+            case m_info[:where].downcase
+            when 'c', 'j', 'n', 'l'
+              proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
+            when 's'
+              proc do |mtext| puts mtext end
+            when 'pm'
+              proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
+            end)
           
-          usage_stats_here[m_info[:who]] ||= []
-          usage_stats_here[m_info[:who]] << t[:id]
+          
+          
+          
+          
+          # log the action
+          if t[:id] && !t[:nolog] # only log triggers with IDs
+            @usagelogger.info("#{m_info[:who]} tripped trigger id:#{t[:id]}")
+            
+            # Add to the stats
+            #usage_stats_here = @usage_stats[m_info[:where]]
+            #
+            #usage_stats_here[m_info[:who]] ||= []
+            #usage_stats_here[m_info[:who]] << t[:id]
+          end
+          
+          t.do_act(m_info)
+          
         end
-        
-        t.do_act(m_info)
-        
-      end
+      rescue => e
+        puts "Crashed in trigger #{t[:id]}"
+        puts e.message
+        puts e.backtrace
+      end   
       
     end
+    
+    
+    # Log any chat messages
+    if m_info[:where] == 'c'
+      logger = @chatloggers[m_info[:room]]
+      if !logger
+        logger = @chatloggers[m_info[:room]] = Logger.new("./#{@group}/logs/chat/#{m_info[:room]}.log", 'monthly')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+          "#{datetime}: #{msg}\n"
+        end
+      end
+      
+      logger.info("#{m_info[:who]}: #{m_info[:what]}")
+    end
+    
+    if m_info[:where] == 'pm'
+      @pmlogger.info("#{m_info[:who]}: #{m_info[:what]}")
+      
+    end
+  end
+  
+  def handle_tournament message, ws
+    
+    # Code adapted from
+    # https://github.com/raymoo/ps-chatbot-llewd/commit/914f952a7371a6cfbcdf75fa87e349f0539a616a
+    
+    room = message[1..-1]
+    action = message[2]
+    
+    if room == 'create' && message[3] == 'challengecup1vs1'
+      ws.send('/tour join')
+    end
+    
+    if action == 'update'
+      info = JSON.parse(message[3])
+      
+      if info['challenged']
+        ws.send('/tour acceptchallenge')
+      end
+      
+      if info["challenges"] && info["challenges"].length != 0
+        ws.send("/tour challenge #{info["challenges"][0]}")
+      end
+    end
+      
   end
   
   def turn_by_id id, on
@@ -232,13 +288,17 @@ class ChatHandler
   def exit_gracefully
     # Write the usage stats to the file
     
-    File.open(@usage_path, 'w') do |f|
-      f.puts(JSON.dump(@usage_stats))
-    end
+    #File.open(@usage_path, 'w') do |f|
+    #  f.puts(JSON.dump(@usage_stats))
+    #end
     
     # Write ignore list to the file
     
     IO.write(@ignore_path, @ignorelist.join("\n"))
+    
+    @triggers.each do |trigger|
+      trigger.exit
+    end
     
     puts "Done with exit sequence"
     
@@ -266,12 +326,22 @@ class Trigger
     @action = blk
   end
   
+  def exit &blk
+    @exit = blk
+  end
+  
   def is_match? m_info
     @match.call(m_info)
   end
   
   def do_act m_info
     @action.call(m_info)
+  end
+  
+  def exit
+    if @exit
+      @exit.call
+    end
   end
   
   def get var
@@ -281,6 +351,7 @@ class Trigger
   def set var, to
     @vars[var] = to
   end
+  
   
   alias_method :[], :get
   alias_method :[]=, :set

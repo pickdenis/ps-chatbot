@@ -18,7 +18,7 @@
 
 class Chatbot
   include EM::Deferrable
-  attr_accessor :name, :pass, :connected, :ch # chathandler
+  attr_accessor :name, :pass, :connected, :ch, :bh
   
   PS_URL = 'ws://sim.smogon.com:8000/showdown/websocket'
   
@@ -37,8 +37,9 @@ class Chatbot
     
     
     # load all of the triggers
-    
-    @ch.load_trigger_files
+    if opts[:triggers]
+      @ch.load_trigger_files
+    end
     
     # initialize console if requested
     
@@ -107,7 +108,8 @@ class Chatbot
         
       when 'c', 'pm', 'j', 'n', 'l'
         @ch.handle(message, ws)
-      
+      when 'tournament'
+        @ch.handle_tournament(message, ws)
       when 'updatechallenges'
         @bh.handle_challenge(message, ws)
       else
@@ -126,6 +128,10 @@ class Chatbot
     end
     
     fix_input_server(ws)
+    
+    if File.exist?('battle_loop')
+      @bh.battle_loop('challengecup1vs1', ws)
+    end
   end
   
   def start_console ws

@@ -28,9 +28,11 @@ Trigger.new do |t|
   }
   
   t.act do |info|
-    t[:lastused] + t[:cooldown] < Time.now or next
-
-    t[:lastused] = Time.now
+    # ignores the cooldown check if user is PMing
+    if info[:where] != 'pm'
+      t[:lastused] + t[:cooldown] < Time.now or next
+      t[:lastused] = Time.now
+    end
     
     info[:respond].call("(#{info[:who]}) #{responses.sample}")
   end

@@ -1,4 +1,4 @@
-require './showderp/pokemon-related/pokedata.rb'
+
 
 Trigger.new do |t|
   t[:id] = 'randbats_moves'
