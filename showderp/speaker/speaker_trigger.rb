@@ -1,5 +1,6 @@
 require "./showderp/speaker/markovchains.rb"
 require 'json'
+require 'uri'
 
 Trigger.new do |t|
   t[:id] = 'speaker'
@@ -20,7 +21,7 @@ Trigger.new do |t|
   puts 'done.'
   
   t.act do |info|
-    text = info[:result]
+    text = info[:result].gsub(URI.regexp, '') # remove links
     
     name = $login[:name]
     
