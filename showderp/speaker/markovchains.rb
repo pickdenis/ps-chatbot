@@ -1,3 +1,5 @@
+require 'json'
+
 module Markov
   
   
@@ -50,13 +52,28 @@ module Markov
       
       return result
     end
+    
+    
+  end
+  
+  def self.chain_from_json json
+    nodes = {}
+    JSON.parse(json).each do |keys, values|
+      nodes[JSON.parse(keys)] = values
+    end
+    
+    result = Chain.new
+    result.nodes = nodes
+    
+    result
+    
   end
 end 
 
-if $0 == __FILE__
-  c = Markov::Chain.new
-  c.add_words("Hi my name is Bob and I am a robot")
-  c.add_words("Hi my name is Julie and I live in a house")
-  
-  p c.generate(10)
-end
+#if $0 == __FILE__
+#  c = Markov::Chain.new
+#  c.add_words("Hi my name is Bob and I am a robot")
+#  c.add_words("Hi my name is Julie and I live in a house")
+#  
+#  p c.generate(10)
+#end
