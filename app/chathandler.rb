@@ -296,6 +296,7 @@ class ChatHandler
     
     IO.write(@ignore_path, @ignorelist.join("\n"))
     
+    puts "Calling triggers' exit sequences..."
     @triggers.each do |trigger|
       trigger.exit
     end
@@ -327,7 +328,13 @@ class Trigger
   end
   
   def exit &blk
-    @exit = blk
+    if block_given?
+      @exit = blk
+    else
+      if @exit
+        @exit.call
+      end
+    end
   end
   
   def is_match? m_info
@@ -336,12 +343,6 @@ class Trigger
   
   def do_act m_info
     @action.call(m_info)
-  end
-  
-  def exit
-    if @exit
-      @exit.call
-    end
   end
   
   def get var
