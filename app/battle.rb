@@ -144,7 +144,7 @@ class BattleAdapter
     when 'turn'
       respond(@battle.logic.move(@rqid))
     when 'win', 'tie'
-      if (message[1] == $login[:name])
+      if (message[1] == USERNAME)
         respond('git gud')
       else
         respond('ok')

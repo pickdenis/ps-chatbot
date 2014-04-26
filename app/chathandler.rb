@@ -126,7 +126,7 @@ class ChatHandler
     return unless trigger.is_a? Trigger
     
     trigger[:ch] = self
-    trigger[:login_name] = $login[:name]
+    trigger[:login_name] = @name
     
     @triggers << trigger
   end
@@ -157,7 +157,7 @@ class ChatHandler
       when 's'
         {
           room: message[0],
-          who: $login[:name],
+          who: USERNAME,
           what: message[2],
         }
       end)

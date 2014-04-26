@@ -85,25 +85,24 @@ class Chatbot
       case message[1].downcase
       when 'challstr'
         puts "Attempting to login..."
-        $data[:challenge] = message[3]
-        $data[:challengekeyid] = message[2]
-        $data[:response] = CBUtils.login(@name, @pass) do |assertion|
+        data = {}
+        CBUtils.login(@name, @pass, message[3], message[2]) do |assertion|
           
           if assertion.nil? 
             raise "Could not login"
           end      
           
-          ws.send("|/trn #{$login[:name]},0,#{assertion}")
+          ws.send("|/trn #{@name},0,#{assertion}")
         
         end
         
       when 'updateuser'
-        if message[2] == $login[:name]
+        if message[2] == @name
           puts 'Succesfully logged in!'
           
           start_console(ws) if @console_option
         end
-        ws.send("|/join #{$options[:room]}")
+        ws.send("|/join #{@room}")
         
         
       when 'c', 'pm', 'j', 'n', 'l'

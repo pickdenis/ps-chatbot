@@ -23,10 +23,10 @@ Trigger.new do |t|
   t.act do |info|
     text = info[:result].gsub(URI.regexp, '') # remove links
     
-    name = $login[:name]
+    name = USERNAME
     
     if text[0..name.size].downcase == "#{name.downcase},"
-      next if info[:who] == $login[:name]
+      next if info[:who] == USERNAME
     
       words = text[name.size..-1].split(' ')
       seed = nil

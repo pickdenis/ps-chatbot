@@ -1,0 +1,23 @@
+options:
+    # login - the bot's username must be registered on PS
+    name: enter-the-bot's-name-here
+    pass: secret-password-here
+    
+    # Server to login to and room to join
+    server: ws://sim.smogon.com:8000/showdown/websocket
+    room: cool room
+    
+    # Allow console input from you
+    console: no
+    
+    # Use triggers at all?
+    triggers: yes
+    
+    #   Trigger group:
+    # The folders 'showderp' and 'mafia' are trigger groups. 
+    # They have a specific directory structure, go check it
+    # out for yourself.
+    tgroup: showderp
+    
+    # Show everything sent from the server in the console
+    log: no

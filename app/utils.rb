@@ -23,13 +23,13 @@ module CBUtils
     name.downcase.gsub(/[^A-Za-z0-9]/, '')
   end
   
-  def self.login name, pass, &callback
+  def self.login name, pass, challenge, challengekeyid, &callback
     EM::HttpRequest.new("https://play.pokemonshowdown.com/action.php").post(body: {
       'act' => 'login',
       'name' => name,
       'pass' => pass,
-      'challengekeyid' => $data[:challengekeyid].to_i,
-      'challenge' => $data[:challenge]} ).callback { |http| 
+      'challengekeyid' => challengekeyid.to_i,
+      'challenge' => challenge} ).callback { |http| 
       
       callback.call(JSON.parse(http.response[1..-1])["assertion"]) # PS returns a ']' before the json
     }
