@@ -39,7 +39,7 @@ Trigger.new do |t| # breadfinder
       result = if bread[:no] == 0
         "couldn't find the bread, sorry"
       else
-        "bread: http://4chan.org/vp/res/#{bread[:no]}#bottom"
+        "bread: http://boards.4chan.org/vp/thread/#{bread[:no]}#bottom"
       end
       info[:respond].call(result)
     end
