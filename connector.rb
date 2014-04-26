@@ -48,6 +48,7 @@ if __FILE__ == $0
   $0 = "pschatbot"
   
   EM.run do
+    
     bot = Chatbot.new(
       name: USERNAME, 
       pass: PASSWORD,
@@ -58,7 +59,11 @@ if __FILE__ == $0
       log: options["log"],
       triggers: options["triggers"])
     
+    exiting = false
     Signal.trap("INT") do
+      next if exiting
+      
+      exiting = true
       bot.exit_gracefully
       Process.exit
     end
