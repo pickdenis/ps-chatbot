@@ -1,5 +1,6 @@
 require "./triggers/speaker/markovchains.rb"
 require 'json'
+require 'fileutils'
 require 'uri'
 
 Trigger.new do |t|
@@ -8,8 +9,8 @@ Trigger.new do |t|
   t.match { |info|
     (info[:where] == 'c') && info[:what]
   }
-  
-  chain_path = './triggers/speaker/chain.json'
+  FileUtils.mkdir_p("./#{ch.dirname}/speaker")
+  chain_path = "./#{ch.dirname}/speaker/chain.json"
   if !File.exist?(chain_path)
     File.open(chain_path, 'w') do |f| 
       f.puts '{}'
