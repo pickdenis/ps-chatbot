@@ -28,14 +28,9 @@ If you have bundler (`gem install bundler`), you can do this:
 
 # Usage
 
-   
-    ruby connector.rb -n USER -p PASS [more options]
+    ruby connector.rb config.yml
 
-Some more options are
-    
-    -s: run a socket server to accept input (used to turn off triggers, etc)
-    -c: run an input loop to accept input
-    -r ROOM: join a room. Joins showderp by default
+**Important: Make sure you have a config file that you can use. Use config-example as a base and create your own based on it.**
 
 
 # Contact
