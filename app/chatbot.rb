@@ -18,7 +18,7 @@
 
 class Chatbot
   include EM::Deferrable
-  attr_reader :name, :pass, :connected, :ch, :bh, :id
+  attr_reader :name, :pass, :connected, :ch, :bh, :id, :config
   
   PS_URL = 'ws://sim.smogon.com:8000/showdown/websocket'
   
@@ -29,11 +29,12 @@ class Chatbot
     @pass = opts[:pass]
     @log_messages = opts[:log]
     
+    @config = opts[:allconfig]
+    
     @ch = ChatHandler.new(opts[:triggers], self)
     @bh = BattleHandler.new(@ch)
     @connected = false
     
-   
     @do_battles = opts[:dobattles]
     
     

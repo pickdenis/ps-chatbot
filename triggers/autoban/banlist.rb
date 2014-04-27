@@ -30,6 +30,9 @@ module Banlist
   FORM_KEY = '1YJQFUBtcrJZKxhe4htXd9_kXPcOlTTdUnFfhtbJjJXY'
   FORM_URL = "https://docs.google.com/forms/d/#{FORM_KEY}/formResponse"
   
+  def set_pw pw
+    @@pw = pw
+  end
   
   def get &callback
     @@banlist = []
@@ -52,10 +55,10 @@ module Banlist
       @@banlist.delete(name)
       
     end
-    pw_path = './triggers/autoban/pw'
+    
     EM::HttpRequest.new(FORM_URL).post(query: {
       "entry.272819384" => "#{act} #{name}",
-      "entry.295377180" => File.read(pw_path).strip
+      "entry.295377180" => @@pw
     }).callback do |http|
       callback.call(http) if block_given?
     end

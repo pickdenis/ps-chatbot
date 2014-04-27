@@ -31,3 +31,4 @@ bots:
         
         # Show everything sent from the server in the console
         log: no
+        

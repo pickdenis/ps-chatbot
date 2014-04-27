@@ -56,7 +56,9 @@ if __FILE__ == $0
         log: options['log'],
         usetriggers: options['usetriggers'],
         triggers: options['triggers'],
-        dobattles: options['dobattles'])
+        dobattles: options['dobattles'],
+        
+        allconfig: options)
       
     end
     

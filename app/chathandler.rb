@@ -21,12 +21,14 @@ require 'json'
 
 class ChatHandler
   attr_accessor :triggers, :ignorelist, :group, :usagelogger, :chatlogger
-  attr_reader :id, :dirname, :name, :pass
+  attr_reader :id, :dirname, :name, :pass, :config
   
   def initialize triggers, chatbot
     @id = chatbot.id
     @name = chatbot.name
     @pass = chatbot.pass
+    @config = chatbot.config
+    
     @dirname = "bot-#{@id}"
     # initialize all of the directories that we need
     FileUtils.mkdir_p("./#{@dirname}/logs/chat")
@@ -138,6 +140,8 @@ class ChatHandler
     
     trigger[:ch] = self
     trigger[:login_name] = @name
+    
+    trigger.init
     
     @triggers << trigger
   end
@@ -338,12 +342,26 @@ class Trigger
     @action = blk
   end
   
+  # Optional trigger field
+  # t.exit { what to do when chatbot exits }
   def exit &blk
     if block_given?
       @exit = blk
     else
       if @exit
         @exit.call
+      end
+    end
+  end
+  
+  # Optional trigger field
+  # t.exit { what to do when trigger is initialized }
+  def init &blk
+    if block_given?
+      @init = blk
+    else
+      if @init
+        @init.call
       end
     end
   end

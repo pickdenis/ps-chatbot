@@ -24,6 +24,10 @@ Trigger.new do |t|
   
   t[:id] = 'ban'
   
+  t.init do
+    Banlist.set_pw(t[:ch].config["autoban"]["pw"])
+  end
+  
   t.match { |info|
     info[:what] =~ /\A!ab ([^,]+)\z/ && $1
   }
