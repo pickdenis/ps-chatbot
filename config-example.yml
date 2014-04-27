@@ -1,23 +1,33 @@
-options:
-    # login - the bot's username must be registered on PS
-    name: enter-the-bot's-name-here
-    pass: secret-password-here
-    
-    # Server to login to and room to join
-    server: ws://sim.smogon.com:8000/showdown/websocket
-    room: cool room
-    
-    # Allow console input from you
-    console: no
-    
-    # Use triggers at all?
-    triggers: yes
-    
-    #   Trigger group:
-    # The folders 'showderp' and 'mafia' are trigger groups. 
-    # They have a specific directory structure, go check it
-    # out for yourself.
-    tgroup: showderp
-    
-    # Show everything sent from the server in the console
-    log: no
+# IMPORTANT: READ ALL OF THE COMMENTS THEY ARE ALL IMPORTANT
+
+# You can run multiple bots.
+# Just make another dash under 'bots:' and go wild
+
+
+bots:
+    -   # id
+        id: a_cool_bot
+        
+        # login
+        name: your_bot's_name
+        pass: your_bot's_password
+        
+        # Server to login to and room to join
+        server: ws://sim.smogon.com:8000/showdown/websocket
+        
+        # Room to join after login
+        room: my_secret_room
+        
+        
+        # Use triggers at all?
+        usetriggers: yes
+        
+        # To get a list of the trigger files already provided, run (windows)
+        #   where /R .\triggers "*_trigger.rb"
+        triggers:
+         - triggers/path/to/file_trigger.rb
+        
+
+        
+        # Show everything sent from the server in the console
+        log: no
