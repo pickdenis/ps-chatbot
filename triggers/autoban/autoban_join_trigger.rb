@@ -14,33 +14,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-require './showderp/autoban/banlist.rb'
+require './triggers/autoban/banlist.rb'
 
 Trigger.new do |t|
-  t[:id] = "banlist"
+  t[:id] = "autoban_join"
   t[:nolog] = true
   
   t.match { |info|
-    (info[:where].downcase == 'pm' || info[:where] == 's') &&
-    info[:what].downcase == 'blist'
+    info[:where].downcase =~ /\A[jnl]\z/
   }
   
-  uploader = CBUtils::HasteUploader.new
   
   t.act do |info|
     
-    banlist = Banlist.list.join("\n")
+    banlist = Banlist.list
+    messages = info[:all]
     
-    banlist_text = if banlist.strip.empty?
-      'nobody'
-    else
-      banlist
+    while messages.size > 0
+      if messages.shift.downcase == 'j'
+        name = CBUtils.condense_name(messages.shift[1..-1]) # The first character will be ' ' or '+' etc
+        info[:respond].call("/roomban #{name}") if banlist.index(name)
+      end
     end
-    
-    uploader.upload(banlist_text) do |url|
-      info[:respond].call(url)
-    end
-    
   end
 end

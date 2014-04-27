@@ -14,24 +14,37 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+require "./triggers/autoban/banlist.rb"
 
-
-require './showderp/statcalc/statcalc.rb'
+Banlist.get
 
 Trigger.new do |t|
-  t[:id] = 'statcalc'
-  t[:cooldown] = 2 # seconds
-  t[:lastused] = Time.now - t[:cooldown]
+  
+  t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
+  
+  t[:id] = 'ban'
   
   t.match { |info|
-    info[:what][0..4] == 'base:' &&
-    info[:what]
+    info[:what] =~ /\A!ab ([^,]+)\z/ && $1
   }
   
+  
   t.act do |info|
-    t[:lastused] + t[:cooldown] < Time.now or next
-
-    t[:lastused] = Time.now
-    info[:respond].call(StatCalc.calc(info[:result]))
+    
+    # First check if :who is a mod
+    
+    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
+      
+    # Add :result to the ban list
+  
+    who = CBUtils.condense_name(info[:result])
+    
+    info[:respond].call("/roomban #{who}")
+    
+    Banlist.ab(who)
+    info[:respond].call("Added #{who} to list.")
+    
+    
+    
   end
 end

@@ -14,27 +14,37 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-require './showderp/autoban/banlist.rb'
+
+
+require "./triggers/bread/battles.rb"
 
 Trigger.new do |t|
-  t[:id] = "autoban_join"
-  t[:nolog] = true
+  t[:lastused] = Time.now - 10
+  t[:cooldown] = 10
+  t[:prevbattles] = []
+  t[:first] = true
   
-  t.match { |info|
-    info[:where].downcase =~ /\A[jnl]\z/
+  t.match { |info| 
+    info[:where] == 'c'
   }
   
-  
   t.act do |info|
+    t[:lastused] + t[:cooldown] < Time.now or next
     
-    banlist = Banlist.list
-    messages = info[:all]
+    t[:lastused] = Time.now
     
-    while messages.size > 0
-      if messages.shift.downcase == 'j'
-        name = CBUtils.condense_name(messages.shift[1..-1]) # The first character will be ' ' or '+' etc
-        info[:respond].call("/roomban #{name}") if banlist.index(name)
+    Battles.get_battles do |battles|
+      lastbattle, time = battles.last
+    
+      if !t[:prevbattles].index(lastbattle)
+        t[:prevbattles] << lastbattle
+        if t[:first]
+          t[:first] = false
+        else
+          info[:respond].call("New battle posted in bread: #{lastbattle}")
+        end
       end
     end
+    
   end
 end

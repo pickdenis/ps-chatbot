@@ -14,33 +14,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-require './showderp/autoban/banlist.rb'
 
-Trigger.new do |t|
-  
-  t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
 
-  t[:id] = 'unban'
+require "./triggers/bread/breadfinder.rb"
+require "./triggers/bread/battles.rb"
+
+
+Trigger.new do |t| # breadfinder
+  t[:id] = 'bread'
+  t[:lastused] = Time.now
+  t[:cooldown] = 5 # seconds
   
-  t.match { |info|
-    info[:what] =~ /\A!(?:uab|aub) ([^,]+)\z/ && $1
+  t.match { |info| 
+    info[:where] == 'pm' && info[:what].downcase =~ /\A(!bread|!thread)/
   }
   
   t.act do |info|
     
-    # First check if :who is a mod
-    
-    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || !!t[:who_can_access].index(CBUtils.condense_name(info[:who])) 
-       
-    # Remove :result from the ban list
-    who = CBUtils.condense_name(info[:result])
-    
-    info[:respond].call("/roomunban #{who}")
-    
-    Banlist.uab(who)
-    
-    info[:respond].call("Removed #{who} from list.")
-
-    
+    t[:lastused] + t[:cooldown] < Time.now or next # This should break out of the block
+      
+    t[:lastused] = Time.now
+      
+    BreadFinder.get_bread do |bread|
+      result = if bread[:no] == 0
+        "couldn't find the bread, sorry"
+      else
+        "bread: http://boards.4chan.org/vp/thread/#{bread[:no]}#bottom"
+      end
+      info[:respond].call(result)
+    end
   end
 end

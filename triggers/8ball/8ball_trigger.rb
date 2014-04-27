@@ -16,41 +16,26 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-require "./showderp/bread/breadfinder.rb"
-require "./showderp/bread/battles.rb"
-
-Trigger.new do |t| # battles
-  t[:id] = 'champ'
-  t[:cooldown] = 10 # seconds
+Trigger.new do |t|
+  t[:id] = "8ball"
+  t[:cooldown] = 3 # seconds
   t[:lastused] = Time.now - t[:cooldown]
   
-  t.match { |info| 
-    info[:what].downcase =~ /\A(!((who'?s)? ?ch[aiou]mp|(jo+hn)? ?ce+na+))/ && $2
+  responses = IO.readlines('./triggers/8ball/responses.txt').map(&:chomp)
+  
+  t.match { |info|
+    info[:what][0..5].downcase == '!8ball' && info[:what][-1] == '?'
   }
   
   t.act do |info|
-    t[:lastused] + t[:cooldown] < Time.now or next
-    
-    t[:lastused] = Time.now
-    
-    Battles.get_battles do |battles|
-      battle, time = battles.last
-      
-      result = if battle.nil?
-        "couldn't find any battles, sorry"
-      else
-        time_since = (Time.now - time).to_i / 60 # minutes
-        
-        fmt = if info[:result] =~ /who/
-          "THAT QUESTION WILL BE ANSWERED ON SUNDAY NIIIGHT (%s, posted %d minutes ago)"
-        else
-          "champ battle: %s, posted %d minutes ago."
-        end
-        
-        result = fmt % [battle, time_since]
-      end
-      
-      info[:respond].call(result)
+    # ignores the cooldown check if user is PMing
+    if info[:where] != 'pm'
+      t[:lastused] + t[:cooldown] < Time.now or next
+      t[:lastused] = Time.now
     end
+    
+    info[:respond].call("(#{info[:who]}) #{responses.sample}")
   end
 end
+  
+  

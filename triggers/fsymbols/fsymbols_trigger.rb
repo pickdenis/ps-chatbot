@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-require './showderp/fsymbols/textgen.rb'
+require './triggers/fsymbols/textgen.rb'
 
 Trigger.new do |t|
   t[:who_can_access] = ['pick', 'stretcher', 'scotteh']

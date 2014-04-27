@@ -18,46 +18,36 @@
 
 class Chatbot
   include EM::Deferrable
-  attr_accessor :name, :pass, :connected, :ch, :bh
+  attr_reader :name, :pass, :connected, :ch, :bh, :id
   
   PS_URL = 'ws://sim.smogon.com:8000/showdown/websocket'
   
   
   def initialize opts # possible keys: name, pass, group, room, console
+    @id = opts[:id]
     @name = opts[:name]
     @pass = opts[:pass]
     @log_messages = opts[:log]
     
-    @ch = ChatHandler.new(opts[:group])
-    @bh = BattleHandler.new
+    @ch = ChatHandler.new(opts[:triggers], self)
+    @bh = BattleHandler.new(@ch)
     @connected = false
     
    
-    
+    @do_battles = opts[:dobattles]
     
     
     # load all of the triggers
-    if opts[:triggers]
+    if opts[:usetriggers]
       @ch.load_trigger_files
     end
     
-    # initialize console if requested
-    
-    @console = Console.new(nil, @ch)
-    @console_option = opts[:console]
-    
-    if !@console_option
-      @console.add_triggers
-    end
     
     @room = opts[:room]
     
     @server = (opts[:server] || PS_URL)
     
-    if @room == 'none'
-      fix_input_server(nil)
-      start_console(nil) if @console_option
-    else
+    if @room != 'none'
       connection_checker = EventMachine::PeriodicTimer.new(10) do
         # If not connected, try to reconnect
         if !@connected
@@ -71,7 +61,7 @@ class Chatbot
     ws = Faye::WebSocket::Client.new(@server)
     
     ws.on :open do |event|
-      puts "Connection opened"
+      puts "#{@id}: Connection opened"
       @connected = true
     end
 
@@ -84,12 +74,12 @@ class Chatbot
       next if !message[1]
       case message[1].downcase
       when 'challstr'
-        puts "Attempting to login..."
+        puts "#{@id}: Attempting to login..."
         data = {}
         CBUtils.login(@name, @pass, message[3], message[2]) do |assertion|
           
           if assertion.nil? 
-            raise "Could not login"
+            raise "#{@id}: Could not login"
           end      
           
           ws.send("|/trn #{@name},0,#{assertion}")
@@ -98,7 +88,7 @@ class Chatbot
         
       when 'updateuser'
         if message[2] == @name
-          puts 'Succesfully logged in!'
+          puts "#{@id}: Succesfully logged in!"
           
           start_console(ws) if @console_option
         end
@@ -121,45 +111,14 @@ class Chatbot
     end
 
     ws.on :close do |event|
-      puts "connection closed. code=#{event.code}, reason=#{event.reason}"
+      puts "#{@id}: connection closed. code=#{event.code}, reason=#{event.reason}"
       @connected = false
       ws = nil
     end
     
-    fix_input_server(ws)
     
-    if File.exist?('battle_loop')
+    if @do_battles
       @bh.battle_loop('challengecup1vs1', ws)
-    end
-  end
-  
-  def start_console ws
-    puts 'Started console'
-    @console.ws = ws
-    @console.start_loop
-  end
-  
-  def fix_input_server ws
-    v_ch = @ch
-    InputServer.send :define_method, :receive_data do |data|
-      @data ||= ''
-      
-      if data == "\b"
-        @data = @data[0..-2]
-      else
-        @data << data
-      end
-      
-      if @data[-1] == "\n"
-        message = [">socket\n", 's', @data.strip]
-        
-        callback = proc do |mtext|
-          send_data "#{mtext}\r\n"
-        end
-        
-        v_ch.handle(message, ws, callback)
-        @data = ''
-      end
     end
   end
   

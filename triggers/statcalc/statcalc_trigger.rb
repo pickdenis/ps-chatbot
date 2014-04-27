@@ -16,37 +16,22 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-$LOAD_PATH << '.'
-
-require "./showderp/bread/battles.rb"
+require './triggers/statcalc/statcalc.rb'
 
 Trigger.new do |t|
-  t[:lastused] = Time.now - 10
-  t[:cooldown] = 10
-  t[:prevbattles] = []
-  t[:first] = true
+  t[:id] = 'statcalc'
+  t[:cooldown] = 2 # seconds
+  t[:lastused] = Time.now - t[:cooldown]
   
-  t.match { |info| 
-    info[:where] == 'c'
+  t.match { |info|
+    info[:what][0..4] == 'base:' &&
+    info[:what]
   }
   
   t.act do |info|
     t[:lastused] + t[:cooldown] < Time.now or next
-    
+
     t[:lastused] = Time.now
-    
-    Battles.get_battles do |battles|
-      lastbattle, time = battles.last
-    
-      if !t[:prevbattles].index(lastbattle)
-        t[:prevbattles] << lastbattle
-        if t[:first]
-          t[:first] = false
-        else
-          info[:respond].call("New battle posted in bread: #{lastbattle}")
-        end
-      end
-    end
-    
+    info[:respond].call(StatCalc.calc(info[:result]))
   end
 end

@@ -14,37 +14,33 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-require "./showderp/autoban/banlist.rb"
 
-Banlist.get
+require './triggers/autoban/banlist.rb'
 
 Trigger.new do |t|
-  
-  t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
-  
-  t[:id] = 'ban'
+  t[:id] = "banlist"
+  t[:nolog] = true
   
   t.match { |info|
-    info[:what] =~ /\A!ab ([^,]+)\z/ && $1
+    (info[:where].downcase == 'pm' || info[:where] == 's') &&
+    info[:what].downcase == 'blist'
   }
   
+  uploader = CBUtils::HasteUploader.new
   
   t.act do |info|
     
-    # First check if :who is a mod
+    banlist = Banlist.list.join("\n")
     
-    next unless info[:all][2][0] == '@' || info[:all][2][0] == '#' || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
-      
-    # Add :result to the ban list
-  
-    who = CBUtils.condense_name(info[:result])
+    banlist_text = if banlist.strip.empty?
+      'nobody'
+    else
+      banlist
+    end
     
-    info[:respond].call("/roomban #{who}")
-    
-    Banlist.ab(who)
-    info[:respond].call("Added #{who} to list.")
-    
-    
+    uploader.upload(banlist_text) do |url|
+      info[:respond].call(url)
+    end
     
   end
 end

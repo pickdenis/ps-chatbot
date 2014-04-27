@@ -52,7 +52,7 @@ module Banlist
       @@banlist.delete(name)
       
     end
-    pw_path = './showderp/autoban/pw'
+    pw_path = './triggers/autoban/pw'
     EM::HttpRequest.new(FORM_URL).post(query: {
       "entry.272819384" => "#{act} #{name}",
       "entry.295377180" => File.read(pw_path).strip

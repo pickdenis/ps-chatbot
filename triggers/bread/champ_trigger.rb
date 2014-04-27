@@ -16,31 +16,40 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-require "./showderp/bread/breadfinder.rb"
-require "./showderp/bread/battles.rb"
+require "./triggers/bread/breadfinder.rb"
+require "./triggers/bread/battles.rb"
 
-
-Trigger.new do |t| # breadfinder
-  t[:id] = 'bread'
-  t[:lastused] = Time.now
-  t[:cooldown] = 5 # seconds
+Trigger.new do |t| # battles
+  t[:id] = 'champ'
+  t[:cooldown] = 10 # seconds
+  t[:lastused] = Time.now - t[:cooldown]
   
   t.match { |info| 
-    info[:where] == 'pm' && info[:what].downcase =~ /\A(!bread|!thread)/
+    info[:what].downcase =~ /\A(!((who'?s)? ?ch[aiou]mp|(jo+hn)? ?ce+na+))/ && $2
   }
   
   t.act do |info|
+    t[:lastused] + t[:cooldown] < Time.now or next
     
-    t[:lastused] + t[:cooldown] < Time.now or next # This should break out of the block
-      
     t[:lastused] = Time.now
+    
+    Battles.get_battles do |battles|
+      battle, time = battles.last
       
-    BreadFinder.get_bread do |bread|
-      result = if bread[:no] == 0
-        "couldn't find the bread, sorry"
+      result = if battle.nil?
+        "couldn't find any battles, sorry"
       else
-        "bread: http://boards.4chan.org/vp/thread/#{bread[:no]}#bottom"
+        time_since = (Time.now - time).to_i / 60 # minutes
+        
+        fmt = if info[:result] =~ /who/
+          "THAT QUESTION WILL BE ANSWERED ON SUNDAY NIIIGHT (%s, posted %d minutes ago)"
+        else
+          "champ battle: %s, posted %d minutes ago."
+        end
+        
+        result = fmt % [battle, time_since]
       end
+      
       info[:respond].call(result)
     end
   end

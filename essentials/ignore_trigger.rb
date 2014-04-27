@@ -23,7 +23,7 @@ Trigger.new do |t|
   
   
   t.match { |info|
-    access_path = "./#{info[:ch].group}/accesslist.txt"
+    access_path = "./#{t[:ch].dirname}/accesslist.txt"
     FileUtils.touch(access_path)
     t[:who_can_access] = File.read(access_path).split("\n")
     

@@ -21,11 +21,22 @@ require 'json'
 
 class ChatHandler
   attr_accessor :triggers, :ignorelist, :group, :usagelogger, :chatlogger
+  attr_reader :id, :dirname, :name, :pass
   
-  def initialize group
+  def initialize triggers, chatbot
+    @id = chatbot.id
+    @name = chatbot.name
+    @pass = chatbot.pass
+    @dirname = "bot-#{@id}"
+    # initialize all of the directories that we need
+    FileUtils.mkdir_p("./#{@dirname}/logs/chat")
+    FileUtils.mkdir_p("./#{@dirname}/logs/usage")
+    FileUtils.mkdir_p("./#{@dirname}/logs/pms")
+    
+    @trigger_files = triggers
+    
     @triggers = []
     @ignorelist = []
-    @group = group
     
     initialize_ignore_list
     
@@ -39,15 +50,15 @@ class ChatHandler
   end
   
   def initialize_ignore_list
-    @ignore_path = "./#{@group}/ignored.txt"
+    
+    @ignore_path = "./#{@dirname}/ignored.txt"
     FileUtils.touch(@ignore_path)
     @ignorelist = IO.readlines(@ignore_path).map(&:chomp)
   end
   
   def initialize_loggers
-    
-    @usagelogger = Logger.new("./#{@group}/logs/usage/usage.log", 'monthly')
-    @pmlogger = Logger.new("./#{@group}/logs/pms/pms.log", 'monthly')
+    @usagelogger = Logger.new("./#{@dirname}/logs/usage/usage.log", 'monthly')
+    @pmlogger = Logger.new("./#{@dirname}/logs/pms/pms.log", 'monthly')
     @pmlogger.formatter = proc do |severity, datetime, progname, msg|
       "#{datetime}: #{msg}\n"
     end
@@ -58,7 +69,7 @@ class ChatHandler
   def initialize_usage_stats
     @usage_stats = {"c" => {}, "s" => {}, "pm" => {}}
     
-    @usage_path = "./#{@group}/logs/usagestats.txt"
+    @usage_path = "./#{@dirname}/logs/usagestats.txt"
     
     FileUtils.touch(@usage_path)
     
@@ -105,7 +116,7 @@ class ChatHandler
   
   def load_trigger_files
     
-    files = IO.readlines("./#{@group}/triggers").map(&:chomp)
+    files = @trigger_files
     
     Dir["./essentials/*_trigger.rb"].each do |f|
       load_trigger(f)
@@ -113,14 +124,14 @@ class ChatHandler
     
     if files
       files.each do |f|
-        load_trigger("./#{@group}/#{f}")
+        load_trigger("./#{f}")
       end
     end
     
   end
   
   def load_trigger(file)
-    puts "loading:  #{file}"
+    puts "#{@id}: loading:  #{file}"
     trigger = eval(File.read(file))
     
     return unless trigger.is_a? Trigger
@@ -132,7 +143,7 @@ class ChatHandler
   end
   
   def make_info message, ws
-    info = {where: message[1], ws: ws, all: message, ch: self, group: @group}
+    info = {where: message[1], ws: ws, all: message, ch: self, id: @id}
     
     info.merge!(
       case info[:where].downcase
@@ -157,7 +168,7 @@ class ChatHandler
       when 's'
         {
           room: message[0],
-          who: USERNAME,
+          who: @name,
           what: message[2],
         }
       end)
@@ -233,7 +244,7 @@ class ChatHandler
     if m_info[:where] == 'c'
       logger = @chatloggers[m_info[:room]]
       if !logger
-        logger = @chatloggers[m_info[:room]] = Logger.new("./#{@group}/logs/chat/#{m_info[:room]}.log", 'monthly')
+        logger = @chatloggers[m_info[:room]] = Logger.new("./#{@dirname}/logs/chat/#{m_info[:room]}.log", 'monthly')
         logger.formatter = proc do |severity, datetime, progname, msg|
           "#{datetime}: #{msg}\n"
         end
@@ -296,12 +307,12 @@ class ChatHandler
     
     IO.write(@ignore_path, @ignorelist.join("\n"))
     
-    puts "Calling triggers' exit sequences..."
+    puts "#{@id}: Calling triggers' exit sequences..."
     @triggers.each do |trigger|
       trigger.exit
     end
     
-    puts "Done with exit sequence"
+    puts "#{@id}: Done with exit sequence"
     
   end
   

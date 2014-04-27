@@ -31,11 +31,7 @@ require './app/socketinput.rb'
 require './app/utils.rb'
 
 
-config = YAML.load(File.open( ARGV[0] || 'config.yml' ))
-options = config["options"]
-
-USERNAME = options["name"]
-PASSWORD = options["pass"]
+configs = YAML.load(File.open( ARGV[0] || 'config.yml' ))["bots"]
 
 
 
@@ -45,32 +41,40 @@ require './app/pokedata.rb'
 if __FILE__ == $0
   
   
-  $0 = "pschatbot"
+  $0 = 'pschatbot'
   
   EM.run do
-    
-    bot = Chatbot.new(
-      name: USERNAME, 
-      pass: PASSWORD,
-      group: options["tgroup"], 
-      room: options["room"], 
-      console: options["console"],
-      server: (options["server"] || nil),
-      log: options["log"],
-      triggers: options["triggers"])
+    bots = []
+    configs.each do |options|
+      bot = Chatbot.new(
+        id: options['id'],
+        name: options['name'], 
+        pass: options['pass'],
+        room: options['room'], 
+        console: options['console'],
+        server: (options['server'] || nil),
+        log: options['log'],
+        usetriggers: options['usetriggers'],
+        triggers: options['triggers'],
+        dobattles: options['dobattles'])
+      
+    end
     
     exiting = false
-    Signal.trap("INT") do
+    
+    Signal.trap('INT') do
+      
       next if exiting
       
       exiting = true
-      bot.exit_gracefully
+      
+      bots.each do |bot|
+        bot.exit_gracefully
+      end
+      
       Process.exit
     end
     
-    if options[:socket]
-      EM.start_server('127.0.0.1', 8081, InputServer)
-    end
   end
   
 

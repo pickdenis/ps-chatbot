@@ -1,4 +1,4 @@
-require "./showderp/speaker/markovchains.rb"
+require "./triggers/speaker/markovchains.rb"
 require 'json'
 require 'uri'
 
@@ -9,7 +9,7 @@ Trigger.new do |t|
     (info[:where] == 'c') && info[:what]
   }
   
-  chain_path = './showderp/speaker/chain.json'
+  chain_path = './triggers/speaker/chain.json'
   if !File.exist?(chain_path)
     File.open(chain_path, 'w') do |f| 
       f.puts '{}'
@@ -23,10 +23,10 @@ Trigger.new do |t|
   t.act do |info|
     text = info[:result].gsub(URI.regexp, '') # remove links
     
-    name = USERNAME
+    name = t[:ch].name
     
     if text[0..name.size].downcase == "#{name.downcase},"
-      next if info[:who] == USERNAME
+      next if info[:who] == name
     
       words = text[name.size..-1].split(' ')
       seed = nil
