@@ -19,8 +19,6 @@ require 'eventmachine'
 require 'em-http-request'
 require 'fileutils'
 
-FileUtils.touch('pw')
-
 module Banlist
   extend self
   
