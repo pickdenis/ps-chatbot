@@ -23,7 +23,7 @@ Trigger.new do |t|
   t.act do |info|
     text = info[:result].gsub(URI.regexp, '') # remove links
     
-    name = t[:ch].name
+    name = ch.name
     
     if text[0..name.size].downcase == "#{name.downcase},"
       next if info[:who] == name

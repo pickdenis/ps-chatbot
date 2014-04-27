@@ -20,12 +20,12 @@ Trigger.new do |t|
   t[:id] = 'ignore'
   t[:nolog] = true
   
-  
+  access_path = "./#{ch.dirname}/accesslist.txt"
+  FileUtils.touch(access_path)
+  t[:who_can_access] = File.read(access_path).split("\n")
   
   t.match { |info|
-    access_path = "./#{t[:ch].dirname}/accesslist.txt"
-    FileUtils.touch(access_path)
-    t[:who_can_access] = File.read(access_path).split("\n")
+    
     
     who = CBUtils.condense_name(info[:who])
     

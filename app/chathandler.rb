@@ -134,6 +134,8 @@ class ChatHandler
   
   def load_trigger(file)
     puts "#{@id}: loading:  #{file}"
+    
+    ch = self # This is so that 'ch' can be accessed within the trigger
     trigger = eval(File.read(file))
     
     return unless trigger.is_a? Trigger
