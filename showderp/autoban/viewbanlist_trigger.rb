@@ -20,7 +20,7 @@ require './showderp/autoban/banlist.rb'
 Trigger.new do |t|
   t[:id] = "banlist"
   t[:nolog] = true
-  t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
+  t[:who_can_access] = ['stretcher', 'pick', 'scotteh', 'aptget', 'blocko', 'roseyraid', 'zarel', 'arkwelder', 'mrwhite', 'yuyuko', 'slarty', 'thatsraven', 'temporaryanonymous', 'bedschibaer', 'bumbadadabum', 'ridaz', 'newlurker', 'sphericalice', 'asgdf', 'freshproduce1', 'thelistermr', 'totemo', 'morfent', 'poliwreck', 'ijkee', 'nsyncluvr69']
   
   t.match { |info|
     (info[:where].downcase == 'pm' || info[:where] == 's') &&
@@ -30,7 +30,7 @@ Trigger.new do |t|
   uploader = CBUtils::HasteUploader.new
   
   t.act do |info|
-    next unless info[:all][2][0] =~ /[%@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
+    next unless !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
     banlist = Banlist.list.join("\n")
     
     banlist_text = if banlist.strip.empty?
