@@ -41,10 +41,10 @@ Trigger.new do |t|
     
     info[:respond].call("/roomban #{who}")
     
-    Banlist.ab(who)
-    info[:respond].call("Added #{who} to list.")
-    
-    
+    if !(banlist.index(who))
+      Banlist.ab(who)
+      info[:respond].call("Added #{who} to list.")
+    end
     
   end
 end
