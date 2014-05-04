@@ -6,6 +6,9 @@ options:
     # Server to login to and room to join
     server: ws://sim.smogon.com:8000/showdown/websocket
     room: cool room
+
+    # Number of the avatar desired
+    avatar: 420
     
     # Allow console input from you
     console: no

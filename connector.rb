@@ -57,7 +57,8 @@ if __FILE__ == $0
       console: options["console"],
       server: (options["server"] || nil),
       log: options["log"],
-      triggers: options["triggers"])
+      triggers: options["triggers"],
+      avatar: options["avatar"])
     
     exiting = false
     Signal.trap("INT") do
