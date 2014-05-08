@@ -35,7 +35,7 @@ module Battles
         thread = JSON.parse(http.response)
         
         thread["posts"].each do |post|
-          if post["com"] && post["com"].gsub('<wbr>', '') =~ %r{(https?\://play\.pokemonshowdown\.com/battle-(?:ou|oucurrent|oususpecttest|ubers|smogondoublessuspecttest)+-\d+)}
+          if post["com"] && post["com"].gsub('<wbr>', '') =~ %r{(https?\://play\.pokemonshowdown\.com/battle-(?:ou|oucurrent|oususpecttest|ubers|smogondoublessuspecttest|almostanyability)+-\d+)}
             battles << [$1, post["time"]]
           end
         end
