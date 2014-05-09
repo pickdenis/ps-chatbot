@@ -26,6 +26,7 @@ class Chatbot
   def initialize opts # possible keys: name, pass, group, room, console
     @name = opts[:name]
     @pass = opts[:pass]
+    @avatar = opts[:avatar]
     @log_messages = opts[:log]
     
     @ch = ChatHandler.new(opts[:group])
@@ -103,6 +104,7 @@ class Chatbot
           start_console(ws) if @console_option
         end
         ws.send("|/join #{@room}")
+        ws.send("|/avatar #{@avatar}")
         
         
       when 'c', 'pm', 'j', 'n', 'l'
