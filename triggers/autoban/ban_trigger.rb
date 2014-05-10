@@ -24,7 +24,10 @@ Trigger.new do |t|
 
   t[:id] = 'ban'
   
-  Banlist.set_pw(ch.config["autoban"]["pw"])
+  if ch.config["autoban"]
+    Banlist.set_pw(ch.config["autoban"]["pw"])
+  end
+  
   
 
   t.match { |info|
