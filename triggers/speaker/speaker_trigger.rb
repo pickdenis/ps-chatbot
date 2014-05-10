@@ -27,7 +27,7 @@ Trigger.new do |t|
     name = ch.name
     
     if text[0..name.size].downcase == "#{name.downcase},"
-      next if info[:who] == name
+      next if info[:who] == name || !ch.config["speaker"] || !ch.config["speaker"]["speak"]
     
       words = text[name.size..-1].split(' ')
       seed = nil
