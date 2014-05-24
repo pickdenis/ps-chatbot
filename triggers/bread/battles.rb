@@ -37,11 +37,7 @@ module Battles
         thread = JSON.parse(http.response)
         
         thread["posts"].each do |post|
-<<<<<<< HEAD:showderp/bread/battles.rb
-          if post["com"] && post["com"].gsub('<wbr>', '') =~ %r{(https?\://play\.pokemonshowdown\.com/battle-(?:ou|oucurrent|oususpecttest|ubers|smogondoublessuspecttest|almostanyability)+-\d+)}
-=======
           if post["com"] && post["com"].gsub('<wbr>', '') =~ BATTLE_REGEX
->>>>>>> multibot-dev:triggers/bread/battles.rb
             battles << [$1, post["time"]]
           end
         end
