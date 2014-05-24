@@ -21,6 +21,8 @@ require_relative 'breadfinder.rb'
 require 'open-uri'
 
 module Battles
+  BATTLE_REGEX = %r{(https?\://play\.pokemonshowdown\.com/battle-(?:ou|oucurrent|oususpecttest|ubers|smogondoubles\w+)+-\d+)}
+  
   def self.get_battles &callback
     BreadFinder.get_bread do |bread|
       if bread[:no] == 0 
@@ -35,7 +37,7 @@ module Battles
         thread = JSON.parse(http.response)
         
         thread["posts"].each do |post|
-          if post["com"] && post["com"].gsub('<wbr>', '') =~ %r{(https?\://play\.pokemonshowdown\.com/battle-(?:ou|oucurrent|oususpecttest|ubers|smogondoublessuspecttest)+-\d+)}
+          if post["com"] && post["com"].gsub('<wbr>', '') =~ BATTLE_REGEX
             battles << [$1, post["time"]]
           end
         end
