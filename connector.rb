@@ -60,6 +60,8 @@ if __FILE__ == $0
         
         allconfig: options)
       
+      bots << bot
+      
     end
     
     exiting = false
