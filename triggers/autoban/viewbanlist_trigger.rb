@@ -29,6 +29,7 @@ Trigger.new do |t|
   uploader = CBUtils::HasteUploader.new
   
   t.act do |info|
+    next if !['#', '@', '%'].index(Userlist.get_user_group(info[:who]))
     
     banlist = Banlist.list.join("\n")
     

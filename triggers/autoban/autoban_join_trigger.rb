@@ -21,20 +21,15 @@ Trigger.new do |t|
   t[:nolog] = true
   
   t.match { |info|
-    info[:where].downcase =~ /\A[jnl]\z/
+    info[:where].downcase == 'j'
   }
   
   
   t.act do |info|
     
     banlist = Banlist.list
-    messages = info[:all]
+    who = CBUtils.condense_name(info[:who])
     
-    while messages.size > 0
-      if messages.shift.downcase == 'j'
-        name = CBUtils.condense_name(messages.shift[1..-1]) # The first character will be ' ' or '+' etc
-        info[:respond].call("/roomban #{name}") if banlist.index(name)
-      end
-    end
+    info[:respond].call("/roomban #{who}") if banlist.index(who)
   end
 end

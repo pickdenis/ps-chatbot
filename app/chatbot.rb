@@ -67,47 +67,58 @@ class Chatbot
     end
 
     ws.on :message do |event|
-      if @log_messages
-        puts event.data
+      
+      messages = event.data.split("\n")
+      if messages[0][0] == '>'
+        room = messages.shift
       end
       
-      message = event.data.split("|")
-      next if !message[1]
-      case message[1].downcase
-      when 'challstr'
-        puts "#{@id}: Attempting to login..."
-        data = {}
-        CBUtils.login(@name, @pass, message[3], message[2]) do |assertion|
-          
-          if assertion.nil? 
-            raise "#{@id}: Could not login"
-          end      
-          
-          ws.send("|/trn #{@name},0,#{assertion}")
+      messages.each do |rawmessage|
+        rawmessage = "#{room}\n#{rawmessage}"
         
+        if @log_messages
+          puts rawmessage
         end
         
-      when 'updateuser'
-        if message[2] == @name
-          puts "#{@id}: Succesfully logged in!"
+        message = rawmessage.split("|")
+        
+        
+        next if !message[1]
+        case message[1].downcase
+        when 'challstr'
+          puts "#{@id}: Attempting to login..."
+          data = {}
+          CBUtils.login(@name, @pass, message[3], message[2]) do |assertion|
+            
+            if assertion.nil? 
+              raise "#{@id}: Could not login"
+            end      
+            
+            ws.send("|/trn #{@name},0,#{assertion}")
           
-          start_console(ws) if @console_option
-        end
-        ws.send("|/join #{@room}")
-        
-        
-      when 'c', 'pm', 'j', 'n', 'l'
-        @ch.handle(message, ws)
-      when 'tournament'
-        @ch.handle_tournament(message, ws)
-      when 'updatechallenges'
-        @bh.handle_challenge(message, ws)
-      else
-        if message[0] =~ />battle-/
-          @bh.handle(message, ws)
+          end
+          
+        when 'updateuser'
+          if message[2] == @name
+            puts "#{@id}: Succesfully logged in!"
+            
+            start_console(ws) if @console_option
+          end
+          ws.send("|/join #{@room}")
+          
+          
+        when 'c', 'pm', 'j', 'n', 'l', 'users'
+          @ch.handle(message, ws)
+        when 'tournament'
+          @ch.handle_tournament(message, ws)
+        when 'updatechallenges'
+          @bh.handle_challenge(message, ws)
+        else
+          if message[0] =~ />battle-/
+            @bh.handle(message, ws)
+          end
         end
       end
-      
       
     end
 
