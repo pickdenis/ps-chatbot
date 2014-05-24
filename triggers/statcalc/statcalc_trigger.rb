@@ -16,33 +16,22 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
+require './triggers/statcalc/statcalc.rb'
+
 Trigger.new do |t|
-  t[:id] = 'ignore'
-  t[:nolog] = true
-  
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
+  t[:id] = 'statcalc'
+  t[:cooldown] = 2 # seconds
+  t[:lastused] = Time.now - t[:cooldown]
   
   t.match { |info|
-    
-    
-    who = CBUtils.condense_name(info[:who])
-    
-    if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'
-      info[:what] =~ /\Aignore (.*?)\z/
-      $1
-    end
+    info[:what][0..4] == 'base:' &&
+    info[:what]
   }
   
-  t.act { |info| 
-    realname = CBUtils.condense_name(info[:result])
-    
-    if info[:ch].ignorelist.index(realname)
-      info[:respond].call("#{info[:result]} is already on the ignore list.")
-    else
-      info[:ch].ignorelist << realname
-      info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
-    end
-  }
+  t.act do |info|
+    t[:lastused] + t[:cooldown] < Time.now or next
+
+    t[:lastused] = Time.now
+    info[:respond].call(StatCalc.calc(info[:result]))
+  end
 end

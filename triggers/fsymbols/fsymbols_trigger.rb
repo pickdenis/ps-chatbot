@@ -16,33 +16,21 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
+require './triggers/fsymbols/textgen.rb'
+
 Trigger.new do |t|
-  t[:id] = 'ignore'
-  t[:nolog] = true
-  
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
+  t[:who_can_access] = ['pick', 'stretcher', 'scotteh']
+  t[:id] = 'fsym'
   
   t.match { |info|
-    
-    
-    who = CBUtils.condense_name(info[:who])
-    
-    if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'
-      info[:what] =~ /\Aignore (.*?)\z/
-      $1
-    end
+    info[:what][0..4] == '!fsym' &&
+    t[:who_can_access].index(CBUtils.condense_name(info[:who])) && # necessary guard
+    info[:what][6..-1]
   }
   
-  t.act { |info| 
-    realname = CBUtils.condense_name(info[:result])
-    
-    if info[:ch].ignorelist.index(realname)
-      info[:respond].call("#{info[:result]} is already on the ignore list.")
-    else
-      info[:ch].ignorelist << realname
-      info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
+  t.act do |info|
+    FSymbols.convert(info[:result]).each do |line|
+      info[:respond].call(line)
     end
-  }
+  end
 end

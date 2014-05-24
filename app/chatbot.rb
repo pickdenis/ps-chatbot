@@ -18,47 +18,38 @@
 
 class Chatbot
   include EM::Deferrable
-  attr_accessor :name, :pass, :connected, :ch, :bh
+  attr_reader :name, :pass, :connected, :ch, :bh, :id, :config
   
   PS_URL = 'ws://sim.smogon.com:8000/showdown/websocket'
   
   
   def initialize opts # possible keys: name, pass, group, room, console
+    @id = opts[:id]
     @name = opts[:name]
     @pass = opts[:pass]
     @avatar = opts[:avatar]
     @log_messages = opts[:log]
     
-    @ch = ChatHandler.new(opts[:group])
-    @bh = BattleHandler.new
+    @config = opts[:allconfig]
+    
+    @ch = ChatHandler.new(opts[:triggers], self)
+    @bh = BattleHandler.new(@ch)
     @connected = false
     
-   
-    
+    @do_battles = opts[:dobattles]
     
     
     # load all of the triggers
-    if opts[:triggers]
+    if opts[:usetriggers]
       @ch.load_trigger_files
     end
     
-    # initialize console if requested
-    
-    @console = Console.new(nil, @ch)
-    @console_option = opts[:console]
-    
-    if !@console_option
-      @console.add_triggers
-    end
     
     @room = opts[:room]
     
     @server = (opts[:server] || PS_URL)
     
-    if @room == 'none'
-      fix_input_server(nil)
-      start_console(nil) if @console_option
-    else
+    if @room != 'none'
       connection_checker = EventMachine::PeriodicTimer.new(10) do
         # If not connected, try to reconnect
         if !@connected
@@ -72,96 +63,75 @@ class Chatbot
     ws = Faye::WebSocket::Client.new(@server)
     
     ws.on :open do |event|
-      puts "Connection opened"
+      puts "#{@id}: Connection opened"
       @connected = true
     end
 
     ws.on :message do |event|
-      if @log_messages
-        puts event.data
+      
+      messages = event.data.split("\n")
+      if messages[0][0] == '>'
+        room = messages.shift
       end
       
-      message = event.data.split("|")
-      next if !message[1]
-      case message[1].downcase
-      when 'challstr'
-        puts "Attempting to login..."
-        data = {}
-        CBUtils.login(@name, @pass, message[3], message[2]) do |assertion|
-          
-          if assertion.nil? 
-            raise "Could not login"
-          end      
-          
-          ws.send("|/trn #{@name},0,#{assertion}")
+      messages.each do |rawmessage|
+        rawmessage = "#{room}\n#{rawmessage}"
         
+        if @log_messages
+          puts rawmessage
         end
         
-      when 'updateuser'
-        if message[2] == @name
-          puts 'Succesfully logged in!'
+        message = rawmessage.split("|")
+        
+        
+        next if !message[1]
+        case message[1].downcase
+        when 'challstr'
+          puts "#{@id}: Attempting to login..."
+          data = {}
+          CBUtils.login(@name, @pass, message[3], message[2]) do |assertion|
+            
+            if assertion.nil? 
+              raise "#{@id}: Could not login"
+            end      
+            
+            ws.send("|/trn #{@name},0,#{assertion}")
           
-          start_console(ws) if @console_option
-        end
-        ws.send("|/join #{@room}")
-        ws.send("|/avatar #{@avatar}")
-        
-        
-      when 'c', 'pm', 'j', 'n', 'l'
-        @ch.handle(message, ws)
-      when 'tournament'
-        @ch.handle_tournament(message, ws)
-      when 'updatechallenges'
-        @bh.handle_challenge(message, ws)
-      else
-        if message[0] =~ />battle-/
-          @bh.handle(message, ws)
+          end
+          
+        when 'updateuser'
+          if message[2] == @name
+            puts "#{@id}: Succesfully logged in!"
+            
+            start_console(ws) if @console_option
+          end
+          ws.send("|/join #{@room}")
+          
+          
+        when 'c', 'pm', 'j', 'n', 'l', 'users'
+          @ch.handle(message, ws)
+        when 'tournament'
+          @ch.handle_tournament(message, ws)
+        when 'updatechallenges'
+          @bh.handle_challenge(message, ws)
+        else
+          if message[0] =~ />battle-/
+            @bh.handle(message, ws)
+          end
         end
       end
-      
       
     end
 
     ws.on :close do |event|
-      puts "connection closed. code=#{event.code}, reason=#{event.reason}"
+      puts "#{@id}: connection closed. code=#{event.code}, reason=#{event.reason}"
       @connected = false
       ws = nil
     end
     
-    fix_input_server(ws)
     
-    if File.exist?('battle_loop')
+    if @do_battles
       @bh.battle_loop('challengecup1vs1', ws)
-    end
-  end
-  
-  def start_console ws
-    puts 'Started console'
-    @console.ws = ws
-    @console.start_loop
-  end
-  
-  def fix_input_server ws
-    v_ch = @ch
-    InputServer.send :define_method, :receive_data do |data|
-      @data ||= ''
-      
-      if data == "\b"
-        @data = @data[0..-2]
-      else
-        @data << data
-      end
-      
-      if @data[-1] == "\n"
-        message = [">socket\n", 's', @data.strip]
-        
-        callback = proc do |mtext|
-          send_data "#{mtext}\r\n"
-        end
-        
-        v_ch.handle(message, ws, callback)
-        @data = ''
-      end
     end
   end
   

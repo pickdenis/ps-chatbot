@@ -16,33 +16,32 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-Trigger.new do |t|
-  t[:id] = 'ignore'
-  t[:nolog] = true
+require "./triggers/bread/breadfinder.rb"
+require "./triggers/bread/battles.rb"
+
+
+Trigger.new do |t| # breadfinder
+  t[:id] = 'bread'
+  t[:lastused] = Time.now
+  t[:cooldown] = 5 # seconds
   
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
-  
-  t.match { |info|
-    
-    
-    who = CBUtils.condense_name(info[:who])
-    
-    if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'
-      info[:what] =~ /\Aignore (.*?)\z/
-      $1
-    end
+  t.match { |info| 
+    info[:where] == 'pm' && info[:what].downcase =~ /\A(!bread|!thread)/
   }
   
-  t.act { |info| 
-    realname = CBUtils.condense_name(info[:result])
+  t.act do |info|
     
-    if info[:ch].ignorelist.index(realname)
-      info[:respond].call("#{info[:result]} is already on the ignore list.")
-    else
-      info[:ch].ignorelist << realname
-      info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
+    t[:lastused] + t[:cooldown] < Time.now or next # This should break out of the block
+      
+    t[:lastused] = Time.now
+      
+    BreadFinder.get_bread do |bread|
+      result = if bread[:no] == 0
+        "couldn't find the bread, sorry"
+      else
+        "bread: http://boards.4chan.org/vp/thread/#{bread[:no]}#bottom"
+      end
+      info[:respond].call(result)
     end
-  }
+  end
 end

@@ -1,13 +1,14 @@
 class BattleHandler
-  attr_accessor :battles, :ws
+  attr_accessor :battles, :ws, :ch
   
-  def initialize
+  def initialize ch
+    @ch = ch
     @battles = {}
   end
   
   def new_battle id, ws
     respond = proc do |message| ws.send("#{ id }|#{ message }") end
-    adapter = BattleAdapter.new id: id, respond: respond
+    adapter = BattleAdapter.new id: id, respond: respond, ch: @ch
     @battles[id] = adapter
   end
   
@@ -66,10 +67,11 @@ class BattleHandler
 end
 
 class BattleAdapter
-  attr_accessor :battle, :respond, :id, :rqid
+  attr_accessor :battle, :respond, :id, :rqid, :ch
   
   def initialize args
     @id = args[:id]
+    @ch = args[:ch]
     format = BattleHandler.parse_battle_id(@id)[:format]
     
     # If the format is not recognized, it will try to use the default logic, which throws
@@ -144,7 +146,7 @@ class BattleAdapter
     when 'turn'
       respond(@battle.logic.move(@rqid))
     when 'win', 'tie'
-      if (message[1] == USERNAME)
+      if (message[1] == @ch.name)
         respond('git gud')
       else
         respond('ok')

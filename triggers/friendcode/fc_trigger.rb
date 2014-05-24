@@ -16,33 +16,44 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
+require 'em-http'
+require './triggers/friendcode/fcgetter.rb'
+
 Trigger.new do |t|
-  t[:id] = 'ignore'
-  t[:nolog] = true
+
+  t[:id] = 'fc'
   
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
-  
+  t[:lastused] = Time.now
+  t[:cooldown] = 5 # seconds
+
   t.match { |info|
-    
-    
-    who = CBUtils.condense_name(info[:who])
-    
-    if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'
-      info[:what] =~ /\Aignore (.*?)\z/
-      $1
-    end
+    info[:what][0..2].downcase == '!fc' && info[:what][3..-1].strip
   }
   
-  t.act { |info| 
-    realname = CBUtils.condense_name(info[:result])
+  FCGetter.load_values
+  
+  t.act do |info|
+    t[:lastused] + t[:cooldown] < Time.now or next
+
+    t[:lastused] = Time.now
     
-    if info[:ch].ignorelist.index(realname)
-      info[:respond].call("#{info[:result]} is already on the ignore list.")
+    userfound = false
+    
+    info[:result] == '' and info[:result] = nil
+    who = info[:result] || info[:who] # if no arg specified, then we'll just use whoever asked
+    
+    entry = FCGetter.get_fc(CBUtils.condense_name(who))
+    
+    if entry
+      realname = entry[:realname]
+      fc = entry[:fc]
+      
+      info[:respond].call("#{realname}'s FC: #{fc}")
     else
-      info[:ch].ignorelist << realname
-      info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
+      info[:respond].call("No FC for #{who}.")
     end
-  }
+    
+    FCGetter.load_values
+
+  end
 end

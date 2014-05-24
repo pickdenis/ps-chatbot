@@ -14,35 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+require './triggers/autoban/banlist.rb'
 
 Trigger.new do |t|
-  t[:id] = 'ignore'
+  t[:id] = "autoban_join"
   t[:nolog] = true
   
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
-  
   t.match { |info|
+    info[:where].downcase == 'j'
+  }
+  
+  
+  t.act do |info|
     
-    
+    banlist = Banlist.list
     who = CBUtils.condense_name(info[:who])
     
-    if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'
-      info[:what] =~ /\Aignore (.*?)\z/
-      $1
-    end
-  }
-  
-  t.act { |info| 
-    realname = CBUtils.condense_name(info[:result])
-    
-    if info[:ch].ignorelist.index(realname)
-      info[:respond].call("#{info[:result]} is already on the ignore list.")
-    else
-      info[:ch].ignorelist << realname
-      info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
-    end
-  }
+    info[:respond].call("/roomban #{who}") if banlist.index(who)
+  end
 end

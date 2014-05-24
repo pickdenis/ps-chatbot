@@ -16,33 +16,35 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
+require "./triggers/bread/battles.rb"
+
 Trigger.new do |t|
-  t[:id] = 'ignore'
-  t[:nolog] = true
+  t[:lastused] = Time.now - 10
+  t[:cooldown] = 10
+  t[:prevbattles] = []
+  t[:first] = true
   
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
-  
-  t.match { |info|
-    
-    
-    who = CBUtils.condense_name(info[:who])
-    
-    if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'
-      info[:what] =~ /\Aignore (.*?)\z/
-      $1
-    end
+  t.match { |info| 
+    info[:where] == 'c'
   }
   
-  t.act { |info| 
-    realname = CBUtils.condense_name(info[:result])
+  t.act do |info|
+    t[:lastused] + t[:cooldown] < Time.now or next
     
-    if info[:ch].ignorelist.index(realname)
-      info[:respond].call("#{info[:result]} is already on the ignore list.")
-    else
-      info[:ch].ignorelist << realname
-      info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
+    t[:lastused] = Time.now
+    
+    Battles.get_battles do |battles|
+      lastbattle, time = battles.last
+    
+      if !t[:prevbattles].index(lastbattle)
+        t[:prevbattles] << lastbattle
+        if t[:first]
+          t[:first] = false
+        else
+          info[:respond].call("New battle posted in bread: #{lastbattle}")
+        end
+      end
     end
-  }
+    
+  end
 end

@@ -15,34 +15,33 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+require './triggers/autoban/banlist.rb'
 
 Trigger.new do |t|
-  t[:id] = 'ignore'
+  t[:id] = "banlist"
   t[:nolog] = true
   
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
-  
   t.match { |info|
-    
-    
-    who = CBUtils.condense_name(info[:who])
-    
-    if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'
-      info[:what] =~ /\Aignore (.*?)\z/
-      $1
-    end
+    (info[:where].downcase == 'pm' || info[:where] == 's') &&
+    info[:what].downcase == 'blist'
   }
   
-  t.act { |info| 
-    realname = CBUtils.condense_name(info[:result])
+  uploader = CBUtils::HasteUploader.new
+  
+  t.act do |info|
+    next if !['#', '@', '%'].index(Userlist.get_user_group(info[:who]))
     
-    if info[:ch].ignorelist.index(realname)
-      info[:respond].call("#{info[:result]} is already on the ignore list.")
+    banlist = Banlist.list.join("\n")
+    
+    banlist_text = if banlist.strip.empty?
+      'nobody'
     else
-      info[:ch].ignorelist << realname
-      info[:respond].call("Added #{info[:result]} to ignore list. (case insensitive)")
+      banlist
     end
-  }
+    
+    uploader.upload(banlist_text) do |url|
+      info[:respond].call(url)
+    end
+    
+  end
 end
