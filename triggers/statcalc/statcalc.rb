@@ -92,9 +92,9 @@ module StatCalc
       when "hp"
         hp = true
       when "vgc"
-        level = 50
+        o_level = level = 50
       when "lc"
-        level = 5
+        o_level = level = 5
       end
     end
     
