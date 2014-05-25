@@ -91,6 +91,13 @@ module StatCalc
         naturemod = o_naturemod if !asbase
       when "hp"
         hp = true
+      when "vgc"
+        o_level = 50
+        level = 50 if !asbase
+      when "lc"
+        o_level = 5
+        level = 5 if !asbase
+      end
       end
     end
     
@@ -113,7 +120,7 @@ module StatCalc
     
     if asbase
       result << "is equivalent to a base stat of #{stat} " \
-             << generate_modstring(o_ev.to_i, iv.to_i, o_plus.to_i, o_minus.to_i, o_level.to_i, o_modifier, o_naturemod)
+             << generate_modstring(o_ev.to_i, o_iv.to_i, o_plus.to_i, o_minus.to_i, o_level.to_i, o_modifier, o_naturemod)
       result[-1] = '.' if result[-1] == ' '
     else
       result << "results in a stat of #{stat}#{stat == 420 ? ' (blaze it)' : ''}."
