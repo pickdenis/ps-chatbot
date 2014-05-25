@@ -91,6 +91,10 @@ module StatCalc
         naturemod = o_naturemod if !asbase
       when "hp"
         hp = true
+      when "vgc"
+        level = 50
+      when "lc"
+        level = 5
       end
     end
     
