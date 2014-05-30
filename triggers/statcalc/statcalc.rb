@@ -98,7 +98,6 @@ module StatCalc
         o_level = 5
         level = 5 if !asbase
       end
-      end
     end
     
     # calculate the stats
