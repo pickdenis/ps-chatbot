@@ -40,6 +40,7 @@ module CC1vs1
     skyattack
     solarbeam
     freezeshock
+    iceburn
     
     doomdesire
     futuresight 
