@@ -5,13 +5,6 @@
   [0]: http://pokemonshowdown.com
   [1]: https://github.com/pickdenis/ps-chatbot/wiki
 
-# Features
-
-  * [Stat calculator](./statcalc)
-  * Friend code searcher
-  * Random battle speed calculator
-  * ASCII art large text generator
-
 # Installation of dependencies
 
 ## bundler (recommended)
@@ -20,12 +13,8 @@ If you have bundler (`gem install bundler`), you can do this:
 
     bundle install
 
-## Manual
-
-    gem install eventmachine
-    gem install faye-websocket
-    # there might me more, check the Gemfile
-
+If you don't have bundler, then just make sure you have the gems `faye-websocket` and `eventmachine`.
+    
 # Usage
 
     ruby connector.rb config.yml
