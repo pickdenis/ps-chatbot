@@ -102,10 +102,11 @@ class Chatbot
         when 'updateuser'
           if message[2] == @name
             puts "#{@id}: Succesfully logged in!"
+            ws.send("|/join #{@room}")
             
             start_console(ws) if @console_option
           end
-          ws.send("|/join #{@room}")
+          
           
           
         when 'c', 'pm', 'j', 'n', 'l', 'users'
