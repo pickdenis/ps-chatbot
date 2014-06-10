@@ -42,7 +42,7 @@ Trigger.new do |t| # battles
         time_since = (Time.now - time).to_i / 60 # minutes
         
         fmt = if info[:result] =~ /who/
-          "THAT QUESTION WILL BE ANSWERED ON SUNDAY NIIIGHT (%s, posted %d minutes ago)"
+          "THAT QUESTION WILL BE ANSWERED THIS SUNDAY NIIIGHT (%s, posted %d minutes ago)"
         else
           "champ battle: %s, posted %d minutes ago."
         end
