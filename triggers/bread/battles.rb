@@ -34,6 +34,10 @@ module Battles
       thread = nil
       
       EventMachine::HttpRequest.new("http://a.4cdn.org/vp/res/#{bread[:no]}.json").get.callback do |http|
+        if !http.response || http.response.size < 2
+          callback.call([])
+        end
+          
         thread = JSON.parse(http.response)
         
         thread["posts"].each do |post|
