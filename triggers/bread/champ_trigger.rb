@@ -41,13 +41,19 @@ Trigger.new do |t| # battles
       else
         time_since = (Time.now - time).to_i / 60 # minutes
         
-        fmt = if info[:result] =~ /who/
-          "THAT QUESTION WILL BE ANSWERED THIS SUNDAY NIIIGHT (%s, posted %d minutes ago)"
+        if time_since < 1
+          time_str = "a few seconds ago"
         else
-          "champ battle: %s, posted %d minutes ago."
+          time_str = "%d minutes ago"
         end
         
-        result = fmt % [battle, time_since]
+        fmt = if info[:result] =~ /who/
+          "THAT QUESTION WILL BE ANSWERED THIS SUNDAY NIIIGHT (%s, posted %s)"
+        else
+          "champ battle: %s, posted %s."
+        end
+        
+        result = fmt % [battle, time_str % time_since]
       end
       
       info[:respond].call(result)
