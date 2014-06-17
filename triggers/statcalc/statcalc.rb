@@ -20,8 +20,8 @@ module StatCalc
   def self.calc str
     # initialize all variables
     o_base = base = 0
-    o_iv = iv = 31.0
-    o_ev = ev = 0.0
+    o_iv = iv = 31
+    o_ev = ev = 0
     o_level = level = 100.0
     o_modifier = modifier = 1.0
     o_boostmod = boostmod = 1.0
@@ -101,12 +101,12 @@ module StatCalc
     end
     
     # calculate the stats
-    stat = !hp ? ((((iv + 2*base + ev/4) * level/100.0 + 5) * modifier * boostmod).to_i * naturemod).to_i
+    stat = !hp ? ((((iv + 2*base + ev/4) * level/100.0 + 5) * modifier * naturemod).to_i * boostmod).to_i
                : ((iv + 2*base + ev/4) * level/100.0 + 10 + level)
     
     
     if asbase
-      stat = (((stat.to_f/(o_naturemod)/(o_boostmod)/(o_modifier) - 5) * 100.0/(o_level) - o_ev/4 - o_iv) / 2).to_i + 1
+      stat = (((stat.to_f/(o_boostmod)/(o_naturemod)/(o_modifier) - 5) * 100.0/(o_level) - o_ev/4 - o_iv) / 2).to_i + 1
     end
     
     stat = stat.to_i
