@@ -149,7 +149,7 @@ class ChatHandler
   end
   
   def make_info message, ws
-    info = {where: message[1], ws: ws, all: message, ch: self, id: @id}
+    info = {where: message[1], ws: ws, all: message, ch: self, id: @id, what: ''}
     
     info.merge!(
       case info[:where].downcase
