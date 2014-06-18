@@ -24,15 +24,26 @@ module Userlist
   def get_user_group name
     get_user(name).group
   end
+  
 
 end
 
 class User
-  attr_reader :name, :group
+  attr_reader :name, :group, :previous_names
   
-  def initialize name
+  def initialize name, previous = []
+    setname(name)
+    previous_names = previous
+  end
+  
+  def setname name
     @group = name[0]
     @name = CBUtils.condense_name(name[1..-1])
+  end
+  
+  def rename newname
+    previous_names << @name
+    setname(newname)
   end
     
 end

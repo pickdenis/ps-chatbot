@@ -7,8 +7,7 @@ Trigger.new do |t|
   }
   
   t.act do |info|
-    Userlist.remove_by_name(info[:oldname])
-    Userlist.add_user(info[:fullwho])
+    Userlist.get_user(info[:oldname]).rename(info[:fullwho])
     
   end
 
