@@ -208,7 +208,7 @@ class ChatHandler
     
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
-    @triggers.each do |t|
+    @triggers.sort_by { |t| t[:priority] }.reverse_each do |t|
       begin
         t[:off] and next
         result = t.is_match?(m_info)
@@ -216,7 +216,7 @@ class ChatHandler
         if result
           m_info[:result] = result
           
-          m_info[:respond] = (callback || 
+          o_callback = 
             case m_info[:where].downcase
             when 'c', 'j', 'n', 'l'
               proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
@@ -224,9 +224,9 @@ class ChatHandler
               proc do |mtext| puts mtext end
             when 'pm'
               proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
-            end)
+            end
           
-          
+          m_info[:respond] = (callback || o_callback)
           
           
           
@@ -298,6 +298,8 @@ class ChatHandler
       
   end
   
+  
+  
   def turn_by_id id, on
     @triggers.each do |t|
       if t[:id] == id
@@ -308,6 +310,21 @@ class ChatHandler
     
     false
   end
+  
+  # convenience methods
+  
+  def turn_off id
+    turn_by_id(id, false)
+  end
+  
+  def turn_on id
+    turn_by_id(id, true)
+  end
+  
+  
+  
+  
+  
   
   def exit_gracefully
     # Write the usage stats to the file
@@ -340,6 +357,7 @@ class Trigger
   
   def initialize &blk
     @vars = {}
+    set(:priority, 0)
     yield self
   end
   
@@ -389,6 +407,10 @@ class Trigger
   
   def set var, to
     @vars[var] = to
+  end
+  
+  def to_s
+    get(:id) || '<no id>'
   end
   
   
