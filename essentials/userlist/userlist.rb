@@ -42,7 +42,7 @@ class User
   end
   
   def rename newname
-    previous_names << @name
+    @previous_names << @name
     setname(newname)
   end
     
