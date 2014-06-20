@@ -19,8 +19,7 @@ require 'eventmachine'
 require 'em-http-request'
 require 'fileutils'
 
-module Banlist
-  extend self
+class Banlist
   
   SS_KEY = '0AvMzk9ZN2tZtdG9jNjFocHNrWVhnajZTa2V1d0dJbmc'
   SS_URL = 'https://docs.google.com/spreadsheet/pub'
@@ -28,37 +27,81 @@ module Banlist
   FORM_KEY = '1YJQFUBtcrJZKxhe4htXd9_kXPcOlTTdUnFfhtbJjJXY'
   FORM_URL = "https://docs.google.com/forms/d/#{FORM_KEY}/formResponse"
   
-  def set_pw pw
-    @@pw = pw
+  # The room the banlist is in effect in
+  
+  attr_reader :room
+  
+  # The method of storage
+  # :local means it will be stored in a file locally
+  # :central means it will be stored in a central banlist, on google drive
+  # If you want to use :central, you need to know the secret password
+  
+  attr_reader :storage
+  
+  def initialize room, storage, dirname=nil
+    @room = room
+    @storage = (storage == :central ? :central : :local)
+    
+    if @storage == :local
+      @blpath = "./#{dirname}/autoban/"
+      FileUtils.mkdir_p(@blpath)
+      @blpath << 'banlist.txt'
+      FileUtils.touch(@blpath)
+    end
+    
+    get
+    
   end
+  
+  def set_pw pw
+    @pw = pw
+  end
+  
+  # The actual list
+  
+  attr_reader :banlist
   
   def get &callback
-    @@banlist = []
+    @banlist = []
     
-    EM::HttpRequest.new(SS_URL).get(query: {key: SS_KEY, single: true, gid: 1, output: "csv"}).callback do |http|
-      @@banlist.push(*http.response.split("\n"))
-      callback.call(@@banlist) if block_given?
+    if storage == :central
+      EM::HttpRequest.new(SS_URL).get(query: {key: SS_KEY, single: true, gid: 1, output: "csv"}).callback do |http|
+        @banlist.push(*http.response.split("\n"))
+        callback.call(@banlist) if block_given?
+      end
+    else
+      @banlist = IO.readlines(@blpath).map(&:strip)
     end
-  end
-  
-  def list
-    class_variable_defined?("@@banlist") ? @@banlist : []
   end
   
   def action(act, name, &callback)
     # name = CBUtils.condense_name(name)
     if act == "ab"
-      @@banlist << name
+      if !@banlist.index(name)
+        
+        @banlist << name
+        File.open(@blpath, 'a') do |f|
+          f.puts(name)
+        end
+        
+      end
+      
     elsif act == "uab"
-      @@banlist.delete(name)
+      
+      @banlist.delete(name)
+      File.open(@blpath, 'w') do |f|
+        f.puts(@banlist)
+      end
       
     end
     
-    EM::HttpRequest.new(FORM_URL).post(query: {
-      "entry.272819384" => "#{act} #{name}",
-      "entry.295377180" => @@pw
-    }).callback do |http|
-      callback.call(http) if block_given?
+    if storage == :central
+      EM::HttpRequest.new(FORM_URL).post(query: {
+        "entry.272819384" => "#{act} #{name}",
+        "entry.295377180" => @pw
+      }).callback do |http|
+        callback.call(http) if block_given?
+      end
     end
   end
   
@@ -70,4 +113,15 @@ module Banlist
     action("uab", name, &callback)
   end
   
+end
+
+module BLHandler
+  extend self
+  
+  Lists = {}
+  
+  def initialize_list(room, storage, pw, dirname)
+    Lists[room] ||= Banlist.new(room, storage, dirname)
+    Lists[room].set_pw(pw)
+  end
 end

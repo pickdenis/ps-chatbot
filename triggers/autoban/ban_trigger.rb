@@ -16,18 +16,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 require "./triggers/autoban/banlist.rb"
 
-Banlist.get
 
 Trigger.new do |t|
 
   t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
 
   t[:id] = 'ban'
-  
-  if ch.config["autoban"]
-    Banlist.set_pw(ch.config["autoban"]["pw"])
-  end
-  
   
 
   t.match { |info|
@@ -42,13 +36,14 @@ Trigger.new do |t|
     next unless info[:all][2][0] =~ /[@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
 
     # Add :result to the ban list
-
+    
+    bl = BLHandler::Lists[info[:room]]
     who = CBUtils.condense_name(info[:result])
 
     info[:respond].call("/roomban #{who}")
     
-    if !(Banlist.list.index(who))
-      Banlist.ab(who)
+    if !(bl.banlist.index(who))
+      bl.ab(who)
       info[:respond].call("Added #{who} to list.")
     end
     

@@ -18,25 +18,32 @@
 require './triggers/autoban/banlist.rb'
 
 Trigger.new do |t|
-  t[:id] = "banlist"
+  t[:id] = "viewbanlist"
   t[:nolog] = true
   
   t.match { |info|
     (info[:where].downcase == 'pm' || info[:where] == 's') &&
-    info[:what].downcase == 'blist'
+    info[:what] =~ /^banlist (.*?)$/ && $1
   }
   
   uploader = CBUtils::HasteUploader.new
   
   t.act do |info|
+    room = $1
+    bl = BLHandler::Lists[$1]
+    
+    if !bl
+      info[:respond].call("I don't have a banlist for that room.")
+    end
+    
     next if !['#', '@', '%'].index(Userlist.get_user_group(info[:who]))
+
+    bl_data = bl.banlist.join("\n")
     
-    banlist = Banlist.list.join("\n")
-    
-    banlist_text = if banlist.strip.empty?
+    banlist_text = if bl_data.strip.empty?
       'nobody'
     else
-      banlist
+      bl_data
     end
     
     uploader.upload(banlist_text) do |url|

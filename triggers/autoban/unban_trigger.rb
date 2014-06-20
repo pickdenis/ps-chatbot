@@ -33,11 +33,12 @@ Trigger.new do |t|
     next unless info[:all][2][0] =~ /[@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
 
     # Remove :result from the ban list
+    bl = BLHandler::Lists[info[:room]]
     who = CBUtils.condense_name(info[:result])
 
     info[:respond].call("/roomunban #{who}")
 
-    Banlist.uab(who)
+    bl.uab(who)
 
     info[:respond].call("Removed #{who} from list.")
 
