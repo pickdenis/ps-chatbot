@@ -33,7 +33,7 @@ class User
   
   def initialize name, previous = []
     setname(name)
-    previous_names = previous
+    @previous_names = previous
   end
   
   def setname name
