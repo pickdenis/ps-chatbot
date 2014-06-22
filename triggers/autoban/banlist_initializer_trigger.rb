@@ -24,6 +24,5 @@ Trigger.new do |t|
     dirname = ch.dirname
     
     BLHandler.initialize_list(room, storage, pw, dirname)
-    p BLHandler::Lists
   end
 end

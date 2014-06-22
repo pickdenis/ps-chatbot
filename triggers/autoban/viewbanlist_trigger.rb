@@ -31,12 +31,19 @@ Trigger.new do |t|
   t.act do |info|
     room = $1
     bl = BLHandler::Lists[$1]
+    ul = ULHandler::Lists[$1]
     
     if !bl
       info[:respond].call("I don't have a banlist for that room.")
+      next
     end
     
-    next if !['#', '@', '%'].index(Userlist.get_user_group(info[:who]))
+    next if !ul
+    
+    if !['#', '@', '%'].index(ul.get_user_group(info[:who]))
+      info[:respond].call("I can't let you see that.")
+      next
+    end
 
     bl_data = bl.banlist.join("\n")
     

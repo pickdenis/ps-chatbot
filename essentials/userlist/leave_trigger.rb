@@ -7,7 +7,7 @@ Trigger.new do |t|
   }
   
   t.act do |info|
-    Userlist.remove_by_name(info[:who])
+    ULHandler::Lists[info[:room]].remove_by_name(info[:who])
   end
 
 end
