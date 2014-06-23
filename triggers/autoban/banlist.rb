@@ -18,14 +18,10 @@
 require 'eventmachine'
 require 'em-http-request'
 require 'fileutils'
+require 'yaml'
 
 class Banlist
   
-  SS_KEY = '0AvMzk9ZN2tZtdG9jNjFocHNrWVhnajZTa2V1d0dJbmc'
-  SS_URL = 'https://docs.google.com/spreadsheet/pub'
-  
-  FORM_KEY = '1YJQFUBtcrJZKxhe4htXd9_kXPcOlTTdUnFfhtbJjJXY'
-  FORM_URL = "https://docs.google.com/forms/d/#{FORM_KEY}/formResponse"
   
   # The room the banlist is in effect in
   
@@ -45,7 +41,7 @@ class Banlist
     if @storage == :local
       @blpath = "./#{dirname}/autoban/"
       FileUtils.mkdir_p(@blpath)
-      @blpath << 'banlist.txt'
+      @blpath << "#{@room}.yml"
       FileUtils.touch(@blpath)
     end
     
@@ -61,58 +57,76 @@ class Banlist
   
   attr_reader :banlist
   
-  def get &callback
+  def get(&callback)
     @banlist = []
     
     if storage == :central
-      EM::HttpRequest.new(SS_URL).get(query: {key: SS_KEY, single: true, gid: 1, output: "csv"}).callback do |http|
-        @banlist.push(*http.response.split("\n"))
-        callback.call(@banlist) if block_given?
-      end
+      # Not implemented yet!
     else
-      @banlist = IO.readlines(@blpath).map(&:strip)
+      @banlist = YAML.load(File.open(@blpath)) || []
     end
   end
   
-  def action(act, name, &callback)
+  def get_entry(name)
+    @banlist.find { |entry| entry.name == name }
+  end
+  
+  def has(name)
+    !!get_entry(name)
+  end
+  
+  def update_file
+    File.open(@blpath, 'w') do |f|
+      f.puts(YAML.dump(@banlist))
+    end
+  end
+  
+  def action(act, name, actor, reason=nil, &callback)
     # name = CBUtils.condense_name(name)
     if act == "ab"
-      if !@banlist.index(name)
+      if !has(name)
         
-        @banlist << name
-        File.open(@blpath, 'a') do |f|
-          f.puts(name)
-        end
+        entry = BanEntry.new(name, reason, actor)
+        
+        @banlist << entry
+        update_file if storage == :local
         
       end
       
     elsif act == "uab"
       
-      @banlist.delete(name)
-      File.open(@blpath, 'w') do |f|
-        f.puts(@banlist)
-      end
+      @banlist.delete(get_entry(name))
+      
+      update_file if storage == :local
       
     end
     
     if storage == :central
-      EM::HttpRequest.new(FORM_URL).post(query: {
-        "entry.272819384" => "#{act} #{name}",
-        "entry.295377180" => @pw
-      }).callback do |http|
-        callback.call(http) if block_given?
-      end
+      # Not implemented yet
     end
   end
   
-  def ab(name, &callback)
-    action("ab", name, &callback)
+  def ab(name, reason, actor, &callback)
+    action("ab", name, actor, reason, &callback)
   end
   
-  def uab(name, &callback)
-    action("uab", name, &callback)
+  def uab(name, reason=nil, actor=nil, &callback)
+    action("uab", name, actor, reason, &callback)
   end
   
+  def to_s
+    @banlist.map(&:to_s).join("\n")
+  end
+  
+end
+
+BanEntry = Struct.new(:name, :reason, :bannedby)
+
+class BanEntry
+  def to_s
+    "#{name}|#{reason || '<unknown>'} (banned by #{bannedby || '<unknown>'})"
+    
+  end
 end
 
 module BLHandler

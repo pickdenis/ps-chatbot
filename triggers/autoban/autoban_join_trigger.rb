@@ -27,9 +27,9 @@ Trigger.new do |t|
   
   
   t.act do |info|
-    banlist = BLHandler::Lists[info[:room]].banlist
+    banlist = BLHandler::Lists[info[:room]]
     who = CBUtils.condense_name(info[:who])
     
-    info[:respond].call("/roomban #{who}") if banlist.index(who)
+    info[:respond].call("/roomban #{who}") if banlist.has(who)
   end
 end

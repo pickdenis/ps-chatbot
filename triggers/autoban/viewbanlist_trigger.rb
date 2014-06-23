@@ -45,15 +45,8 @@ Trigger.new do |t|
       next
     end
 
-    bl_data = bl.banlist.join("\n")
     
-    banlist_text = if bl_data.strip.empty?
-      'nobody'
-    else
-      bl_data
-    end
-    
-    uploader.upload(banlist_text) do |url|
+    uploader.upload(bl.to_s) do |url|
       info[:respond].call(url)
     end
     

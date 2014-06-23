@@ -25,7 +25,7 @@ Trigger.new do |t|
   
 
   t.match { |info|
-    info[:what] =~ /\A!ab ([^,]+)\z/ && $1
+    info[:what] =~ /\A!ab ([^,]+)(?:,\s*(.*?))?\z/ && BanEntry.new($1, $2)
   }
 
 
@@ -35,16 +35,23 @@ Trigger.new do |t|
 
     next unless info[:all][2][0] =~ /[@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
 
+    if !$2
+      info[:respond].call('Please supply a reason for the ban.')
+      next
+    end
     # Add :result to the ban list
     
-    bl = BLHandler::Lists[info[:room]]
-    who = CBUtils.condense_name(info[:result])
+    bl = BLHandler::Lists[CBUtils.condense_name(info[:room])]
+    who = CBUtils.condense_name(info[:result].name)
+    actor = CBUtils.condense_name(info[:who])
+    
+    reason = info[:result].reason
 
     info[:respond].call("/roomban #{who}")
     
-    if !bl.banlist.index(who)
-      bl.ab(who)
-      info[:respond].call("Added #{who} to list.")
+    if !bl.has(who)
+      bl.ab(who, reason, actor)
+      info[:respond].call("#{who} added to list by #{info[:who]}.")
     else
       info[:respond].call("#{who} is already on the list.")
     end
