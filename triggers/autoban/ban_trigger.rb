@@ -34,8 +34,8 @@ Trigger.new do |t|
     # First check if :who is a mod
 
     next unless info[:all][2][0] =~ /[@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
-
-    if !$2
+    
+    if !info[:result].reason
       info[:respond].call('Please supply a reason for the ban.')
       next
     end
