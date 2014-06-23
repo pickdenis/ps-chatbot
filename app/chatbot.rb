@@ -98,7 +98,13 @@ class Chatbot
             ws.send("|/trn #{@name},0,#{assertion}")
           
           end
+        when 'formats'
+          data = message[2..-1].join('|')
           
+          # don't bother understanding the next line, it just takes the data PS sends for formats and
+          # changes it into a list of formats
+          
+          $battle_formats = ('|' + data.gsub(/[,#]/, '')).gsub(/\|\d\|[^|]+\|/, '').split('|').map { |f| CBUtils.condense_name(f) }
         when 'updateuser'
           if message[2] == @name
             puts "#{@id}: Succesfully logged in!"
