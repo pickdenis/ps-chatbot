@@ -18,6 +18,7 @@
 
 require 'logger'
 require 'json'
+require 'fileutils'
 
 class ChatHandler
   attr_accessor :triggers, :ignorelist, :group, :usagelogger, :chatlogger
@@ -34,6 +35,8 @@ class ChatHandler
     FileUtils.mkdir_p("./#{@dirname}/logs/chat")
     FileUtils.mkdir_p("./#{@dirname}/logs/usage")
     FileUtils.mkdir_p("./#{@dirname}/logs/pms")
+    
+    FileUtils.touch("./#{dirname}/accesslist.txt")
     
     @trigger_files = triggers
     
@@ -378,6 +381,13 @@ class ChatHandler
     @triggers.push(trigger)
     self
   end
+  
+  
+  
+  def has_access(user)
+    IO.readlines("./#{@dirname}/accesslist.txt").map(&:strip).index(CBUtils.condense_name(user))
+  end
+  
 
 end
 
