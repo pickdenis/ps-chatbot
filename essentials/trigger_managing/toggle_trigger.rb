@@ -8,6 +8,10 @@ Trigger.new do |t|
   t.act do |info|
     id = info[:result]
     t = ch.get_by_id(id)
+    if !t
+      info[:respond].call("'#{t}' is not any trigger's ID")
+      next
+    end
     
     t[:off] = !t[:off]
     
