@@ -26,7 +26,7 @@ module Battles
   
   def self.get_battles &callback
     real_regex = Regexp.new(BATTLE_REGEX.gsub("FORMATS", $battle_formats.join('|')))
-    p real_regex
+    
     BreadFinder.get_bread do |bread|
       if bread[:no] == 0 
         callback.call([])
