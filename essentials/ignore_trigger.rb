@@ -20,19 +20,8 @@ Trigger.new do |t|
   t[:id] = 'ignore'
   t[:nolog] = true
   
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
-  
   t.match { |info|
-    
-    
-    who = CBUtils.condense_name(info[:who])
-    
-    if info[:where] == 'pm' && t[:who_can_access].index(who) || info[:where] == 's'
-      info[:what] =~ /\Aignore (.*?)\z/
-      $1
-    end
+    ch.has_access(info[:who]) && info[:what] =~ /\A!ignore (.*?)\z/ && $1
   }
   
   t.act { |info| 

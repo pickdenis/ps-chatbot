@@ -11,7 +11,7 @@ Trigger.new do |t|
     
     t[:off] = !t[:off]
     
-    info[:respond].call("Trigger #{t} turned #{t[:off] ? 'off' : 'on'}.")
+    info[:respond].call("Trigger '#{t}' turned #{t[:off] ? 'off' : 'on'}.")
     
   end
 end

@@ -22,18 +22,8 @@ Trigger.new do |t|
   t[:id] = 'unignore'
   t[:nolog] = true
   
-  access_path = "./#{ch.dirname}/accesslist.txt"
-  FileUtils.touch(access_path)
-  t[:who_can_access] = File.read(access_path).split("\n")
-  
   t.match { |info| 
-    
-    
-    who = CBUtils.condense_name(info[:who])
-    if (info[:where] == 'pm' && t[:who_can_access].index(who)) || info[:where] == 's'
-      info[:what] =~ /\Aunignore (.*?)\z/
-      $1
-    end
+    ch.has_access(info[:who]) && info[:what] =~ /\A!unignore (.*?)\z/ && $1
   }
   
   t.act { |info| 
