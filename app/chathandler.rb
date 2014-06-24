@@ -38,6 +38,8 @@ class ChatHandler
     @trigger_files = triggers
     
     @triggers = []
+    @trigger_paths = {}
+    
     @ignorelist = []
     
     initialize_ignore_list
@@ -135,8 +137,17 @@ class ChatHandler
   def load_trigger(file)
     puts "#{@id}: loading:  #{file}"
     
+    trigger = load_trigger_code(File.read(file))
+    
+    if trigger[:id]
+      @trigger_paths[trigger[:id]] = file
+    end
+  end
+  
+  def load_trigger_code(code)
+    
     ch = self # This is so that 'ch' can be accessed within the trigger
-    trigger = eval(File.read(file))
+    trigger = eval(code)
     
     return unless trigger.is_a? Trigger
     
@@ -146,6 +157,18 @@ class ChatHandler
     trigger.init
     
     @triggers << trigger
+    
+    trigger
+    
+  end
+  
+  def reload_trigger(id)
+    trigger = get_by_id(id)
+    return false if !trigger
+    
+    @triggers.delete(trigger)
+    load_trigger(@trigger_paths[id])
+    true
   end
   
   def make_info message, ws
@@ -301,17 +324,14 @@ class ChatHandler
       
   end
   
-  
+  def get_by_id(id)
+    @triggers.find { |t| t[:id] == id }
+  end
   
   def turn_by_id id, on
-    @triggers.each do |t|
-      if t[:id] == id
-        t[:off] = !on
-        return true
-      end
-    end
-    
-    false
+    t = get_by_id(id)
+    return if !t
+    t[:off] = !on
   end
   
   # convenience methods
