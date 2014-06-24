@@ -19,41 +19,41 @@ require "./triggers/autoban/banlist.rb"
 
 Trigger.new do |t|
 
-  t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
 
   t[:id] = 'ban'
   
 
   t.match { |info|
-    info[:what] =~ /\A!ab ([^,]+)(?:,\s*(.*?))?\z/ && BanEntry.new($1, $2)
+    info[:what] =~ /\A!ab(q?) ([^,]+)(?:,\s*(.*?))?\z/ && [$1, $2, $3]
   }
 
 
   t.act do |info|
-
-    # First check if :who is a mod
-
-    next unless info[:all][2][0] =~ /[@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
+    quiet, name, reason = info[:result]
     
-    if !info[:result].reason
+    # First check if :who is a mod
+    
+    next unless info[:all][2][0] =~ /[@#]/
+    
+    if !reason
       info[:respond].call('Please supply a reason for the ban.')
       next
     end
     # Add :result to the ban list
     
     bl = BLHandler::Lists[CBUtils.condense_name(info[:room])]
-    who = CBUtils.condense_name(info[:result].name)
+    name = CBUtils.condense_name(name)
     actor = CBUtils.condense_name(info[:who])
     
-    reason = info[:result].reason
-
-    info[:respond].call("/roomban #{who}")
+    if quiet != 'q'
+      info[:respond].call("/roomban #{name}")
+    end
     
-    if !bl.has(who)
-      bl.ab(who, reason, actor)
-      info[:respond].call("#{who} added to list by #{info[:who]}.")
+    if !bl.has(name)
+      bl.ab(name, reason, actor)
+      info[:respond].call("#{name} added to list by #{info[:who]}.")
     else
-      info[:respond].call("#{who} is already on the list.")
+      info[:respond].call("#{name} is already on the list.")
     end
     
   end

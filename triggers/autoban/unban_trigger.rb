@@ -18,29 +18,31 @@ require './triggers/autoban/banlist.rb'
 
 Trigger.new do |t|
 
-  t[:who_can_access] = ['stretcher', 'pick', 'scotteh']
-
   t[:id] = 'unban'
 
   t.match { |info|
-    info[:what] =~ /\A!(?:uab|aub) ([^,]+)\z/ && $1
+    info[:what] =~ /\A!(?:uab|aub)(q?) ([^,]+)\z/ && [$1, $2]
   }
 
   t.act do |info|
+    
+    quiet, name = info[:result]
 
     # First check if :who is a mod
 
-    next unless info[:all][2][0] =~ /[@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
+    next unless info[:all][2][0] =~ /[@#]/
 
     # Remove :result from the ban list
     bl = BLHandler::Lists[info[:room]]
-    who = CBUtils.condense_name(info[:result])
+    name = CBUtils.condense_name(name)
 
-    info[:respond].call("/roomunban #{who}")
+    if quiet != 'q'
+      info[:respond].call("/roomunban #{name}")
+    end
+    
+    bl.uab(name)
 
-    bl.uab(who)
-
-    info[:respond].call("Removed #{who} from list.")
+    info[:respond].call("Removed #{name} from list.")
 
 
   end
