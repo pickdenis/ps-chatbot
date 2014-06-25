@@ -33,13 +33,20 @@ class BattleHandler
     end
   end
   
+  TEAMS = {
+    'doublescustomgame' => [
+      'zap7|magnezone|choicespecs|friendguard|metronome|Sassy|252,252,252,252,252,252|||S|666|]ayy lmao|celebi|weaknesspolicy|filter|metronome|Quiet|252,252,252,252,252,252||||666|',
+      'Daddy|golurk|weaknesspolicy|magicbounce|metronome|Sassy|252,252,252,252,252,252|||S|666|]babby|golett|choiceband|magicbounce|metronome|Quiet|252,252,252,252,252,252||||666|'
+    ]
+  }
+  
   def handle_challenge message, ws
     JSON.parse(message[2])["challengesFrom"].each do |who, format|
       if format == "challengecup1vs1"
         ws.send("|/utm {}")
         ws.send("|/accept #{who}, {}")
       elsif format == "doublescustomgame"
-        ws.send("|/utm zap7|magnezone|choicespecs|friendguard|metronome|Sassy|252,252,252,252,252,252|||S|666|]ayy lmao|celebi|weaknesspolicy|filter|metronome|Quiet|252,252,252,252,252,252||||666|")
+        ws.send("|/utm #{TEAMS['doublescustomgame'].sample}")
         ws.send("|/accept #{who}")
       end
     end
