@@ -9,7 +9,7 @@ Trigger.new do |t|
     id = info[:result]
     t = ch.get_by_id(id)
     if !t
-      info[:respond].call("'#{t}' is not any trigger's ID")
+      info[:respond].call("'#{id}' is not any trigger's ID")
       next
     end
     
