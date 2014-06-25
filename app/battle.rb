@@ -38,6 +38,9 @@ class BattleHandler
       if format == "challengecup1vs1"
         ws.send("|/utm {}")
         ws.send("|/accept #{who}, {}")
+      elsif format == "doublescustomgame"
+        ws.send("|/utm zap7|magnezone|choicespecs|friendguard|metronome|Sassy|252,252,252,252,252,252|||S|666|]ayy lmao|celebi|weaknesspolicy|filter|metronome|Quiet|252,252,252,252,252,252||||666|")
+        ws.send("|/accept #{who}")
       end
     end
     
@@ -76,7 +79,7 @@ class BattleAdapter
     
     # If the format is not recognized, it will try to use the default logic, which throws
     # an exception with every method. Only accept battles that have logic
-    logic = ({'challengecup1vs1' => CC1vs1Logic}[format] || BattleLogic).new
+    logic = ({'challengecup1vs1' => CC1vs1Logic, 'doublescustomgame' => DoublesCustomGameLogic}[format] || BattleLogic).new
     
     
     @battle = Battle.new id: @id, logic: logic # Battle object
@@ -267,5 +270,15 @@ class CC1vs1Logic < BattleLogic
     chosen = moves.max_by { |move| CC1vs1.calculate_move_score(my_species, move, otherside) }
     
     "/choose move #{chosen}|#{rqid}"
+  end
+end
+
+class DoublesCustomGameLogic < BattleLogic
+  def chooselead rqid
+    "/team 1|#{rqid}"
+  end
+  
+  def move rqid
+    "/choose move metronome|#{rqid}"
   end
 end
