@@ -65,8 +65,7 @@ if __FILE__ == $0
     end
     
     exiting = false
-    
-    Signal.trap('INT') do
+    exitblk = proc do
       
       next if exiting
       
@@ -76,8 +75,10 @@ if __FILE__ == $0
         bot.exit_gracefully
       end
       
-      Process.exit
+      Process.exit(0)
     end
+    
+    at_exit &exitblk
     
   end
   
