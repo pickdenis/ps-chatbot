@@ -125,8 +125,10 @@ class ChatHandler
     
     files = @trigger_files
     
-    Dir["./essentials/**/*_trigger.rb"].each do |f|
-      load_trigger(f)
+    if !@config["noessentials"]
+      Dir["./essentials/**/*_trigger.rb"].each do |f|
+        load_trigger(f)
+      end
     end
     
     if files
@@ -140,17 +142,25 @@ class ChatHandler
   def load_trigger(file)
     puts "#{@id}: loading:  #{file}"
     
-    trigger = load_trigger_code(File.read(file))
+    trigger = load_trigger_code(File.read(file), file)
+    
+    return false if !trigger
     
     if trigger[:id]
       @trigger_paths[trigger[:id]] = file
     end
   end
   
-  def load_trigger_code(code)
+  def load_trigger_code(code, file='(no file given)')
     
     ch = self # This is so that 'ch' can be accessed within the trigger
-    trigger = eval(code)
+    
+    begin
+      trigger = eval(code, binding, file)
+    rescue => e
+      puts e.message
+      return false
+    end
     
     return unless trigger.is_a? Trigger
     
@@ -311,22 +321,22 @@ class ChatHandler
     # Code adapted from
     # https://github.com/raymoo/ps-chatbot-llewd/commit/914f952a7371a6cfbcdf75fa87e349f0539a616a
     
-    room = message[1..-1]
+    room = message[0][1..-2]
     action = message[2]
     
-    if room == 'create' && message[3] == 'challengecup1vs1'
-      ws.send('/tour join')
+    if action == 'create' && message[3] == 'challengecup1vs1'
+      ws.send("#{room}|/tour join")
     end
     
     if action == 'update'
       info = JSON.parse(message[3])
       
       if info['challenged']
-        ws.send('/tour acceptchallenge')
+        ws.send("#{room}|/tour acceptchallenge")
       end
       
       if info["challenges"] && info["challenges"].length != 0
-        ws.send("/tour challenge #{info["challenges"][0]}")
+        ws.send("#{room}|/tour challenge #{info["challenges"][0]}")
       end
     end
       
@@ -420,7 +430,7 @@ class Trigger
   end
   
   # Optional trigger field
-  # t.exit { what to do when trigger is initialized }
+  # t.init { what to do when trigger is initialized }
   def init &blk
     if block_given?
       @init = blk
