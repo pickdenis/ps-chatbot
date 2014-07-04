@@ -50,7 +50,8 @@ if __FILE__ == $0
         id: options['id'],
         name: options['name'], 
         pass: options['pass'],
-        room: options['room'], 
+        room: options['room'], # compatibility
+        rooms: options['rooms'], 
         console: options['console'],
         server: (options['server'] || nil),
         log: options['log'],

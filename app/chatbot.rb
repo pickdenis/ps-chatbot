@@ -45,11 +45,14 @@ class Chatbot
     end
     
     
-    @room = opts[:room]
+    @rooms = opts[:room] || opts[:rooms]
+    if !@rooms.is_a? Array
+      @rooms = [@rooms]
+    end
     
     @server = (opts[:server] || PS_URL)
     
-    if @room != 'none'
+    if @rooms != 'none'
       connection_checker = EventMachine::PeriodicTimer.new(10) do
         # If not connected, try to reconnect
         if !@connected
@@ -108,7 +111,11 @@ class Chatbot
         when 'updateuser'
           if message[2] == @name
             puts "#{@id}: Succesfully logged in!"
-            ws.send("|/join #{@room}")
+            p @rooms
+            @rooms.each do |r|
+              puts "#{@id} Joining room #{r}."
+              ws.send("|/join #{r}")
+            end
             
             start_console(ws) if @console_option
           end
