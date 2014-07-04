@@ -123,17 +123,11 @@ class ChatHandler
   
   def load_trigger_files
     
-    files = @trigger_files
-    
-    if !@config["noessentials"]
-      Dir["./essentials/**/*_trigger.rb"].each do |f|
-        load_trigger(f)
-      end
-    end
+    files = @trigger_files.map { |f| Dir[f] }.flatten
     
     if files
       files.each do |f|
-        load_trigger("./#{f}")
+        load_trigger("#{f}")
       end
     end
     
@@ -142,7 +136,12 @@ class ChatHandler
   def load_trigger(file)
     puts "#{@id}: loading:  #{file}"
     
-    trigger = load_trigger_code(File.read(file), file)
+    begin
+      trigger = load_trigger_code(File.read(file), file)
+    rescue => e
+      puts e.message
+      return false
+    end
     
     return false if !trigger
     
