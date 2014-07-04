@@ -75,7 +75,6 @@ if __FILE__ == $0
         bot.exit_gracefully
       end
       
-      Process.exit(0)
     end
     
     at_exit &exitblk
