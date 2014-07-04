@@ -31,7 +31,7 @@ require './app/socketinput.rb'
 require './app/utils.rb'
 
 
-configs = YAML.load(File.open( ARGV[0] || 'config.yml' ))["bots"]
+
 
 
 
@@ -40,6 +40,20 @@ require './app/pokedata.rb'
 
 if __FILE__ == $0
   
+  cfg_file = ARGV[0]
+  
+  if cfg_file
+    puts "Using config file: #{cfg_file}."
+  else
+    puts "No config file specified, attempting to use 'config.yml'"
+    cfg_file = 'config.yml'
+  end
+
+  if File.exist?(cfg_file)
+    configs = YAML.load(File.open(cfg_file))["bots"]
+  else
+    raise "config file specified #{cfg_file} does not exist!"
+  end
   
   $0 = 'pschatbot'
   
