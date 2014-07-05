@@ -96,7 +96,7 @@ class Chatbot
         when 'updateuser'
           if message[2] == @name
             puts "#{@id}: Succesfully logged in!"
-            p @rooms
+            
             @rooms.each do |r|
               puts "#{@id} Joining room #{r}."
               ws.send("|/join #{r}")
