@@ -162,7 +162,7 @@ class ChatHandler
   def reload_trigger(id)
     trigger = get_by_id(id)
     return false if !trigger
-    
+    trigger.exit
     @triggers.delete(trigger)
     load_trigger(@trigger_paths[id])
     true
