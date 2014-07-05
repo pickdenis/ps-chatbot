@@ -2,5 +2,6 @@
 *.log.*
 *.bat
 add_licenses.rb
+check_licenses.rb
 config.yml
 bot-*/
