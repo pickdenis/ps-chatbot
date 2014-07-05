@@ -8,16 +8,16 @@ Trigger.new do |t|
   t.act do |info|
     url = info[:result]
     
-    EM::HttpRequest.new(url).get.callback do |http|
-      begin
+    begin
+      EM::HttpRequest.new(url).get.callback do |http|
         ch.load_trigger_code(http.response)
-      rescue Exception => e
-        info[:respond].call("There was an error while loading the trigger.")
-        puts e.message
-        next
+        info[:respond].call("Loaded trigger successfully")
       end
-      
-      info[:respond].call("Loaded trigger successfully")
+    rescue Exception => e
+      info[:respond].call("There was an error while loading the trigger.")
+      puts e.message
+      next
     end
+      
   end
 end
