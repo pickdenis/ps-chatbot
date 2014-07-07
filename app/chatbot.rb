@@ -3,7 +3,7 @@
 
 class Chatbot
   include EM::Deferrable
-  attr_reader :name, :pass, :connected, :ch, :bh, :id, :config
+  attr_reader :name, :pass, :connected, :ch, :bh, :id, :config, :dirname
   
   PS_URL = 'ws://sim.smogon.com:8000/showdown/websocket'
   
@@ -17,6 +17,7 @@ class Chatbot
     
     @config = opts[:allconfig]
     
+    initialize_dir
     @ch = ChatHandler.new(opts[:triggers], self)
     @bh = BattleHandler.new(@ch)
     @connected = false
@@ -37,6 +38,7 @@ class Chatbot
     
     @server = (opts[:server] || PS_URL)
     
+    
     if @rooms != 'none'
       connection_checker = EventMachine::PeriodicTimer.new(10) do
         # If not connected, try to reconnect
@@ -45,6 +47,20 @@ class Chatbot
         end
       end
     end
+    
+    
+  end
+  
+  def initialize_dir
+    
+    @dirname = "bot-#{@id}"
+    
+    # initialize all of the directories that we need
+    FileUtils.mkdir_p("./#{@dirname}/logs/chat")
+    FileUtils.mkdir_p("./#{@dirname}/logs/usage")
+    FileUtils.mkdir_p("./#{@dirname}/logs/pms")
+    
+    FileUtils.touch("./#{dirname}/accesslist.txt")
   end
   
   def connect

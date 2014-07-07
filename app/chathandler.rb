@@ -10,18 +10,12 @@ class ChatHandler
   attr_reader :id, :dirname, :name, :pass, :config
   
   def initialize triggers, chatbot
+    # mostly convenience
     @id = chatbot.id
     @name = chatbot.name
     @pass = chatbot.pass
     @config = chatbot.config
-    
-    @dirname = "bot-#{@id}"
-    # initialize all of the directories that we need
-    FileUtils.mkdir_p("./#{@dirname}/logs/chat")
-    FileUtils.mkdir_p("./#{@dirname}/logs/usage")
-    FileUtils.mkdir_p("./#{@dirname}/logs/pms")
-    
-    FileUtils.touch("./#{dirname}/accesslist.txt")
+    @dirname = chatbot.dirname
     
     @trigger_files = triggers
     
@@ -38,7 +32,6 @@ class ChatHandler
     initialize_loggers
     
     initialize_message_queue
-    
   end
   
   def initialize_ignore_list
@@ -242,10 +235,10 @@ class ChatHandler
           case m_info[:where].downcase
           when 'c', 'j', 'n', 'l'
             proc do |mtext| queue_message(m_info[:ws], "#{m_info[:room]}|#{mtext}") end
-          when 's'
-            proc do |mtext| puts mtext end
           when 'pm'
             proc do |mtext| queue_message(m_info[:ws], "|/pm #{m_info[:who]},#{mtext}") end
+          else
+            proc do |mtext| $stderr.puts(mtext) end
           end
         
         m_info[:respond] = (callback || o_callback)
