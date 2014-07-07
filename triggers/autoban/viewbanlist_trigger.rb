@@ -15,8 +15,8 @@ Trigger.new do |t|
   
   t.act do |info|
     room = $1
-    bl = BLHandler::Lists[$1]
-    ul = ULHandler::Lists[$1]
+    bl = ch.blhandler.get($1)
+    ul = ch.ulhandler.get($1)
     
     if !bl
       info[:respond].call("I don't have a banlist for that room.")

@@ -17,7 +17,7 @@ Trigger.new do |t|
     next unless info[:all][2][0] =~ /[@#]/
 
     # Remove :result from the ban list
-    bl = BLHandler::Lists[info[:room]]
+    bl = ch.blhandler.get(info[:room])
     name = CBUtils.condense_name(name)
 
     if quiet != 'q'

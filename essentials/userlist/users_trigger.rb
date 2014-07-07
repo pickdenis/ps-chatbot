@@ -10,7 +10,7 @@ Trigger.new do |t|
   
   t.act do |info|
     info[:what].split(',')[1..-1].each do |name|
-      ULHandler::Lists[info[:room]].add_user(name)
+      ch.ulhandler.get(info[:room]).add_user(name)
     end
     
   end

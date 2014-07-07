@@ -12,7 +12,7 @@ Trigger.new do |t|
     oldname = info[:oldname]
     newname = info[:fullwho]
     
-    ULHandler::Lists[info[:room]].get_user(oldname).rename(newname)
+    ch.ulhandler.get(info[:room]).get_user(oldname).rename(newname)
     
   end
 

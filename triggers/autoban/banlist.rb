@@ -49,6 +49,7 @@ class Banlist
       # Not implemented yet!
     else
       @banlist = YAML.load(File.open(@blpath)) || []
+      @callback.call(@banlist) if block_given?
     end
   end
   
@@ -114,13 +115,19 @@ class BanEntry
   end
 end
 
-module BLHandler
-  extend self
+class BLHandler
   
-  Lists = {}
+  def initialize
+    @lists = {}
+  end
   
   def initialize_list(room, storage, pw, dirname)
-    Lists[room] ||= Banlist.new(room, storage, dirname)
-    Lists[room].set_pw(pw)
+    @lists[room] ||= Banlist.new(room, storage, dirname)
+    @lists[room].set_pw(pw)
   end
+  
+  def get(room)
+    @lists[room]
+  end
+  
 end

@@ -7,7 +7,7 @@ Trigger.new do |t|
   }
   
   t.act do |info|
-    ULHandler::Lists[info[:room]].add_user(info[:fullwho])
+    ch.ulhandler.get(info[:room]).add_user(info[:fullwho])
   end
 
 end

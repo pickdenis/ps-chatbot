@@ -1,11 +1,16 @@
 require './triggers/autoban/banlist.rb'
 
+ch.instance_exec do
+  @blhandler = BLHandler.new
+  self.class.send(:attr_accessor, :blhandler)
+end
+
 Trigger.new do |t|
   t[:priority] = 1
   t[:id] = 'banlist_initializer'
   
   t.match { |info|
-    info[:where] =~ /[cjln]/i && !BLHandler::Lists[info[:room]]
+    info[:where] =~ /[cjln]/i && !ch.blhandler.get(info[:room])
   }
   
   t.act do |info|
@@ -23,6 +28,6 @@ Trigger.new do |t|
     
     dirname = ch.dirname
     
-    BLHandler.initialize_list(room, storage, pw, dirname)
+    ch.blhandler.initialize_list(room, storage, pw, dirname)
   end
 end

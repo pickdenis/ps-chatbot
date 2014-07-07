@@ -48,12 +48,16 @@ class User
     
 end
 
-module ULHandler
-  extend self
-  
-  Lists = {}
+class ULHandler
+  def initialize
+    @lists = {}
+  end
   
   def initialize_list(room)
-    Lists[room] ||= Userlist.new(room)
+    @lists[room] ||= Userlist.new(room)
+  end
+  
+  def get(room)
+    @lists[room]
   end
 end

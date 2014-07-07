@@ -28,8 +28,8 @@ Trigger.new do |t|
     name = CBUtils.condense_name(args.shift)
     room = args.shift
     
-    bl = BLHandler::Lists[room]
-    ul = ULHandler::Lists[room]
+    bl = ch.blhandler.get(room)
+    ul = ch.ulhandler.get(room)
     
     who = CBUtils.condense_name(info[:who])
     

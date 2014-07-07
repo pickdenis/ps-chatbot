@@ -25,7 +25,8 @@ Trigger.new do |t|
     end
     # Add :result to the ban list
     
-    bl = BLHandler::Lists[CBUtils.condense_name(info[:room])]
+    bl = ch.blhandler.get(CBUtils.condense_name(info[:room]))
+    
     name = CBUtils.condense_name(name)
     actor = CBUtils.condense_name(info[:who])
     
