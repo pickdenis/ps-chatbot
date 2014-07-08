@@ -110,7 +110,7 @@ class Chatbot
           
           $battle_formats = ('|' + data.gsub(/[,#]/, '')).gsub(/\|\d\|[^|]+\|/, '').split('|').map { |f| CBUtils.condense_name(f) }
         when 'updateuser'
-          if message[2] == @name
+          if CBUtils.condense_name(message[2]) == CBUtils.condense_name(@name)
             puts "#{@id}: Succesfully logged in!"
             
             @rooms.each do |r|
