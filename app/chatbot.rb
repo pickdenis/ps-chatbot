@@ -18,6 +18,8 @@ class Chatbot
     @config = opts[:allconfig]
     
     initialize_dir
+    run_initializers
+    
     @ch = ChatHandler.new(opts[:triggers], self)
     @bh = BattleHandler.new(@ch)
     @connected = false
@@ -60,7 +62,16 @@ class Chatbot
     FileUtils.mkdir_p("./#{@dirname}/logs/usage")
     FileUtils.mkdir_p("./#{@dirname}/logs/pms")
     
-    FileUtils.touch("./#{dirname}/accesslist.txt")
+    FileUtils.touch("./#{@dirname}/accesslist.txt")
+  end
+  
+  def run_initializers
+    FileUtils.mkdir_p("./#{@dirname}/initializers")
+    files = Dir["./#{@dirname}/initializers/*.rb"] | Dir['./initializers/*.rb']
+    
+    files.each do |file|
+      load(file)
+    end
   end
   
   def connect
