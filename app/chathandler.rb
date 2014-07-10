@@ -344,7 +344,7 @@ class ChatHandler
   
   
   
-  def exit_gracefully
+  def exit_gracefully(&callback)
     # Write the usage stats to the file
     
     #File.open(@usage_path, 'w') do |f|
@@ -356,11 +356,23 @@ class ChatHandler
     IO.write(@ignore_path, @ignorelist.join("\n"))
     
     puts "#{@id}: Calling triggers' exit sequences..."
+    
+    left = @triggers.count(&:exit_takes_callback?)
     @triggers.each do |trigger|
-      trigger.exit
+      
+      trigger.call_exit do |can_exit|
+        if can_exit
+          left -= 1
+        end
+        
+        if left <= 0
+          puts "#{@id}: Done with exit sequence"
+          callback.call if block_given?
+        end
+      end
     end
     
-    puts "#{@id}: Done with exit sequence"
+    
     
   end
   
@@ -397,13 +409,17 @@ class Trigger
   # Optional trigger field
   # t.exit { what to do when chatbot exits }
   def exit &blk
-    if block_given?
-      @exit = blk
-    else
-      if @exit
-        @exit.call
-      end
-    end
+    @exit = blk
+  end
+  
+  def exit_takes_callback?
+    return false if !@exit
+    @exit.arity == 1
+  end
+  
+  def call_exit &blk
+    return if !@exit
+    @exit.call(blk)
   end
   
   # Optional trigger field
