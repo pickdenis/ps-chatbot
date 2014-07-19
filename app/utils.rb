@@ -22,6 +22,11 @@ module CBUtils
   end
   
   
+  def self.safe_read(file)
+    File.read(file, 
+      external_encoding: 'iso-8859-1',
+      internal_encoding: 'utf-8')
+  end
 
   class HasteUploader # Asynchronous with eventmachine!
     def initialize

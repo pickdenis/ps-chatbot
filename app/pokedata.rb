@@ -4,10 +4,10 @@
 module Pokedex
   print  'Loading pokedex data...  '
   BASEPATH = File.expand_path(File.dirname(__FILE__))
-  POKEMONDATA = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattlePokedex.json")[0])
-  FORMATSDATA = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattleFormatsData.json")[0])
-  MOVES = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/BattleMovedex.json")[0])
-  CCUSAGE = JSON.parse(IO.readlines("#{BASEPATH}/ps-data/cc1v1usage.json")[0])
+  POKEMONDATA = JSON.parse(CBUtils.safe_read("#{BASEPATH}/ps-data/BattlePokedex.json"))
+  FORMATSDATA = JSON.parse(CBUtils.safe_read("#{BASEPATH}/ps-data/BattleFormatsData.json"))
+  MOVES = JSON.parse(CBUtils.safe_read("#{BASEPATH}/ps-data/BattleMovedex.json"))
+  CCUSAGE = JSON.parse(CBUtils.safe_read("#{BASEPATH}/ps-data/cc1v1usage.json"))
   puts 'done.'
   
   def self.get_randbats_speeds
