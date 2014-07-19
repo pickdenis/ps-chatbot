@@ -107,6 +107,11 @@ class Chatbot
         
         
         next if !message[1]
+        
+        if message[0] =~ />battle-/
+          next @bh.handle(message, ws)
+        end
+        
         case message[1].downcase
         when 'challstr'
           puts "#{@id}: Attempting to login..."
@@ -147,10 +152,6 @@ class Chatbot
           @ch.handle_tournament(message, ws)
         when 'updatechallenges'
           @bh.handle_challenge(message, ws)
-        else
-          if message[0] =~ />battle-/
-            @bh.handle(message, ws)
-          end
         end
       end
       
