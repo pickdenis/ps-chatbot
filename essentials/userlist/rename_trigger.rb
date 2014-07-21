@@ -12,7 +12,10 @@ Trigger.new do |t|
     oldname = info[:oldname]
     newname = info[:fullwho]
     
-    ch.ulhandler.get(info[:room]).get_user(oldname).rename(newname)
+    ul = ch.ulhandler.get(info[:room]) 
+    ul.get_user(oldname).rename(newname)
+    
+    ul.trigger_callbacks(:rename, oldname, newname)
     
   end
 
