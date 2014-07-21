@@ -16,7 +16,9 @@ class Userlist
   end
   
   def add_user(name)
-    @users << User.new(name)
+    u = User.new(name)
+    @users << u
+    u
   end
 
   def remove_by_name(name)
