@@ -16,7 +16,7 @@ Trigger.new do |t|
     ul = ch.ulhandler.get(info[:room]) 
     ul.get_user(oldname).rename(newname)
     if CBUtils.condense_name(oldname) != CBUtils.condense_name(newname[1..-1])
-      p [oldname, newname[1..-1]]
+      
       ul.trigger_callbacks(:rename, oldname, newname[1..-1])
     end
     
