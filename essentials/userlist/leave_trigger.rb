@@ -1,6 +1,7 @@
 require './essentials/userlist/userlist.rb'
 
 Trigger.new do |t|
+  t[:id] = 'user_leave'
   t[:nolog] = true
   
   t.match { |info|
