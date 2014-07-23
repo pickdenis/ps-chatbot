@@ -211,8 +211,7 @@ class ChatHandler
       end)
     
     info[:rawroom] = info[:room]
-    info[:room] = CBUtils.condense_name(info[:room] || '')
-    
+    info[:room] && info[:room] = CBUtils.condense_name(info[:room])
     info
   end
   
