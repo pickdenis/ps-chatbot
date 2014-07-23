@@ -263,6 +263,7 @@ class ChatHandler
           puts "Crashed in trigger #{t}"
           puts e.message
           puts e.backtrace
+          STDOUT.flush
           
           m_info[:respond].call("Crashed in trigger #{t}; temporarily turning off.")
           t[:off] = true
