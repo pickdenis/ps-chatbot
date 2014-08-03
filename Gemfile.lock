@@ -1,15 +1,33 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.3.6)
+    cookiejar (0.3.2)
+    em-http-request (1.1.2)
+      addressable (>= 2.3.4)
+      cookiejar
+      em-socksify (>= 0.3)
+      eventmachine (>= 1.0.3)
+      http_parser.rb (>= 0.6.0)
+    em-redis (0.3.0)
+      eventmachine
+    em-socksify (0.3.0)
+      eventmachine (>= 1.0.0.beta.4)
     eventmachine (1.0.3-x86-mingw32)
+    fastimage (1.6.3)
+      addressable (~> 2.3, >= 2.3.5)
     faye-websocket (0.7.0)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.3.0)
+    http_parser.rb (0.6.0)
     websocket-driver (0.3.0)
 
 PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  em-http-request
+  em-redis
   eventmachine
+  fastimage
   faye-websocket
