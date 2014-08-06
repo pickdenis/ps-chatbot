@@ -116,7 +116,7 @@ class ChatHandler
     
     begin
       trigger = load_trigger_code(File.read(file), file)
-    rescue => e
+    rescue Exception => e
       puts e.message
       return false
     end
@@ -134,7 +134,7 @@ class ChatHandler
     
     begin
       trigger = eval(code, binding, file)
-    rescue => e
+    rescue Exception => e
       puts e.message
       return false
     end
@@ -259,7 +259,7 @@ class ChatHandler
           
           t.do_act(m_info)
         
-        rescue => e
+        rescue Exception => e
           puts "Crashed in trigger #{t}"
           puts e.message
           puts e.backtrace
