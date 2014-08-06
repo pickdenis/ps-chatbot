@@ -44,7 +44,7 @@ Trigger.new do |t|
     ch.blhandler.lists.each do |room, list|
       list.update_file do |resp|
         if !resp
-          $stderr.puts("#{id}: Warning: Couldn't save banlist for room '#{room}'")
+          $stderr.puts("\n#{id}: Warning: Couldn't save banlist for room '#{room}'")
         end
         left -= 1
         if left <= 0
