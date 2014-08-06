@@ -306,7 +306,7 @@ class ChatHandler
     end
     
     if action == 'update'
-      info = JSON.parse(message[3])
+      info = JSON.parse(message[3], max_nesting: 100)
       
       if info['challenged']
         ws.send("#{room}|/tour acceptchallenge")
