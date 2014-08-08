@@ -46,7 +46,7 @@ class BattleHandler
             return
           end
           
-          team = handler.chooseteam
+          team = handler.respond_to? :chooseteam ? handler.chooseteam : ''
           ws.send("|/utm #{team}")
           ws.send("|/accept #{who}")
           found = true
@@ -251,7 +251,7 @@ class BattleLogic
     throw NotImplementedError
   end
   
-  def chooseteam
+  def self.chooseteam
     ''
   end
 end
