@@ -30,7 +30,7 @@ class Userlist
   end
   
   def get_user_group(name)
-    get_user(name).group
+    get_user(name).group rescue ' '
   end
   
   def on(action, &cb)
