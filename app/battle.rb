@@ -46,7 +46,7 @@ class BattleHandler
             return
           end
           
-          team = handler.respond_to? :chooseteam ? handler.chooseteam : ''
+          team = handler.respond_to?(:chooseteam) ? handler.chooseteam : ''
           ws.send("|/utm #{team}")
           ws.send("|/accept #{who}")
           found = true
