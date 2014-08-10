@@ -154,7 +154,7 @@ class BattleAdapter
         p_object.team[poke['ident']] = poke_object
         p_object.side << if request['active']
           
-          {object: poke_object, moves: request['active'][index]['moves']}
+          {object: poke_object, moves: request['active'][index]['moves'] rescue []}
         else
           {object: poke_object}
         end
