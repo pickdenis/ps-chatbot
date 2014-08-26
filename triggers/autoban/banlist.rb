@@ -2,6 +2,7 @@
 
 require 'eventmachine'
 require 'em-http-request'
+
 require 'fileutils'
 require 'yaml'
 
@@ -19,24 +20,25 @@ class Banlist
   
   attr_reader :storage
   
-  def initialize room, storage, dirname=nil
+  def initialize(room, storage, id=nil)
     @room = room
-    @storage = (storage == :central ? :central : :local)
+    dirname = 'bot-' << id
+    
+    @storage = storage
     
     if @storage == :local
       @blpath = "./#{dirname}/autoban/"
       FileUtils.mkdir_p(@blpath)
       @blpath << "#{@room}.yml"
       FileUtils.touch(@blpath)
+    elsif @storage == :redis
+      @redis_key = "#{id}:banlist:#{@room}"
     end
     
     get
     
   end
   
-  def set_pw pw
-    @pw = pw
-  end
   
   # The actual list
   
@@ -45,11 +47,14 @@ class Banlist
   def get(&callback)
     @banlist = []
     
-    if storage == :central
-      # Not implemented yet!
-    else
+    if storage == :local
       @banlist = YAML.load(File.open(@blpath)) || []
-      @callback.call(@banlist) if block_given?
+      callback.call(@banlist) if block_given?
+    elsif storage == :redis
+      REDIS.get(@redis_key) do |resp|
+        @banlist = resp ? Marshal.load(resp) : []
+        callback.call(@banlist) if block_given?
+      end
     end
   end
   
@@ -61,9 +66,18 @@ class Banlist
     !!get_entry(name)
   end
   
-  def update_file
-    File.open(@blpath, 'w') do |f|
-      f.puts(YAML.dump(@banlist))
+  def update_file(&callback)
+    if @storage == :local
+      File.open(@blpath, 'w') do |f|
+        f.puts(YAML.dump(@banlist))
+        callback.call if block_given?
+      end
+    elsif @storage == :redis
+      
+      REDIS.set(@redis_key, Marshal.dump(@banlist)) do |resp|
+        callback.call(resp) if block_given?
+      end
+      
     end
   end
   
@@ -75,7 +89,6 @@ class Banlist
         entry = BanEntry.new(name, reason, actor)
         
         @banlist << entry
-        update_file if storage == :local
         
       end
       
@@ -83,13 +96,9 @@ class Banlist
       
       @banlist.delete(get_entry(name))
       
-      update_file if storage == :local
-      
     end
     
-    if storage == :central
-      # Not implemented yet
-    end
+    update_file if storage == :local
   end
   
   def ab(name, reason, actor, &callback)
@@ -116,14 +125,14 @@ class BanEntry
 end
 
 class BLHandler
+  attr_reader :lists
   
   def initialize
     @lists = {}
   end
   
-  def initialize_list(room, storage, pw, dirname)
-    @lists[room] ||= Banlist.new(room, storage, dirname)
-    @lists[room].set_pw(pw)
+  def initialize_list(room, storage, id)
+    @lists[room] ||= Banlist.new(room, storage, id)
   end
   
   def get(room)

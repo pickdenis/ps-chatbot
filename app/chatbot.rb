@@ -3,12 +3,19 @@
 
 class Chatbot
   include EM::Deferrable
-  attr_reader :name, :pass, :connected, :ch, :bh, :id, :config, :dirname
+  attr_reader :name, :pass, :connected, :ch, :bh, :id, :config, :dirname, :initializing
   
   PS_URL = 'ws://sim.smogon.com:8000/showdown/websocket'
   
   
   def initialize opts # possible keys: name, pass, group, room, console
+    # The bot is initializing - if we try to terminate the program with SIGINT,
+    # it won't attempt to exit during this phase because there are things being
+    # loaded
+    
+    @initializing = true
+    
+    
     @id = opts[:id]
     @name = opts[:name]
     @pass = opts[:pass]
@@ -18,6 +25,8 @@ class Chatbot
     @config = opts[:allconfig]
     
     initialize_dir
+    run_initializers
+    
     @ch = ChatHandler.new(opts[:triggers], self)
     @bh = BattleHandler.new(@ch)
     @connected = false
@@ -48,7 +57,7 @@ class Chatbot
       end
     end
     
-    
+    @initializing = false
   end
   
   def initialize_dir
@@ -60,7 +69,16 @@ class Chatbot
     FileUtils.mkdir_p("./#{@dirname}/logs/usage")
     FileUtils.mkdir_p("./#{@dirname}/logs/pms")
     
-    FileUtils.touch("./#{dirname}/accesslist.txt")
+    FileUtils.touch("./#{@dirname}/accesslist.txt")
+  end
+  
+  def run_initializers
+    FileUtils.mkdir_p("./#{@dirname}/initializers")
+    files = Dir["./#{@dirname}/initializers/*.rb"] | Dir['./initializers/*.rb']
+    
+    files.each do |file|
+      load(file)
+    end
   end
   
   def connect
@@ -89,6 +107,11 @@ class Chatbot
         
         
         next if !message[1]
+        
+        if message[0] =~ />battle-/
+          next @bh.handle(message, ws)
+        end
+        
         case message[1].downcase
         when 'challstr'
           puts "#{@id}: Attempting to login..."
@@ -114,7 +137,7 @@ class Chatbot
             puts "#{@id}: Succesfully logged in!"
             
             @rooms.each do |r|
-              puts "#{@id} Joining room #{r}."
+              puts "#{@id}: Joining room #{r}."
               ws.send("|/join #{r}")
             end
             
@@ -129,10 +152,6 @@ class Chatbot
           @ch.handle_tournament(message, ws)
         when 'updatechallenges'
           @bh.handle_challenge(message, ws)
-        else
-          if message[0] =~ />battle-/
-            @bh.handle(message, ws)
-          end
         end
       end
       
@@ -150,8 +169,8 @@ class Chatbot
     end
   end
   
-  def exit_gracefully
-    @ch.exit_gracefully
+  def exit_gracefully(&callback)
+    @ch.exit_gracefully(&callback)
   end
     
 end

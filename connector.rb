@@ -65,19 +65,20 @@ if __FILE__ == $0
     end
     
     exiting = false
-    exitblk = proc do
+    exitblk = proc do |&callback|
       
-      next if exiting
+      next if exiting || bots.any?(&:initializing)
       
       exiting = true
       
       bots.each do |bot|
-        bot.exit_gracefully
+        bot.exit_gracefully(&callback)
       end
       
     end
     
     at_exit &exitblk
+    Signal.trap("INT") { exitblk.call { Process.exit(0) } } 
     
   end
   

@@ -17,17 +17,41 @@ Trigger.new do |t|
     room = info[:room]
     cfg = ch.config
     
+    id = ch.id
     
     if cfg['autoban']
-      pw = cfg['autoban']['pw'] || ''
       storage = (cfg['autoban']['storage'] || 'local').to_sym
+      if storage == :redis && !CBUtils.connected_to_redis?
+        # Huge problem
+        $stderr.puts("#{id}: banlist: Tried to use :redis for banlist but wasn't connected. Defaulting to :local (check config file/redis server)")
+        $stderr.puts("#{id}: banlist: If you don't know what Redis is at this point, you should just leave things how they are; nothing will go wrong")
+        storage = :local
+      end
     else
-      pw = ''
       storage = :local
     end
     
-    dirname = ch.dirname
     
-    ch.blhandler.initialize_list(room, storage, pw, dirname)
+    ch.blhandler.initialize_list(room, storage, id)
+  end
+  
+  t.exit do |canreturn|
+    id = ch.id
+    print "#{id}: banlist: saving... "
+    left = ch.blhandler.lists.size
+    canreturn.call(true) if left <= 0
+    
+    ch.blhandler.lists.each do |room, list|
+      list.update_file do |resp|
+        if !resp
+          $stderr.puts("\n#{id}: Warning: Couldn't save banlist for room '#{room}'")
+        end
+        left -= 1
+        if left <= 0
+          puts 'done'
+          canreturn.call(true)
+        end
+      end
+    end
   end
 end

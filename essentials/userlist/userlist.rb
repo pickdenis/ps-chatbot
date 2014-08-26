@@ -3,6 +3,12 @@ class Userlist
   def initialize(room)
     @users = []
     @room = room
+    
+    @callbacks = {
+      join: [],
+      leave: [],
+      rename: []
+    }
   end
   
   def list
@@ -10,7 +16,9 @@ class Userlist
   end
   
   def add_user(name)
-    @users << User.new(name)
+    u = User.new(name)
+    @users << u
+    u
   end
 
   def remove_by_name(name)
@@ -22,7 +30,26 @@ class Userlist
   end
   
   def get_user_group(name)
-    get_user(name).group
+    get_user(name).group rescue ' '
+  end
+  
+  def on(action, &cb)
+    @callbacks[action] ||= []
+    @callbacks[action] << cb
+    
+  end
+  
+  def remove_callback(cb)
+    @callbacks.each do |action, cbs|
+      cbs.delete(cb)
+    end
+  end
+  
+  def trigger_callbacks(action, *argv)
+    
+    @callbacks[action].each do |cb|
+      cb.call(*argv)
+    end
   end
   
 

@@ -116,7 +116,7 @@ class ChatHandler
     
     begin
       trigger = load_trigger_code(File.read(file), file)
-    rescue => e
+    rescue Exception => e
       puts e.message
       return false
     end
@@ -134,7 +134,7 @@ class ChatHandler
     
     begin
       trigger = eval(code, binding, file)
-    rescue => e
+    rescue Exception => e
       puts e.message
       return false
     end
@@ -155,7 +155,7 @@ class ChatHandler
   def reload_trigger(id)
     trigger = get_by_id(id)
     return false if !trigger
-    trigger.exit
+    trigger.call_exit
     @triggers.delete(trigger)
     load_trigger(@trigger_paths[id])
     true
@@ -212,8 +212,7 @@ class ChatHandler
       end)
     
     info[:rawroom] = info[:room]
-    info[:room] = CBUtils.condense_name(info[:room] || '')
-    
+    info[:room] && info[:room] = CBUtils.condense_name(info[:room])
     info
   end
   
@@ -261,10 +260,11 @@ class ChatHandler
           
           t.do_act(m_info)
         
-        rescue => e
+        rescue Exception => e
           puts "Crashed in trigger #{t}"
           puts e.message
           puts e.backtrace
+          STDOUT.flush
           
           m_info[:respond].call("Crashed in trigger #{t}; temporarily turning off.")
           t[:off] = true
@@ -307,7 +307,7 @@ class ChatHandler
     end
     
     if action == 'update'
-      info = JSON.parse(message[3])
+      info = JSON.parse(message[3], max_nesting: 100)
       
       if info['challenged']
         ws.send("#{room}|/tour acceptchallenge")
@@ -345,7 +345,7 @@ class ChatHandler
   
   
   
-  def exit_gracefully
+  def exit_gracefully(&callback)
     # Write the usage stats to the file
     
     #File.open(@usage_path, 'w') do |f|
@@ -357,11 +357,23 @@ class ChatHandler
     IO.write(@ignore_path, @ignorelist.join("\n"))
     
     puts "#{@id}: Calling triggers' exit sequences..."
+    
+    left = @triggers.count(&:exit_takes_callback?)
     @triggers.each do |trigger|
-      trigger.exit
+      
+      trigger.call_exit do |can_exit|
+        if can_exit
+          left -= 1
+        end
+        
+        if left <= 0
+          puts "#{@id}: Done with exit sequence"
+          callback.call if block_given?
+        end
+      end
     end
     
-    puts "#{@id}: Done with exit sequence"
+    
     
   end
   
@@ -398,13 +410,17 @@ class Trigger
   # Optional trigger field
   # t.exit { what to do when chatbot exits }
   def exit &blk
-    if block_given?
-      @exit = blk
-    else
-      if @exit
-        @exit.call
-      end
-    end
+    @exit = blk
+  end
+  
+  def exit_takes_callback?
+    return false if !@exit
+    @exit.arity == 1
+  end
+  
+  def call_exit &blk
+    return if !@exit
+    @exit.call(blk)
   end
   
   # Optional trigger field

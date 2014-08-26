@@ -1,5 +1,7 @@
 class BattleHandler
-  attr_accessor :battles, :ws, :ch
+  attr_reader :battles, :ws, :ch
+  
+  LOGIC = {} 
   
   def initialize ch
     @ch = ch
@@ -33,21 +35,27 @@ class BattleHandler
     end
   end
   
-  TEAMS = {
-    'doublescustomgame' => [
-      'zap7|magnezone|choicespecs|friendguard|metronome|Sassy|252,252,252,252,252,252|||S|666|]ayy lmao|celebi|weaknesspolicy|filter|metronome|Quiet|252,252,252,252,252,252||||666|',
-      'Daddy|golurk|weaknesspolicy|magicbounce|metronome|Sassy|252,252,252,252,252,252|||S|666|]babby|golett|choiceband|magicbounce|metronome|Quiet|252,252,252,252,252,252||||666|'
-    ]
-  }
-  
   def handle_challenge message, ws
     JSON.parse(message[2])["challengesFrom"].each do |who, format|
-      if format == "challengecup1vs1"
-        ws.send("|/utm {}")
-        ws.send("|/accept #{who}, {}")
-      elsif format == "doublescustomgame"
-        ws.send("|/utm #{TEAMS['doublescustomgame'].sample}")
-        ws.send("|/accept #{who}")
+      found = false
+      
+      LOGIC.each do |lformat, handler|
+        if lformat == format
+          if handler.const_defined? :NOCHALLENGES
+            ws.send("/pm #{who}, sorry, but I don't accept challenges for this format.")
+            return
+          end
+          
+          team = handler.respond_to?(:chooseteam) ? handler.chooseteam : ''
+          ws.send("|/utm #{team}")
+          ws.send("|/accept #{who}")
+          found = true
+          break
+        end
+      end
+      
+      if !found
+        ws.send("/pm #{who}, sorry, I don't know how to battle in this format.")
       end
     end
     
@@ -70,6 +78,7 @@ class BattleHandler
   
   def battle_loop format, ws
     EM::PeriodicTimer.new(30) do
+      ws.send("|/utm #{BattleHandler::LOGIC[format].chooseteam rescue ''}")
       ws.send("|/search #{format}")
     end
   end
@@ -77,19 +86,20 @@ class BattleHandler
 end
 
 class BattleAdapter
-  attr_accessor :battle, :respond, :id, :rqid, :ch
+  attr_reader :battle, :respond, :id, :rqid, :ch, :logic
   
   def initialize args
     @id = args[:id]
     @ch = args[:ch]
     format = BattleHandler.parse_battle_id(@id)[:format]
     
-    # If the format is not recognized, it will try to use the default logic, which throws
-    # an exception with every method. Only accept battles that have logic
-    logic = ({'challengecup1vs1' => CC1vs1Logic, 'doublescustomgame' => DoublesCustomGameLogic}[format] || BattleLogic).new
+    @logic = BattleHandler::LOGIC[format]
+    if !@logic
+      return nil
+    end
+
     
-    
-    @battle = Battle.new id: @id, logic: logic # Battle object
+    @battle = Battle.new id: @id, logic: @logic.new # Battle object
     @respond = args[:respond] # This should be passed from the ChatHandler
   end
   
@@ -144,7 +154,7 @@ class BattleAdapter
         p_object.team[poke['ident']] = poke_object
         p_object.side << if request['active']
           
-          {object: poke_object, moves: request['active'][index]['moves']}
+          {object: poke_object, moves: (request['active'][index]['moves'] rescue [])}
         else
           {object: poke_object}
         end
@@ -240,6 +250,10 @@ class BattleLogic
   def switch rqid
     throw NotImplementedError
   end
+  
+  def self.chooseteam
+    ''
+  end
 end
 
 require_relative 'battleutil/cc1vs1helper.rb'
@@ -280,7 +294,18 @@ class CC1vs1Logic < BattleLogic
   end
 end
 
+BattleHandler::LOGIC['challengecup1vs1'] = CC1vs1Logic
+
 class DoublesCustomGameLogic < BattleLogic
+  TEAMS = [
+    'zap7|magnezone|choicespecs|friendguard|metronome|Sassy|252,252,252,252,252,252|||S|666|]ayy lmao|celebi|weaknesspolicy|filter|metronome|Quiet|252,252,252,252,252,252||||666|',
+    'Daddy|golurk|weaknesspolicy|magicbounce|metronome|Sassy|252,252,252,252,252,252|||S|666|]babby|golett|choiceband|magicbounce|metronome|Quiet|252,252,252,252,252,252||||666|'
+  ]
+  
+  def self.chooseteam
+    TEAMS.shuffle
+  end
+  
   def chooselead rqid
     "/team 1|#{rqid}"
   end
@@ -289,3 +314,5 @@ class DoublesCustomGameLogic < BattleLogic
     "/choose move metronome|#{rqid}"
   end
 end
+
+BattleHandler::LOGIC['doublescustomgame'] = DoublesCustomGameLogic
