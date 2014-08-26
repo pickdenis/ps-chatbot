@@ -146,7 +146,7 @@ class Chatbot
           
           
           
-        when 'c', 'pm', 'j', 'n', 'l', 'users'
+        when 'c:', 'pm', 'j', 'n', 'l', 'users'
           @ch.handle(message, ws)
         when 'tournament'
           @ch.handle_tournament(message, ws)
