@@ -14,7 +14,7 @@ Trigger.new do |t|
 
     # First check if :who is a mod
 
-    next unless info[:all][2][0] =~ /[@#]/
+    next unless info[:fullwho][1] =~ /[@#]/
 
     # Remove :result from the ban list
     bl = ch.blhandler.get(info[:room])

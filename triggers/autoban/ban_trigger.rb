@@ -17,7 +17,7 @@ Trigger.new do |t|
     
     # First check if :who is a mod
     
-    next unless info[:all][2][0] =~ /[@#]/
+    next unless info[:fullwho][1] =~ /[@#]/
     
     if !reason
       info[:respond].call('Please supply a reason for the ban.')
