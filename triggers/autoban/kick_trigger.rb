@@ -14,7 +14,7 @@ Trigger.new do |t|
   t.act do |info|
     
     # First check if :who is a mod (or part of the epic meme police)
-    next unless info[:fullwho][1] =~ /[@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
+    next unless info[:fullwho][0] =~ /[@#]/ || !!t[:who_can_access].index(CBUtils.condense_name(info[:who]))
       
     # Add :result to the ban list
   
