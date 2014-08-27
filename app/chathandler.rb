@@ -166,7 +166,7 @@ class ChatHandler
     
     info.merge!(
       case info[:where].downcase
-      when 'c', 'c:'
+      when 'c:'
         {
           where: 'c',
           room: message[0][1..-2],
@@ -174,6 +174,15 @@ class ChatHandler
           fullwho: message[3],
           what: message[4],
         }
+
+      when 'c'
+        {
+          room: message[0][1..-2],
+          who: message[2][1..-1],
+          fullwho: message[2],
+          what: message[3],
+        }
+
       when 'j', 'l'
         {
           room: message[0][1..-2],
