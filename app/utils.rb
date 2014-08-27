@@ -21,6 +21,18 @@ module CBUtils
   
   end
   
+  def self.command(name, num_args = Numeric)                   
+    pattern = /!#{name}\s*((?:[^,]+,?\s*)+)/              
+    lambda { |cmd|                                        
+      match = cmd.match(pattern)                          
+                                                          
+      return nil unless match                             
+      args = match[1].split(/,\s*/)                       
+      return :syntax_error unless num_args === args.size  
+      args                                                
+    }                                                     
+  end                                                     
+  
   
   def self.safe_read(file)
     File.read(file, 
