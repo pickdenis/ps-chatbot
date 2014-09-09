@@ -303,7 +303,7 @@ class DoublesCustomGameLogic < BattleLogic
   ]
   
   def self.chooseteam
-    TEAMS.shuffle
+    TEAMS.sample
   end
   
   def chooselead rqid
