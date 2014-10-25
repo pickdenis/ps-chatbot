@@ -45,10 +45,12 @@ Trigger.new do |t|
     end
   end
   
-  t.exit do
+  t.exit do |canexit|
     puts 'Saving phrases I know...'
     File.open(chain_path, 'w') do |f|
       f.puts JSON.dump(chain.nodes)
     end
+
+    canexit.call(true)
   end
 end
