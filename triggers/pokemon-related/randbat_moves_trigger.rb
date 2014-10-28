@@ -8,11 +8,11 @@ Trigger.new do |t|
   t.act do |info|
     mon = CBUtils.condense_name(info[:result])
 
-    if Pokedex::FORMATSDATA[mon].nil? || Pokedex::FORMATSDATA[mon]['isUnreleased']
-    	result = ""
+    fd = Pokedex::FORMATSDATA[mon]
+    if !fd || !(moves = fd['randomBattleMoves'] || fd['learnset']) 
+      result = ""
     else
-    	moves = (Pokedex::FORMATSDATA[mon]['randomBattleMoves'] || Pokedex::FORMATSDATA[mon]['learnset'])
-    	result = moves.map { |m| Pokedex::MOVES[m]['name'] }.join(', ')
+      result = moves.map { |m| Pokedex::MOVES[m]['name'] }.join(', ')
     end
 
     info[:respond].call(result)
