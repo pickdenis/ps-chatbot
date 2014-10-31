@@ -171,7 +171,7 @@ class ChatHandler
           room: message[0][1..-2],
           who: message[3][1..-1],
           fullwho: message[3],
-          what: message[4],
+          what: message[4] || '',
         }
 
       when 'c'
@@ -228,7 +228,6 @@ class ChatHandler
   def handle message, ws, callback = nil
     
     m_info = self.make_info(message, ws)
-    
     
     @ignorelist.map(&:downcase).index(m_info[:who].downcase) and return
     
