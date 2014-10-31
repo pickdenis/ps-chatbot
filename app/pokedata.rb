@@ -7,6 +7,7 @@ module Pokedex
   POKEMONDATA = JSON.parse(CBUtils.safe_read("#{BASEPATH}/ps-data/BattlePokedex.json"))
   FORMATSDATA = JSON.parse(CBUtils.safe_read("#{BASEPATH}/ps-data/BattleFormatsData.json"))
   MOVES = JSON.parse(CBUtils.safe_read("#{BASEPATH}/ps-data/BattleMovedex.json"))
+  ITEMS = JSON.parse(CBUtils.safe_read("#{BASEPATH}/ps-data/BattleItems.json"))
   puts 'done.'
   
   def self.get_randbats_speeds
