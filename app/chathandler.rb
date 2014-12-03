@@ -23,7 +23,7 @@ class ChatHandler
     @trigger_paths = {}
     
     @ignorelist = []
-    
+
     initialize_ignore_list
     
     # useless and redundant feature
