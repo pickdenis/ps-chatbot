@@ -44,6 +44,8 @@ class Chatbot
     if !@rooms.is_a? Array
       @rooms = [@rooms]
     end
+
+    @room_times = Hash.new
     
     @server = (opts[:server] || PS_URL)
     
@@ -146,17 +148,26 @@ class Chatbot
           
           
           
-        when 'c', 'c:', 'pm', 'j', 'n', 'l', 'users'
+        when 'c', 'pm', 'j', 'n', 'l', 'users'
           @ch.handle(message, ws)
+        when 'c:'
+          curTime = Integer(message[2])
+          if (curTime == nil || curTime > @room_times[message[0][1..-2]])
+            @ch.handle(message, ws)
+          end
         when 'tournament'
           @ch.handle_tournament(message, ws)
         when 'updatechallenges'
           @bh.handle_challenge(message, ws)
+        when ':'
+          update_room_time(message[0][1..-2], Integer(message[2]))
         end
       end
       
     end
 
+
+              
     ws.on :close do |event|
       puts "#{@id}: connection closed. code=#{event.code}, reason=#{event.reason}"
       @connected = false
@@ -168,7 +179,13 @@ class Chatbot
       @bh.battle_loop('challengecup1vs1', ws)
     end
   end
-  
+
+
+  # Sets the join time for a room
+  def update_room_time room, time
+    @room_times[room] = time
+  end
+              
   def exit_gracefully(&callback)
     @ch.exit_gracefully(&callback)
   end
