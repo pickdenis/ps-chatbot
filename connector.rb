@@ -35,7 +35,7 @@ if __FILE__ == $0
   end
 
   if File.exist?(cfg_file)
-    configs = YAML.load(File.open(cfg_file))["bots"]
+    configs = YAML.load_file(cfg_file)["bots"]
   else
     raise "config file specified #{cfg_file} does not exist!"
   end
