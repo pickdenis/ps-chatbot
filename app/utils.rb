@@ -5,7 +5,7 @@ require 'json'
 
 module CBUtils
   def self.condense_name name
-    name.downcase.gsub(/[^A-Za-z0-9]/, '')
+    name.downcase.gsub(/[^a-z0-9]/, '')
   end
   
   def self.login name, pass, challenge, challengekeyid, &callback
